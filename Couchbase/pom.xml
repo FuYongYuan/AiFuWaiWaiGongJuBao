@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.fyy</groupId>
+    <artifactId>couchbase</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- cn.fyy.tools -->
+        <cn.fyy.tools.version>1.0</cn.fyy.tools.version>
+
+        <!-- couchbase -->
+        <couchbase.version>2.7.7</couchbase.version>
+
+        <!-- json -->
+        <jackson.version>2.9.9.1</jackson.version>
+
+        <!-- 日志 -->
+        <commons-logging.version>1.2</commons-logging.version>
+    </properties>
+
+    <dependencies>
+        <!-- couchbase -->
+        <dependency>
+            <groupId>com.couchbase.client</groupId>
+            <artifactId>java-client</artifactId>
+            <version>[${couchbase.version},)</version>
+        </dependency>
+
+        <!-- json -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>[${jackson.version},)</version>
+        </dependency>
+
+        <!-- 日志 -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>[${commons-logging.version},)</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.fyy</groupId>
+            <artifactId>dispose</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.fyy</groupId>
+            <artifactId>encrypt</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.fyy</groupId>
+            <artifactId>schedule</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
+</project>
