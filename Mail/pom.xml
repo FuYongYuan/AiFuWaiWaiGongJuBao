@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.fyy</groupId>
+    <artifactId>mail</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--邮件-->
+        <mail.version>1.5.0-b01</mail.version>
+        <!-- 日志 -->
+        <commons-logging.version>1.2</commons-logging.version>
+    </properties>
+
+    <dependencies>
+        <!--邮件-->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>[${mail.version},)</version>
+        </dependency>
+
+        <!-- 日志 -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>[${commons-logging.version},)</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.fyy</groupId>
+            <artifactId>dispose</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
+</project>
