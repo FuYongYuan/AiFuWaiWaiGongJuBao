@@ -10,8 +10,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <!-- 验证 -->
         <commons-codec.version>1.12</commons-codec.version>
     </properties>

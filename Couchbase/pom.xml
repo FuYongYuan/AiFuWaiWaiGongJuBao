@@ -10,17 +10,12 @@
     <packaging>jar</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <!-- cn.fyy.tools -->
         <cn.fyy.tools.version>1.0</cn.fyy.tools.version>
-
         <!-- couchbase -->
         <couchbase.version>2.7.7</couchbase.version>
-
         <!-- json -->
         <jackson.version>2.9.9.1</jackson.version>
-
         <!-- 日志 -->
         <commons-logging.version>1.2</commons-logging.version>
     </properties>

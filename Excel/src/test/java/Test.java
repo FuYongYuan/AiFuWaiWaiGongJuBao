@@ -1,5 +1,4 @@
 import dispose.CopyClass;
-import encrypt.RandomUtil;
 import excel.operation.ExcelExport;
 import excel.operation.set.SheetSet;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -27,12 +26,12 @@ public class Test {
 //            excelEntity.sT = "测试" + ix;
 //            excelEntity.iT = i / 5;
 //            excelEntity.DT = new Date();
-//            excelEntity.dT = Double.valueOf(RandomUtil.randomNumberByWithin(i) + "." + RandomUtil.randomNumberByWithin(i));
-//            excelEntity.bDT = new BigDecimal(RandomUtil.randomNumberByWithin(i) + "." + RandomUtil.randomNumberByWithin(i));
-//            excelEntity.bT = RandomUtil.randomBoolean();
+//            excelEntity.dT = Double.valueOf(Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
+//            excelEntity.bDT = new BigDecimal(Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
+//            excelEntity.bT = Test.randomBoolean();
 //            excelEntities.add(excelEntity);
 
-            Map<String, Object> omap = new HashMap<String, Object>();
+            Map<String, Object> omap = new HashMap<>();
             omap.put("sT", "测试" + ix);
             omap.put("iT", i / 5);
 //            if (i % 2 == 0) {
@@ -40,13 +39,13 @@ public class Test {
 //            }
             omap.put("DT", new Date());
             if (i % 2 != 0) {
-                omap.put("dT", RandomUtil.randomNumberByWithin(i) + "." + RandomUtil.randomNumberByWithin(i));
+                omap.put("dT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
             }
             if (i % 2 == 0) {
-                omap.put("bDT", RandomUtil.randomNumberByWithin(i) + "." + RandomUtil.randomNumberByWithin(i));
+                omap.put("bDT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
             }
 //            if (i % 2 != 0) {
-                omap.put("bT", RandomUtil.randomBoolean());
+                omap.put("bT", Test.randomBoolean());
 //            }
             excelEntities.add(omap);
         }
@@ -151,5 +150,29 @@ public class Test {
 //            e.printStackTrace();
 //        }
 
+    }
+
+
+    /**
+     * 随机范围数
+     */
+    public static int randomNumberByWithin(int within) {
+        return randomNumberByWithin(0, within);
+    }
+
+    /**
+     * 随机范围数
+     */
+    public static int randomNumberByWithin(int startWithin, int endWithin) {
+        Random random = new Random();
+        return random.nextInt(endWithin - startWithin + 1) + startWithin;
+    }
+
+    /**
+     * 随机boolean
+     */
+    public static boolean randomBoolean() {
+        Random rd = new Random();
+        return rd.nextBoolean();
     }
 }

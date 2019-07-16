@@ -10,8 +10,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <!--Http请求包-->
         <httpclient.version>4.5.9</httpclient.version>
         <!--Html处理工具包-->

@@ -10,8 +10,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <!--excel导出导入-->
         <poi.version>4.1.0</poi.version>
     </properties>
