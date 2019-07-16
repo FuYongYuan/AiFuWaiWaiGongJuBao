@@ -1,24 +1,28 @@
 ## 说明
 
 #### 功能说明
-* 整个项目是一个工具包的集群，根据各自需求导入不同的工具包，工具包统一在 `<groupId>cn.fyy</groupId>` 下只需要根据个人需求修改 `<artifactId>dispose</artifactId>` 即可。
+> 1. 整个项目是一个工具包的集群，根据各自需求导入不同的工具包。
+>
+> 2. 工具包统一在 `<groupId>cn.fyy</groupId>` 下只需要根据个人需求修改 `<artifactId>dispose</artifactId>` 即可。
+>
+> 3. 单一模块使用方法在模块的 src 同级的 test.java 下。
 
 #### 模块说明
 > 1. Couchbase 即非关系型数据库 Couchbase 框架，让 Couchbase 书写更加轻减。
 >
 > 2. Dispose 即处理工具类包，其中包括如：日期处理、文本处理、对象拷贝等处理类。
 >
-> 3. Encrypt 即加密工具类包，其中包括如：MD5加密、AES加密、SHA1加密等加密方式。
+> 3. Encrypt 即加密工具类包，其中包括如：MD5 加密、AES 加密、SHA1 加密等加密方式。
 >
-> 4. Excel 即Excel导出工具类包，帮助Excel快速导出，还可以完成合并、计算等功能。
+> 4. Excel 即 Excel 导出工具类包，帮助 Excel 快速导出，还可以完成合并、计算等功能。
 >
-> 5. Http 即HTTP请求工具包，包括HTTP的Get和Post请求，可快速进行拼装请求。
+> 5. Http 即 HTTP 请求工具包，包括 HTTP 的 Get 和 Post 请求，可快速进行拼装请求。
 >
 > 6. Log 即文件日志工具包，可以通过此工具包快速实现文件日志记录系统。
 >
 > 7. Mail 即邮件工具类包，可以通过此工具类包快速完成发送邮件功能。
 >
-> 8. Project 即项目工具类包，其中包括如：分页对象、请求Path对象等。
+> 8. Project 即项目工具类包，其中包括如：分页对象、请求 Path 对象等。
 >
 > 9. Robot 即图灵机器人工具包，快速完成机器人交流功能。
 >
