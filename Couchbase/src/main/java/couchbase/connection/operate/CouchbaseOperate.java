@@ -7,9 +7,11 @@ import com.couchbase.client.java.query.N1qlQuery;
 import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryRow;
 import com.couchbase.client.java.query.Statement;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import couchbase.convert.N1qlQueryToObject;
 import couchbase.entity.BucketTime;
 import couchbase.entity.Document;
@@ -20,10 +22,7 @@ import dispose.DateDispose;
 import encrypt.UUIDUtil;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.couchbase.client.java.query.Select.select;
 import static com.couchbase.client.java.query.dsl.Expression.s;
@@ -58,8 +57,8 @@ public class CouchbaseOperate {
         bucketTime = time;
         if (isIgnoreGetSet) {
             //忽略get.set
-            mapper.configure(MapperFeature.AUTO_DETECT_GETTERS, false);
-            mapper.configure(MapperFeature.AUTO_DETECT_SETTERS, false);
+            mapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
+            mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         }
         //有属性不能映射的时候不报错   比如json中多一个属性...或者是对象中多几个属性
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -79,12 +78,11 @@ public class CouchbaseOperate {
     public <T extends Document> boolean add(T doc) {
         try {
             if (doc != null) {
-                JsonDocument jsonDocument = documentInitialize(doc.getClass().getSimpleName() + "-" + UUIDUtil.getUUID32(), doc);
-                if (jsonDocument != null) {
-                    bucket.insert(jsonDocument, bucketTime.TIME_ADD, bucketTime.TIME_UNIT);
-                } else {
-                    throw new DataBaseOperateException("诊断：传入对象转换文档过程错误");
-                }
+                bucket.insert(
+                        documentInitialize(doc.getClass().getSimpleName() + "-" + UUIDUtil.getUUID32(), doc),
+                        bucketTime.TIME_ADD,
+                        bucketTime.TIME_UNIT
+                );
                 return true;
             } else {
                 throw new DataBaseOperateException("诊断：传入对象为空");
@@ -106,12 +104,11 @@ public class CouchbaseOperate {
     public <T extends Document> boolean add(String id, T doc) {
         try {
             if (id != null && !id.isEmpty() && doc != null) {
-                JsonDocument jsonDocument = documentInitialize(id, doc);
-                if (jsonDocument != null) {
-                    bucket.insert(jsonDocument, bucketTime.TIME_ADD, bucketTime.TIME_UNIT);
-                } else {
-                    throw new DataBaseOperateException("诊断：传入对象转换文档过程错误");
-                }
+                bucket.insert(
+                        documentInitialize(id, doc),
+                        bucketTime.TIME_ADD,
+                        bucketTime.TIME_UNIT
+                );
                 return true;
             } else {
                 throw new DataBaseOperateException("诊断：传入对象为空或者主键为空");
@@ -337,7 +334,7 @@ public class CouchbaseOperate {
                 } else {
                     throw new DataBaseOperateException("诊断：未找到公共基类Document的主键");
                 }
-            }else {
+            } else {
                 throw new DataBaseOperateException("诊断：传入对象为空");
             }
         } catch (Exception e) {
@@ -1050,8 +1047,9 @@ public class CouchbaseOperate {
      * @return json形式文档
      */
     private <T extends Document> JsonDocument objectToT(T doc) {
-        HashMap<String, T> docHashMap = mapper.convertValue(doc, HashMap.class);
-        return JsonDocument.create(getIdFieldValue(doc), JsonObject.from(docHashMap));
+        HashMap<String, Object> docHashMap = mapper.convertValue(doc, new TypeReference<HashMap<String, Object>>() {
+        });
+        return JsonDocument.create(Objects.requireNonNull(getIdFieldValue(doc)), JsonObject.from(docHashMap));
     }
 
     /**
@@ -1122,7 +1120,8 @@ public class CouchbaseOperate {
             }
             updateTimeField.set(doc, new Date());
 
-            HashMap docHashMap = mapper.convertValue(doc, HashMap.class);
+            HashMap<String, Object> docHashMap = mapper.convertValue(doc, new TypeReference<HashMap<String, Object>>() {
+            });
             jsonDocument = JsonDocument.create(id, JsonObject.from(docHashMap));
         } else {
             throw new DataBaseOperateException("诊断：对象未继承公共基类Document无法存入数据库请继承后重试!");

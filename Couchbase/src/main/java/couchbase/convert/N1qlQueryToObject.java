@@ -4,8 +4,10 @@ import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryRow;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
@@ -48,8 +50,8 @@ public class N1qlQueryToObject {
             }
         } else {
             mapper = new ObjectMapper();
-            mapper.configure(MapperFeature.AUTO_DETECT_GETTERS, false);
-            mapper.configure(MapperFeature.AUTO_DETECT_SETTERS, false);
+            mapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
+            mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             if (n1qlQueryToObject == null) {
                 n1qlQueryToObject = new N1qlQueryToObject(mapper);
@@ -139,7 +141,8 @@ public class N1qlQueryToObject {
      * @return 文档格式的内容
      */
     public <T> JsonDocument objectToT(String Id, T doc) {
-        HashMap docHashMap = mapper.convertValue(doc, HashMap.class);
+        HashMap<String, Object> docHashMap = mapper.convertValue(doc, new TypeReference<HashMap<String, Object>>() {
+        });
         return JsonDocument.create(Id, JsonObject.from(docHashMap));
     }
 
@@ -173,7 +176,8 @@ public class N1qlQueryToObject {
      */
     public <T> JsonDocument giveDocumentId(String id, T doc) {
         JsonDocument jsonDocument;
-        HashMap docHashMap = mapper.convertValue(doc, HashMap.class);
+        HashMap<String, Object> docHashMap = mapper.convertValue(doc, new TypeReference<HashMap<String, Object>>() {
+        });
         jsonDocument = JsonDocument.create(id, JsonObject.from(docHashMap));
         return jsonDocument;
     }

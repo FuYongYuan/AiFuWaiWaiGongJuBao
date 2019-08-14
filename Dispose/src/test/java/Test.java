@@ -26,7 +26,7 @@ public class Test {
 
         Date start_Date = DateDispose.formatting_Date("2019-04-30 00:00:00", DateType.Year_Month_Day_Hour_Minute_Second);
         Date end_Date = DateDispose.formatting_Date("2019-07-02 23:59:59", DateType.Year_Month_Day_Hour_Minute_Second);
-        Date totalStartDate = start_Date;
+        Date totalStartDate;
         totalStartDate = DateDispose.day_calculate_Date(start_Date, 1);
 
         System.out.println(DateDispose.formatting_Date(start_Date, DateType.Year_Month_Day));
@@ -68,7 +68,7 @@ public class Test {
             total = total.add(balance.add(b));
         }
 
-        Long bizDay = DateDispose.dateDiff(start_Date, end_Date, DateType.Day) + 1;
+        long bizDay = DateDispose.dateDiff(start_Date, end_Date, DateType.Day) + 1;
 
         System.out.println(total.divide(new BigDecimal(bizDay), 2, BigDecimal.ROUND_HALF_UP));
 

@@ -164,14 +164,14 @@ public class TextDispose {
      * @return 分割后的数组
      */
     public static String[] split(String s, char c) {
-        ArrayList sections = new ArrayList();
+        List<String> sections = new ArrayList<>();
         int pos = 0;
 
         while (true) {
             int pos1 = s.indexOf(c, pos);
             if (pos1 == -1) {
                 sections.add(s.substring(pos));
-                return (String[]) toArray(sections, String.class);
+                return (String[]) toArray(sections);
             }
 
             sections.add(s.substring(pos, pos1));
@@ -187,14 +187,14 @@ public class TextDispose {
      * @return 分割后的数组
      */
     public static String[] split(String s, String p) {
-        ArrayList sections = new ArrayList();
+        List<String> sections = new ArrayList<>();
         int pos = 0;
 
         while (true) {
             int pos1 = s.indexOf(p, pos);
             if (pos1 == -1) {
                 sections.add(s.substring(pos));
-                return (String[]) toArray(sections, String.class);
+                return (String[]) toArray(sections);
             }
 
             sections.add(s.substring(pos, pos1));
@@ -202,8 +202,8 @@ public class TextDispose {
         }
     }
 
-    private static Object[] toArray(List<?> list, Class<?> elementType) {
-        Object[] array = (Object[]) Array.newInstance(elementType, list.size());
+    private static Object[] toArray(List<?> list) {
+        Object[] array = (Object[]) Array.newInstance(String.class, list.size());
         list.toArray(array);
         return array;
     }
@@ -403,7 +403,7 @@ public class TextDispose {
         }
         String head = str.substring(0, 1);
         String value = str.substring(1, str.length());
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < value.length(); i++) {
             String s = value.substring(i, i + 1);
             if (isAllUpper(s)) {
