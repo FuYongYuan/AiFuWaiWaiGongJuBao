@@ -62,8 +62,7 @@ public class ExcelValidationUtil {
                 fileOut.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new ExcelOperateException("诊断：验证文档不存在则创建过程失败");
+            throw new ExcelOperateException("诊断：验证文档不存在则创建过程失败" + e.getMessage());
         }
     }
 

@@ -169,7 +169,7 @@ public class ExcelOperate {
                 throw new ExcelOperateException("诊断：传入文档地址为空");
             }
         } catch (IOException e) {
-            throw new ExcelOperateException("诊断：Excel操作写入文件被占用");
+            throw new ExcelOperateException("诊断：Excel操作写入文件被占用" + e.getMessage());
         }
     }
 
@@ -180,7 +180,7 @@ public class ExcelOperate {
                 workbook.close();
             }
         } catch (IOException e) {
-            throw new ExcelOperateException("诊断：Excel操作类销毁失败");
+            throw new ExcelOperateException("诊断：Excel操作类销毁失败" + e.getMessage());
         }
     }
 }

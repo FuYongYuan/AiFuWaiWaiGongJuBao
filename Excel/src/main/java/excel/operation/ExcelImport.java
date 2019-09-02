@@ -84,8 +84,7 @@ public class ExcelImport {
                 list.add(obj);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new ExcelOperateException("诊断：Excel导入失败");
+            throw new ExcelOperateException("诊断：Excel导入失败" + e.getMessage());
         }
         return list;
     }
@@ -151,8 +150,7 @@ public class ExcelImport {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new ExcelOperateException("诊断：Excel导入赋值过程错误");
+            throw new ExcelOperateException("诊断：Excel导入赋值过程错误" + e.getMessage());
         }
     }
 
