@@ -24,6 +24,11 @@ public class SheetSet {
     private Class<?> dataClass;
 
     /**
+     * 读取字段时是否采用的Get方法读取
+     */
+    private Boolean isGetMethodFieldValue;
+
+    /**
      * 对应当前页样式对象
      */
     private Style style;
@@ -77,6 +82,10 @@ public class SheetSet {
         }
 
         this.sheetData = new SheetData();
+
+        if (this.isGetMethodFieldValue == null) {
+            this.isGetMethodFieldValue = true;
+        }
 
         return this;
     }
@@ -146,5 +155,20 @@ public class SheetSet {
      */
     public SheetData getSheetData() {
         return sheetData;
+    }
+
+    /**
+     * 读取字段时是否采用的Get方法读取
+     */
+    public Boolean getIsGetMethodFieldValue() {
+        return isGetMethodFieldValue;
+    }
+
+    /**
+     * 读取字段时是否采用的Get方法读取
+     */
+    public SheetSet setIsGetMethodFieldValue(Boolean isGetMethodFieldValue) {
+        this.isGetMethodFieldValue = isGetMethodFieldValue;
+        return this;
     }
 }

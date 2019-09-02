@@ -10,6 +10,7 @@ import excel.operation.set.Function;
 import excel.operation.set.SheetData;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -101,10 +102,18 @@ public class ExcelDisposeUtil {
      * @param decimalAfterDigit 保留小数
      * @return 处理后的值
      */
-    public static String correspondingValue(Field field, Object obj, DateType dateType, int decimalAfterDigit) {
+    public static String correspondingValue(Field field, Object obj, boolean isGetMethodFieldValue, DateType dateType, int decimalAfterDigit) {
         try {
             //定义一个取对象中get方法的对象
-            Object objectValue = field.get(obj);
+            Object objectValue;
+            if (isGetMethodFieldValue) {
+                String fieldName = field.getName();
+                String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
+                Method method = obj.getClass().getMethod("get" + fieldNameFirstUpperCase);
+                objectValue = method.invoke(obj);
+            } else {
+                objectValue = field.get(obj);
+            }
             String value;
             if (objectValue == null) {
                 value = null;

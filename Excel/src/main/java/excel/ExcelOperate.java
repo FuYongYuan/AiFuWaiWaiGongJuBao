@@ -64,7 +64,7 @@ public class ExcelOperate {
                 Row row = sheet.createRow(result);
                 for (int i = 0; i < fieldList.size(); i++) {
                     row.createCell(i).setCellValue(ExcelDisposeUtil.correspondingValue(
-                            fieldList.get(i), obj,
+                            fieldList.get(i), obj, true,
                             fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
                             fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit()));
                 }
@@ -98,7 +98,7 @@ public class ExcelOperate {
                     Row row = sheet.getRow(rowNumber);
                     for (int i = 0; i < fieldList.size(); i++) {
                         String value = ExcelDisposeUtil.correspondingValue(
-                                fieldList.get(i), obj,
+                                fieldList.get(i), obj, true,
                                 fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
                                 fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit());
                         if (TextDispose.isNotEmpty(value)) {

@@ -115,14 +115,14 @@ public class ExcelExport {
                                 Cell cell = nextrow.createCell(j);
 
                                 String cellValue = ExcelDisposeUtil.correspondingValue(
-                                        sheetSet.getSheetData().useField.get(j), sheetSet.getWorkbookData().get(i - extrai),
+                                        sheetSet.getSheetData().useField.get(j), sheetSet.getWorkbookData().get(i - extrai), sheetSet.getIsGetMethodFieldValue(),
                                         sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).dateType(),
                                         sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).decimalAfterDigit());
 
                                 String rowspanAlignCellValue = cellValue;
                                 if (sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() > 0) {
                                     rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
-                                            sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1), sheetSet.getWorkbookData().get(i - extrai),
+                                            sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1), sheetSet.getWorkbookData().get(i - extrai), sheetSet.getIsGetMethodFieldValue(),
                                             sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).dateType(),
                                             sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).decimalAfterDigit());
                                 }
