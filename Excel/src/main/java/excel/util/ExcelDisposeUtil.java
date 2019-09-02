@@ -89,7 +89,7 @@ public class ExcelDisposeUtil {
                 throw new ExcelOperateException("诊断：Excel导出未找到配置字段");
             }
         } catch (Exception e) {
-            throw new ExcelOperateException("诊断：Excel对应关系错误" + e.getMessage());
+            throw new ExcelOperateException("诊断：Excel对应关系错误 -> " + e.getMessage());
         }
     }
 
@@ -165,7 +165,7 @@ public class ExcelDisposeUtil {
                 }
             }
         } catch (Exception e) {
-            throw new ExcelOperateException("诊断：Excel对应关系错误" + e.getMessage());
+            throw new ExcelOperateException("诊断：Excel对应关系错误 -> " + e.getMessage());
         }
         return fieldList;
     }
