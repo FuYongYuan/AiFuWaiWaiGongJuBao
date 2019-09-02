@@ -11,8 +11,6 @@ import java.util.Map;
 
 /**
  * 用于比较两个类是否完全相等
- *
- * @author fuyongyuan
  */
 public class CompareClass {
     public static DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

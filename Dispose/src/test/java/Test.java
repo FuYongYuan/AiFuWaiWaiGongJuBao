@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class Test {
     public static void main(String[] args) {
+
 //        Date totalStartDate = DateDispose.formatting_Date("2019-07-03", DateType.Year_Month_Day);
 //        Date totalEndDate = DateDispose.formatting_Date("2019-07-01", DateType.Year_Month_Day);
 //        if(DateDispose.compareDateSize(totalEndDate, totalStartDate) || DateDispose.compareDate(totalEndDate, totalStartDate)) {
@@ -71,7 +72,6 @@ public class Test {
         long bizDay = DateDispose.dateDiff(start_Date, end_Date, DateType.Day) + 1;
 
         System.out.println(total.divide(new BigDecimal(bizDay), 2, BigDecimal.ROUND_HALF_UP));
-
 
 
 

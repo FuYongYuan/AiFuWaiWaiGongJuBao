@@ -127,7 +127,7 @@ public class ExcelDisposeUtil {
             }
             return value;
         } catch (Exception e) {
-            throw new ExcelOperateException("诊断：Excel中数据格式转换错误");
+            throw new ExcelOperateException("诊断：Excel中数据格式转换错误 -> " + e.getMessage());
         }
     }
 

@@ -21,8 +21,6 @@ import java.util.List;
 
 /**
  * Excel导入
- *
- * @author fuyongyuan
  */
 public class ExcelImport {
     /**

@@ -26,8 +26,6 @@ import java.util.Map;
 
 /**
  * Excel文件导出
- *
- * @author Administrator
  */
 public class ExcelExport {
     /**
@@ -235,7 +233,7 @@ public class ExcelExport {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ExcelOperateException("诊断：Excel导出失败");
+            throw new ExcelOperateException("诊断：Excel导出失败 -> " + e.getMessage());
         }
         return this.workbook;
     }

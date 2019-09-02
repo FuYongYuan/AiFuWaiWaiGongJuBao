@@ -2,8 +2,6 @@ package page;
 
 /**
  * 页标签实体类
- *
- * @author FYY
  */
 public class PageEntity {
     /**
