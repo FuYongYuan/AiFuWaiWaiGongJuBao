@@ -27,14 +27,24 @@ public class ExcelOperate {
     private String path;
 
     /**
+     * 是否使用get读取值
+     */
+    private boolean isGetMethodFieldValue;
+
+    /**
      * 文档对象
      */
     public Workbook workbook;
 
     public ExcelOperate(String documentPath) throws ExcelOperateException, IOException {
+        new ExcelOperate(documentPath, true);
+    }
+
+    public ExcelOperate(String documentPath, boolean isGetMethodFieldValue) throws ExcelOperateException, IOException {
         this.path = documentPath;
         if (TextDispose.isNotEmpty(this.path)) {
             String prefix = this.path.substring(this.path.lastIndexOf(".") + 1);
+            this.isGetMethodFieldValue = isGetMethodFieldValue;
             if ("xlsx".equals(prefix)) {
                 workbook = new XSSFWorkbook(new FileInputStream(new File(this.path)));
             } else if ("xls".equals(prefix)) {
@@ -64,7 +74,7 @@ public class ExcelOperate {
                 Row row = sheet.createRow(result);
                 for (int i = 0; i < fieldList.size(); i++) {
                     row.createCell(i).setCellValue(ExcelDisposeUtil.correspondingValue(
-                            fieldList.get(i), obj, true,
+                            fieldList.get(i), obj, this.isGetMethodFieldValue,
                             fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
                             fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit()));
                 }
@@ -98,7 +108,7 @@ public class ExcelOperate {
                     Row row = sheet.getRow(rowNumber);
                     for (int i = 0; i < fieldList.size(); i++) {
                         String value = ExcelDisposeUtil.correspondingValue(
-                                fieldList.get(i), obj, true,
+                                fieldList.get(i), obj, this.isGetMethodFieldValue,
                                 fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
                                 fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit());
                         if (TextDispose.isNotEmpty(value)) {
