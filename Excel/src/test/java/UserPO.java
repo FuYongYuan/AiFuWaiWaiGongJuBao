@@ -88,4 +88,18 @@ public class UserPO {
     public void setState(Integer state) {
         this.state = state;
     }
+
+    @Override
+    public String toString() {
+        return "UserPO{" +
+                "account='" + account + '\'' +
+                ", password='" + password + '\'' +
+                ", lastLoginDate=" + lastLoginDate +
+                ", lastLoginIP='" + lastLoginIP + '\'' +
+                ", lastAttemptLoginDate=" + lastAttemptLoginDate +
+                ", attemptLoginIP='" + attemptLoginIP + '\'' +
+                ", attemptLoginNumber=" + attemptLoginNumber +
+                ", state=" + state +
+                '}';
+    }
 }

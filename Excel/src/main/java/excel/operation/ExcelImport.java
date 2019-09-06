@@ -113,7 +113,7 @@ public class ExcelImport {
             } else if (type == CellType.BOOLEAN) {
                 value = cell.getBooleanCellValue();
             }
-            if (value != null) {
+            if (value != null && !"".equals(value.toString())) {
                 if (isGetMethodFieldValue) {
                     String fieldName = field.getName();
                     String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
