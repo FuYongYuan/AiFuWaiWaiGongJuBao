@@ -36,7 +36,7 @@ public class LogService {
         String documentPath = LogParameters.logPath + logName;
         try {
             ExcelValidationUtil.validationDocument(documentPath, LogParameters.sheetName, LogModel.class);
-            ExcelOperate eo = new ExcelOperate(documentPath);
+            ExcelOperate eo = new ExcelOperate(documentPath, true);
             LogModel logModel = new LogModel();
             logModel.requestName = requestName;
             logModel.requestIP = requestIP;

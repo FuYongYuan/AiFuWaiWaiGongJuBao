@@ -36,9 +36,6 @@ public class ExcelOperate {
      */
     public Workbook workbook;
 
-    public ExcelOperate(String documentPath) throws ExcelOperateException, IOException {
-        new ExcelOperate(documentPath, true);
-    }
 
     public ExcelOperate(String documentPath, boolean isGetMethodFieldValue) throws ExcelOperateException, IOException {
         this.path = documentPath;
