@@ -4,7 +4,6 @@ import dispose.TextDispose;
 import excel.exception.ExcelOperateException;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,7 +47,7 @@ public class SheetSet {
     /**
      * 额外数据集合
      */
-    private List<ExtraData> extraData;
+    private List<ExtraRowData> extraRowData;
 
     /**
      * 构造
@@ -182,23 +181,23 @@ public class SheetSet {
     /**
      * 额外数据集合
      */
-    public List<ExtraData> getExtraData() {
-        return extraData;
+    public List<ExtraRowData> getExtraRowData() {
+        return extraRowData;
     }
 
     /**
      * 额外数据集合
      */
-    public SheetSet setExtraData(List<ExtraData> extraData) {
-        this.extraData = extraData;
+    public SheetSet setExtraRowData(List<ExtraRowData> extraRowData) {
+        this.extraRowData = extraRowData;
         return this;
     }
 
     /**
      * 额外数据集合
      */
-    public SheetSet setExtraData(ExtraData... extraData) {
-        this.extraData = Arrays.asList(extraData);
+    public SheetSet setExtraData(ExtraRowData... extraRowData) {
+        this.extraRowData = Arrays.asList(extraRowData);
         return this;
     }
 }

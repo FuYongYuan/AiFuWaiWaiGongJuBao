@@ -1,13 +1,11 @@
 package excel.operation;
 
+import dispose.DateDispose;
 import dispose.TextDispose;
 import enumerate.CommonlyUsedType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
-import excel.operation.set.ExtraData;
-import excel.operation.set.Function;
-import excel.operation.set.SheetSet;
-import excel.operation.set.TotalRowIndex;
+import excel.operation.set.*;
 import excel.util.ExcelDisposeUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -19,10 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -64,8 +59,8 @@ public class ExcelExport {
                     ExcelDisposeUtil.initialization(sheetSet.getFunction(), sheetSet.getSheetData(), sheetSet.getDataClass());
                     if (sheetSet.getSheetData().useField != null && sheetSet.getSheetData().useField.size() > 0) {
                         int initRow = 0;
-                        if (sheetSet.getExtraData() != null && sheetSet.getExtraData().size() > 0) {
-                            initRow = this.getInitRow(sheetModel, sheetSet.getExtraData(), initRow);
+                        if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
+                            initRow = this.getInitRow(sheetModel, sheetSet.getExtraRowData(), initRow);
                         }
                         //设置当前页签的第一行
                         Row row = sheetModel.createRow(initRow);
@@ -114,8 +109,8 @@ public class ExcelExport {
                             //创建行    （标题的下一行）
                             Row nextrow = sheetModel.createRow(i + 1);
 
-                            if (sheetSet.getExtraData() != null && sheetSet.getExtraData().size() > 0) {
-                                if (this.getContainCreateRow(sheetSet.getExtraData(), i + 1)) {
+                            if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
+                                if (this.getContainCreateRow(sheetSet.getExtraRowData(), i + 1)) {
                                     //创建列
                                     Cell cell = nextrow.createCell(0);
                                     cell.setCellValue("");
@@ -245,18 +240,24 @@ public class ExcelExport {
                         }
                     }
                     //额外数据
-                    if (sheetSet.getExtraData() != null && sheetSet.getExtraData().size() > 0) {
-                        for (ExtraData ed : sheetSet.getExtraData()) {
-                            if (ed != null) {
-                                Row row = sheetModel.getRow(ed.getRowNumber());
+                    if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
+                        for (ExtraRowData erd : sheetSet.getExtraRowData()) {
+                            if (erd != null) {
+                                if (erd.getIsMaxRowNumber()) {
+                                    erd.setRowNumber(sheetModel.getLastRowNum() + 1);
+                                }
+                                Row row = sheetModel.getRow(erd.getRowNumber());
                                 if (row == null) {
-                                    row = sheetModel.createRow(ed.getRowNumber());
+                                    row = sheetModel.createRow(erd.getRowNumber());
                                 }
-                                Cell cell = row.getCell(ed.getCellNumber());
-                                if (cell == null) {
-                                    cell = row.createCell(ed.getCellNumber());
+                                for (ExtraCellData ecd : erd.getExtraCellData()) {
+                                    Cell cell = row.getCell(ecd.getCellNumber());
+                                    if (cell == null) {
+                                        cell = row.createCell(ecd.getCellNumber());
+                                    }
+                                    this.setCellValue(cell, ecd);
                                 }
-                                this.setCellValue(cell, ed.getCellValue());
+
                             }
                         }
                     }
@@ -288,27 +289,6 @@ public class ExcelExport {
                 }
             } else {
                 cell.setCellValue(cellValue);
-            }
-        } else {
-            cell.setCellValue("");
-        }
-    }
-
-    /**
-     * 赋值
-     */
-    private void setCellValue(Cell cell, Object obj) {
-        //结果转换
-        if (obj != null) {
-            //结果转换
-            if (obj instanceof Double) {
-                cell.setCellValue(Double.parseDouble(obj.toString()));
-            } else if (obj instanceof Integer) {
-                cell.setCellValue(Integer.parseInt(obj.toString()));
-            } else if (obj instanceof BigDecimal) {
-                cell.setCellValue(new BigDecimal(obj.toString()).doubleValue());
-            } else {
-                cell.setCellValue(obj.toString());
             }
         } else {
             cell.setCellValue("");
@@ -353,6 +333,72 @@ public class ExcelExport {
         cellStyle.setAlignment(field.getAnnotation(ExcelField.class).horizontalAlignment());
         //垂直位置
         cellStyle.setVerticalAlignment(field.getAnnotation(ExcelField.class).verticalAlignment());
+
+        return cellStyle;
+    }
+
+    /**
+     * 赋值
+     */
+    private void setCellValue(Cell cell, ExtraCellData ecd) {
+        //结果转换
+        if (ecd != null) {
+            //结果转换
+            if (ecd.getCellType() == Double.class || ecd.getCellType() == double.class) {
+                cell.setCellValue(Double.parseDouble(ecd.getCellValue().toString()));
+            } else if (ecd.getCellType() == Integer.class || ecd.getCellType() == int.class) {
+                cell.setCellValue(Integer.parseInt(ecd.getCellValue().toString()));
+            } else if (ecd.getCellType() == BigDecimal.class) {
+                cell.setCellValue(new BigDecimal(ecd.getCellValue().toString()).doubleValue());
+            } else if (ecd.getCellType() == Date.class) {
+                cell.setCellValue(DateDispose.formatting_Date((Date) ecd.getCellValue(), ecd.getDateType()));
+            } else {
+                cell.setCellValue(ecd.getCellValue().toString());
+            }
+            cell.setCellStyle(this.setFormat(ecd));
+        } else {
+            cell.setCellValue("");
+        }
+    }
+
+    /**
+     * 是否进行货币格式化
+     */
+    private CellStyle setFormat(ExtraCellData ecd) {
+        CellStyle cellStyle = this.workbook.createCellStyle();
+
+        if (ecd.getIsMoney()) {
+            DataFormat format = this.workbook.createDataFormat();
+            StringBuilder moneyFormat = new StringBuilder("#,##0");
+            if ((ecd.getCellType() == BigDecimal.class
+                    || ecd.getCellType() == Double.class
+                    || ecd.getCellType() == double.class)
+                    && ecd.getDecimalAfterDigit() > 0
+            ) {
+                moneyFormat.append(".");
+                int decimalAfterDigit = ecd.getDecimalAfterDigit();
+                for (int i = 0; i < decimalAfterDigit; i++) {
+                    moneyFormat.append("0");
+                }
+            }
+            cellStyle.setDataFormat(format.getFormat(moneyFormat.toString()));
+        } else if ((ecd.getCellType() == BigDecimal.class
+                || ecd.getCellType() == Double.class
+                || ecd.getCellType() == double.class)
+                && ecd.getDecimalAfterDigit() > 0
+        ) {
+            DataFormat format = this.workbook.createDataFormat();
+            StringBuilder sb = new StringBuilder("#0.");
+            int decimalAfterDigit = ecd.getDecimalAfterDigit();
+            for (int i = 0; i < decimalAfterDigit; i++) {
+                sb.append("0");
+            }
+            cellStyle.setDataFormat(format.getFormat(sb.toString()));
+        }
+        //水平位置
+        cellStyle.setAlignment(ecd.getHorizontalAlignment());
+        //垂直位置
+        cellStyle.setVerticalAlignment(ecd.getVerticalAlignment());
 
         return cellStyle;
     }
@@ -577,13 +623,13 @@ public class ExcelExport {
     /**
      * 额外数据新增开始行数
      */
-    private int getInitRow(Sheet sheetModel, List<ExtraData> extraData, int initRow) {
-        if (this.getContainCreateRow(extraData, initRow)) {
+    private int getInitRow(Sheet sheetModel, List<ExtraRowData> extraRowData, int initRow) {
+        if (this.getContainCreateRow(extraRowData, initRow)) {
             Row row = sheetModel.createRow(initRow);
             Cell cell = row.createCell(0);
             cell.setCellValue("");
             initRow = initRow + 1;
-            return this.getInitRow(sheetModel, extraData, initRow);
+            return this.getInitRow(sheetModel, extraRowData, initRow);
         }
         return initRow;
     }
@@ -591,9 +637,9 @@ public class ExcelExport {
     /**
      * 额外数据是否含该行
      */
-    private boolean getContainCreateRow(List<ExtraData> extraData, int containRow) {
-        for (ExtraData ed : extraData) {
-            if (ed != null && ed.getRowNumber() == containRow && ed.getNewRow()) {
+    private boolean getContainCreateRow(List<ExtraRowData> extraRowData, int containRow) {
+        for (ExtraRowData erd : extraRowData) {
+            if (erd != null && erd.getRowNumber() != null && erd.getRowNumber() == containRow && erd.getIsNewRow()) {
                 return true;
             }
         }
