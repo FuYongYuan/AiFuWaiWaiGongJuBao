@@ -147,7 +147,7 @@ public class ExcelDisposeUtil {
      * @return 对象和Excel有关的属性List
      */
     public static List<Field> getFieldList(Class tClass) {
-        List<Field> fieldList = new ArrayList<Field>();
+        List<Field> fieldList = new ArrayList<>();
         try {
             //获取正确的要赋值的字段
             Field[] fields = tClass.getDeclaredFields();

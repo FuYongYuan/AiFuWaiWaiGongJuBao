@@ -4,6 +4,8 @@ import dispose.TextDispose;
 import excel.exception.ExcelOperateException;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SheetSet {
@@ -42,6 +44,11 @@ public class SheetSet {
      * 对应当前页的数据缓存
      */
     private SheetData sheetData;
+
+    /**
+     * 额外数据集合
+     */
+    private List<ExtraData> extraData;
 
     /**
      * 构造
@@ -169,6 +176,29 @@ public class SheetSet {
      */
     public SheetSet setIsGetMethodFieldValue(Boolean isGetMethodFieldValue) {
         this.isGetMethodFieldValue = isGetMethodFieldValue;
+        return this;
+    }
+
+    /**
+     * 额外数据集合
+     */
+    public List<ExtraData> getExtraData() {
+        return extraData;
+    }
+
+    /**
+     * 额外数据集合
+     */
+    public SheetSet setExtraData(List<ExtraData> extraData) {
+        this.extraData = extraData;
+        return this;
+    }
+
+    /**
+     * 额外数据集合
+     */
+    public SheetSet setExtraData(ExtraData... extraData) {
+        this.extraData = Arrays.asList(extraData);
         return this;
     }
 }

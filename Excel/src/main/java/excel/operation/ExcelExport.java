@@ -4,6 +4,7 @@ import dispose.TextDispose;
 import enumerate.CommonlyUsedType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
+import excel.operation.set.ExtraData;
 import excel.operation.set.Function;
 import excel.operation.set.SheetSet;
 import excel.operation.set.TotalRowIndex;
@@ -57,13 +58,17 @@ public class ExcelExport {
             if (sheetSets != null && sheetSets.size() > 0) {
                 //循环页签数组对象
                 for (SheetSet sheetSet : sheetSets) {
+                    //创建页签并给页签命名
+                    Sheet sheetModel = this.workbook.createSheet(sheetSet.getWorkbookName());
                     //获取要执行的对象中属于Excel的字段
                     ExcelDisposeUtil.initialization(sheetSet.getFunction(), sheetSet.getSheetData(), sheetSet.getDataClass());
                     if (sheetSet.getSheetData().useField != null && sheetSet.getSheetData().useField.size() > 0) {
-                        //创建页签并给页签命名
-                        Sheet sheetModel = this.workbook.createSheet(sheetSet.getWorkbookName());
+                        int initRow = 0;
+                        if (sheetSet.getExtraData() != null && sheetSet.getExtraData().size() > 0) {
+                            initRow = this.getInitRow(sheetModel, sheetSet.getExtraData(), initRow);
+                        }
                         //设置当前页签的第一行
-                        Row row = sheetModel.createRow(0);
+                        Row row = sheetModel.createRow(initRow);
                         //循环标题（列名）
                         int titleCellSize = sheetSet.getSheetData().useField.size();
                         for (int i = 0; i < titleCellSize; i++) {
@@ -105,9 +110,19 @@ public class ExcelExport {
                         int extrai = 0;
                         //循环对象（值）
                         int rowSize = sheetSet.getWorkbookData().size();
-                        for (int i = 0; i < rowSize + extrai; i++) {
+                        for (int i = initRow; i < (rowSize + extrai + initRow); i++) {
                             //创建行    （标题的下一行）
                             Row nextrow = sheetModel.createRow(i + 1);
+
+                            if (sheetSet.getExtraData() != null && sheetSet.getExtraData().size() > 0) {
+                                if (this.getContainCreateRow(sheetSet.getExtraData(), i + 1)) {
+                                    //创建列
+                                    Cell cell = nextrow.createCell(0);
+                                    cell.setCellValue("");
+                                    continue;
+                                }
+                            }
+
                             //处理列
                             int rowCellSize = sheetSet.getSheetData().useField.size();
                             for (int j = 0; j < rowCellSize; j++) {
@@ -115,7 +130,7 @@ public class ExcelExport {
                                 Cell cell = nextrow.createCell(j);
 
                                 String cellValue = ExcelDisposeUtil.correspondingValue(
-                                        sheetSet.getSheetData().useField.get(j), sheetSet.getWorkbookData().get(i - extrai), sheetSet.getIsGetMethodFieldValue(),
+                                        sheetSet.getSheetData().useField.get(j), sheetSet.getWorkbookData().get(i - extrai - initRow), sheetSet.getIsGetMethodFieldValue(),
                                         sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).dateType(),
                                         sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).decimalAfterDigit());
 
@@ -229,6 +244,22 @@ public class ExcelExport {
                             );
                         }
                     }
+                    //额外数据
+                    if (sheetSet.getExtraData() != null && sheetSet.getExtraData().size() > 0) {
+                        for (ExtraData ed : sheetSet.getExtraData()) {
+                            if (ed != null) {
+                                Row row = sheetModel.getRow(ed.getRowNumber());
+                                if (row == null) {
+                                    row = sheetModel.createRow(ed.getRowNumber());
+                                }
+                                Cell cell = row.getCell(ed.getCellNumber());
+                                if (cell == null) {
+                                    cell = row.createCell(ed.getCellNumber());
+                                }
+                                this.setCellValue(cell, ed.getCellValue());
+                            }
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
@@ -257,6 +288,27 @@ public class ExcelExport {
                 }
             } else {
                 cell.setCellValue(cellValue);
+            }
+        } else {
+            cell.setCellValue("");
+        }
+    }
+
+    /**
+     * 赋值
+     */
+    private void setCellValue(Cell cell, Object obj) {
+        //结果转换
+        if (obj != null) {
+            //结果转换
+            if (obj instanceof Double) {
+                cell.setCellValue(Double.parseDouble(obj.toString()));
+            } else if (obj instanceof Integer) {
+                cell.setCellValue(Integer.parseInt(obj.toString()));
+            } else if (obj instanceof BigDecimal) {
+                cell.setCellValue(new BigDecimal(obj.toString()).doubleValue());
+            } else {
+                cell.setCellValue(obj.toString());
             }
         } else {
             cell.setCellValue("");
@@ -520,5 +572,31 @@ public class ExcelExport {
                 }
             }
         }
+    }
+
+    /**
+     * 额外数据新增开始行数
+     */
+    private int getInitRow(Sheet sheetModel, List<ExtraData> extraData, int initRow) {
+        if (this.getContainCreateRow(extraData, initRow)) {
+            Row row = sheetModel.createRow(initRow);
+            Cell cell = row.createCell(0);
+            cell.setCellValue("");
+            initRow = initRow + 1;
+            return this.getInitRow(sheetModel, extraData, initRow);
+        }
+        return initRow;
+    }
+
+    /**
+     * 额外数据是否含该行
+     */
+    private boolean getContainCreateRow(List<ExtraData> extraData, int containRow) {
+        for (ExtraData ed : extraData) {
+            if (ed != null && ed.getRowNumber() == containRow && ed.getNewRow()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,102 +1,101 @@
 import dispose.CopyClass;
 import excel.operation.ExcelExport;
-import excel.operation.ExcelImport;
+import excel.operation.set.ExtraData;
 import excel.operation.set.SheetSet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.*;
 
 public class Test {
     public static void main(String[] age) {
 
+//        try {
+//            String rulesPath = "D:\\fuyy\\Desktop\\测试.xls";
+//            HSSFWorkbook work = new HSSFWorkbook(new FileInputStream(new File(rulesPath)));
+//            List<UserPO> rulesList = ExcelImport.getExcel(work.getSheet("测试"), UserPO.class);
+//            for (int i = 0; i < rulesList.size(); i++) {
+//                System.out.println(rulesList.get(i).toString());
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+
+        List<Map<String, Object>> userPOList = new ArrayList<>();
+
+        /**
+         * 在全配置下.跨行多的情况下 XSSF最多 1250 条  HSSF最多 150 条   SXSSF最多 * 条
+         */
+        for (int i = 0; i < 10; i++) {
+            int ix = i / 10;
+            Map<String, Object> omap = new HashMap<>();
+            omap.put("account", "测试" + ix);
+            omap.put("password", "password" + i);
+            omap.put("state", 0);
+            userPOList.add(omap);
+        }
+
+//        userPOList.forEach(System.out::println);
+
+//        System.out.println("---------------------------------------");
+
+
+        long startTime = System.currentTimeMillis();
+
+
+        long endTime = System.currentTimeMillis();
+        float seconds = (endTime - startTime) / 1000F;
+        System.out.println("测试数据:" + seconds + "秒.");
+
         try {
-            String rulesPath = "D:\\fuyy\\Desktop\\测试.xls";
-            HSSFWorkbook work = new HSSFWorkbook(new FileInputStream(new File(rulesPath)));
-            List<UserPO> rulesList = ExcelImport.getExcel(work.getSheet("测试"), UserPO.class);
-            for (int i = 0; i < rulesList.size(); i++) {
-                System.out.println(rulesList.get(i).toString());
-            }
+            startTime = System.currentTimeMillis();
+
+            ExcelExport excelExport = new ExcelExport(new XSSFWorkbook());
+
+            List<SheetSet> sheetSets = new ArrayList<>();
+            SheetSet sheetSet = SheetSet.create()
+                    .setWorkbookName("测试")
+                    .setWorkbookData(CopyClass.copyMapGetSet(userPOList, UserPO.class))
+                    .setDataClass(UserPO.class)
+                    .setExtraData(null
+                            , ExtraData.create().setRowNumber(3).setCellNumber(1).setCellValue("测试").setNewRow(true).build()
+                            , ExtraData.create().setRowNumber(4).setCellNumber(3).setCellValue("测试").setNewRow(true).build()
+                            , ExtraData.create().setRowNumber(1).setCellNumber(5).setCellValue("测试").setNewRow(true).build()
+                            , ExtraData.create().setRowNumber(2).setCellNumber(4).setCellValue("测试").setNewRow(true).build()
+                            , ExtraData.create().setRowNumber(7).setCellNumber(4).setCellValue("测试").setNewRow(false).build()
+                            , ExtraData.create().setRowNumber(8).setCellNumber(4).setCellValue("测试").setNewRow(true).build()
+                            , ExtraData.create().setRowNumber(20).setCellNumber(7).setCellValue("测试").setNewRow(true).build()
+                    )
+                    .build(excelExport.getWorkbook());
+
+
+            sheetSets.add(sheetSet);
+
+            endTime = System.currentTimeMillis();
+            seconds = (endTime - startTime) / 1000F;
+            System.out.println("赋值页对象:" + seconds + "秒.");
+
+            XSSFWorkbook xssfWorkbook = (XSSFWorkbook) excelExport.setExcel(sheetSets);
+
+            endTime = System.currentTimeMillis();
+            seconds = (endTime - startTime) / 1000F;
+            System.out.println("工作簿生成:" + seconds + "秒.");
+
+            String FileName = "D:\\fuyy\\Desktop\\测试.xlsx";
+            FileOutputStream fos = new FileOutputStream(FileName);
+            xssfWorkbook.write(fos);
+            fos.close();
+
+            endTime = System.currentTimeMillis();
+            seconds = (endTime - startTime) / 1000F;
+            System.out.println("导出完成:" + seconds + "秒.");
+
+            System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-
-
-//
-//        List<Map<String, Object>> userPOList = new ArrayList<>();
-//
-//        /**
-//         * 在全配置下.跨行多的情况下 XSSF最多 1250 条  HSSF最多 150 条   SXSSF最多 * 条
-//         */
-//        for (int i = 0; i < 5; i++) {
-//            int ix = i / 10;
-//            Map<String, Object> omap = new HashMap<>();
-//            omap.put("account", "测试" + ix);
-//            omap.put("password", "password" + i);
-//            omap.put("state", 0);
-//            userPOList.add(omap);
-//        }
-//
-//        userPOList.forEach(System.out::println);
-//
-//        System.out.println("---------------------------------------");
-//
-//
-//        long startTime = System.currentTimeMillis();
-//
-//
-//        long endTime = System.currentTimeMillis();
-//        float seconds = (endTime - startTime) / 1000F;
-//        System.out.println("测试数据:" + seconds + "秒.");
-//
-//        try {
-//            startTime = System.currentTimeMillis();
-//
-//            ExcelExport excelExport = new ExcelExport(new XSSFWorkbook());
-//
-//            List<SheetSet> sheetSets = new ArrayList<>();
-//            SheetSet sheetSet = SheetSet.create()
-//                    .setWorkbookName("测试")
-//                    .setWorkbookData(CopyClass.copyMapGetSet(userPOList, UserPO.class))
-//                    .setDataClass(UserPO.class)
-//                    .build(excelExport.getWorkbook());
-//
-//
-//            sheetSets.add(sheetSet);
-//
-//            endTime = System.currentTimeMillis();
-//            seconds = (endTime - startTime) / 1000F;
-//            System.out.println("赋值页对象:" + seconds + "秒.");
-//
-//            XSSFWorkbook xssfWorkbook = (XSSFWorkbook) excelExport.setExcel(sheetSets);
-//
-//            endTime = System.currentTimeMillis();
-//            seconds = (endTime - startTime) / 1000F;
-//            System.out.println("工作簿生成:" + seconds + "秒.");
-//
-//            String FileName = "D:\\fuyy\\Desktop\\测试.xlsx";
-//            FileOutputStream fos = new FileOutputStream(FileName);
-//            xssfWorkbook.write(fos);
-//            fos.close();
-//
-//            endTime = System.currentTimeMillis();
-//            seconds = (endTime - startTime) / 1000F;
-//            System.out.println("导出完成:" + seconds + "秒.");
-//
-//            System.exit(0);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//
 
 //
 //
