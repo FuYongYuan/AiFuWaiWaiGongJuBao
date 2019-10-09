@@ -1,9 +1,9 @@
-package mail;
+package mail.exception;
 
 /**
  * 操作错误
  */
-class MailException extends RuntimeException {
+public class MailException extends RuntimeException {
     /**
      * 操作错误
      */
