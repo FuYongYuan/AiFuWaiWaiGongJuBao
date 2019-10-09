@@ -1,8 +1,6 @@
 package mail;
 
 import dispose.TextDispose;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -15,7 +13,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 class SendMailEntity {
-    private static Log logger = LogFactory.getLog(SendMailEntity.class);
     /**
      * 发信邮箱
      */
@@ -98,12 +95,10 @@ class SendMailEntity {
             message.setSubject(subject);// 设置主题
             return true;
         } catch (MessagingException e) {
-            logger.error("<<<<<=====-----发送邮件错误!-----=====>>>>>");
-            return false;
+            throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
         } catch (UnsupportedEncodingException e) {
-            logger.error("<<<<<=====-----发送邮件错误!-----=====>>>>>");
+            throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
         }
-        return false;
     }
 
     /**
@@ -121,8 +116,7 @@ class SendMailEntity {
             System.out.println("[INFO] 发送完成!");
             return true;
         } catch (Exception e) {
-            logger.error("<<<<<=====-----发送邮件错误!-----=====>>>>>");
-            return false;
+            throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
         }
     }
 
@@ -233,8 +227,7 @@ class SendMailEntity {
             }
             return true;
         } catch (Exception e) {
-            logger.error("增加附件: " + filename + "--faild!" + e);
-            return false;
+            throw new MailException("增加附件: " + filename + "--faild!" + e);
         }
     }
 

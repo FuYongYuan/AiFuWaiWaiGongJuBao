@@ -1,8 +1,6 @@
 package mail;
 
 import dispose.TextDispose;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +10,6 @@ import java.util.Properties;
  * 发送邮件逻辑类
  */
 public class SendMailService {
-    private static Log logger = LogFactory.getLog(SendMailService.class);
     /**
      * 服务地址
      */
@@ -39,20 +36,16 @@ public class SendMailService {
      */
     private boolean checkParameter() {
         if (TextDispose.isEmpty(this.stmp)) {
-            logger.error("<<<<<=====-----服务地址为空创建发送邮件服务类失败!-----=====>>>>>");
-            return false;
+            throw new MailException("<<<<<=====-----服务地址为空创建发送邮件服务类失败!-----=====>>>>>");
         }
         if (TextDispose.isEmpty(this.userName)) {
-            logger.error("<<<<<=====-----发送邮箱账号为空创建发送邮件服务类失败!-----=====>>>>>");
-            return false;
+            throw new MailException("<<<<<=====-----发送邮箱账号为空创建发送邮件服务类失败!-----=====>>>>>");
         }
         if (TextDispose.isEmpty(this.userPassword)) {
-            logger.error("<<<<<=====-----发送邮箱密码为空创建发送邮件服务类失败!-----=====>>>>>");
-            return false;
+            throw new MailException("<<<<<=====-----发送邮箱密码为空创建发送邮件服务类失败!-----=====>>>>>");
         }
         if (TextDispose.isEmpty(this.send)) {
-            logger.error("<<<<<=====-----发送邮箱为空创建发送邮件服务类失败!-----=====>>>>>");
-            return false;
+            throw new MailException("<<<<<=====-----发送邮箱为空创建发送邮件服务类失败!-----=====>>>>>");
         }
         return true;
     }
@@ -78,7 +71,7 @@ public class SendMailService {
                 return service;
             }
         } catch (IOException e) {
-            logger.error("<<<<<=====-----配置文件未读取到创建发送邮件服务类失败!-----=====>>>>>");
+            throw new MailException("<<<<<=====-----配置文件未读取到创建发送邮件服务类失败!-----=====>>>>>");
         }
         return null;
     }
@@ -108,7 +101,7 @@ public class SendMailService {
                 return service;
             }
         } catch (IOException e) {
-            logger.error("<<<<<=====-----配置文件未读取到创建发送邮件服务类失败!-----=====>>>>>");
+            throw new MailException("<<<<<=====-----配置文件未读取到创建发送邮件服务类失败!-----=====>>>>>");
         }
         return null;
     }
@@ -170,8 +163,7 @@ public class SendMailService {
             if (TextDispose.isNotEmpty(eMail)) {
                 sm.setTo(eMail);//接收邮箱
             } else {
-                logger.error("<<<<<=====-----没有发送目标邮箱发送停止!-----=====>>>>>");
-                return false;
+                throw new MailException("<<<<<=====-----没有发送目标邮箱发送停止!-----=====>>>>>");
             }
             if (TextDispose.isNotEmpty(content)) {
                 sm.setText(content);//内容
@@ -185,8 +177,7 @@ public class SendMailService {
             sm.setOut();
             return true;
         } catch (Exception e) {
-            logger.error("<<<<<=====-----发送邮件错误!-----=====>>>>>");
-            return false;
+            throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
         }
     }
 }

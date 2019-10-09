@@ -16,26 +16,17 @@
 
     <properties>
         <!--邮件-->
-        <mail.version>1.5.0-b01</mail.version>
-        <!-- 日志 -->
-        <commons-logging.version>1.2</commons-logging.version>
+        <mail.version>1.6.2</mail.version>
     </properties>
 
     <dependencies>
-        <!--邮件-->
+        <!-- 邮件 -->
         <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
             <version>[${mail.version},)</version>
         </dependency>
-
-        <!-- 日志 -->
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>[${commons-logging.version},)</version>
-        </dependency>
-
+        <!-- 工具包 -->
         <dependency>
             <groupId>cn.fyy</groupId>
             <artifactId>dispose</artifactId>
