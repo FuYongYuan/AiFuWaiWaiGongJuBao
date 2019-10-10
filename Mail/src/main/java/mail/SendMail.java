@@ -46,31 +46,41 @@ public class SendMail {
      */
     public boolean sendMail(String theme, String content, String eMail, String fileAffix) {
         try {
-            //发送邮件
-            SendMailService sm = new SendMailService(send.getStmp());//服务地址
-            sm.setNamePass(send.getUserName(), send.getUserPassword());//发送邮箱账号 //发送邮箱密码
+            //发送邮件对象并初始化服务地址
+            SendMailService sm = new SendMailService(send.getStmp());
+            //发送邮箱
+            sm.setFrom(send.getSendMail());
+            //发送邮箱账号 //发送邮箱密码
+            sm.setNamePass(send.getUserName(), send.getUserPassword());
+            //标题
             if (TextDispose.isNotEmpty(theme)) {
-                sm.setSubject(theme);//标题
+                sm.setSubject(theme);
             } else {
                 sm.setSubject("无主题");
             }
-            sm.setFrom(send.getSendMail());//发送邮箱
+            //接收邮箱
             if (TextDispose.isNotEmpty(eMail)) {
-                sm.setTo(eMail);//接收邮箱
+                sm.setTo(eMail);
             } else {
                 throw new MailException("<<<<<=====-----没有发送目标邮箱发送停止!-----=====>>>>>");
             }
+            //内容
             if (TextDispose.isNotEmpty(content)) {
-                sm.setText(content);//内容
+                sm.setText(content);
             } else {
                 sm.setText("");
             }
+            //附件
             if (TextDispose.isNotEmpty(fileAffix)) {
-                sm.addFileAffix(fileAffix);//附件
+                if (!sm.addFileAffix(fileAffix)) {
+                    throw new MailException("<<<<<=====-----附件上传失败请检查附件地址!-----=====>>>>>");
+                }
             }
-            sm.createMimeMessage(send.getPersonal());
-            sm.setOut();
-            return true;
+            //发送
+            if (sm.createMimeMessage(send.getPersonal())) {
+                return sm.setOut();
+            }
+            return false;
         } catch (Exception e) {
             throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
         }

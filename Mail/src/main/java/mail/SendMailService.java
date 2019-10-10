@@ -10,7 +10,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 class SendMailService {
@@ -21,11 +20,11 @@ class SendMailService {
     /**
      * 收信邮箱
      */
-    public String to = "";
+    private String to = "";
     /**
      * 邮件主题
      */
-    public String subject = "";
+    private String subject = "";
     /**
      * 账号
      */
@@ -34,10 +33,6 @@ class SendMailService {
      * 密码
      */
     private String password = "";
-    /**
-     * 邮件内容
-     */
-    public String text = "";
     /**
      * 存放邮件的title 内容和附件
      */
@@ -56,24 +51,24 @@ class SendMailService {
      *
      * @param stmp 服务地址
      */
-    public SendMailService(String stmp) {
+    SendMailService(String stmp) {
         setSmtpHost(stmp);
     }
 
     /**
      * 创建传输Host
      */
-    public void setSmtpHost(String smtpHostName) {
-        if (props == null) {
+    private void setSmtpHost(String smtpHostName) {
+        if (this.props == null) {
             //创建Properties对象
-            props = new Properties();
+            this.props = new Properties();
         }
         //设置传输协议
-        props.setProperty("mail.transport.protocol", "smtp");
+        this.props.setProperty("mail.transport.protocol", "smtp");
         //设置发信邮箱的smtp地址"smtp.sina.com"
-        props.put("mail.smtp.host", smtpHostName);
+        this.props.put("mail.smtp.host", smtpHostName);
         //验证
-        props.setProperty("mail.smtp.auth", "true");
+        this.props.setProperty("mail.smtp.auth", "true");
     }
 
     /**
@@ -81,23 +76,21 @@ class SendMailService {
      *
      * @return 成功失败
      */
-    public boolean createMimeMessage(String personal) {
-        Authenticator auth = new AjavaAuthenticator(username, password); // 使用验证，创建一个Authenticator
-        Session session = Session.getDefaultInstance(props, auth);// 根据Properties，Authenticator创建Session
+    boolean createMimeMessage(String personal) {
+        Authenticator auth = new AjavaAuthenticator(this.username, this.password); // 使用验证，创建一个Authenticator
+        Session session = Session.getDefaultInstance(this.props, auth);// 根据Properties，Authenticator创建Session
 
         try {
-            if (message == null) {
-                message = new MimeMessage(session);// Message存储发送的电子邮件信息
+            if (this.message == null) {
+                this.message = new MimeMessage(session);// Message存储发送的电子邮件信息
             }
-            InternetAddress setfrom = new InternetAddress(from, personal);
-            message.setFrom(setfrom);    //设置发件人
+            InternetAddress setfrom = new InternetAddress(this.from, personal);
+            this.message.setFrom(setfrom);    //设置发件人
             //message.setFrom(new InternetAddress(from));
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(to));// 设置收信邮箱
-            message.setSubject(subject);// 设置主题
+            this.message.setRecipient(Message.RecipientType.TO, new InternetAddress(this.to));// 设置收信邮箱
+            this.message.setSubject(this.subject);// 设置主题
             return true;
-        } catch (MessagingException e) {
-            throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
         }
     }
@@ -107,13 +100,13 @@ class SendMailService {
      *
      * @return 成功失败
      */
-    public boolean setOut() {
+    boolean setOut() {
         try {
-            message.setContent(mp);
-            message.saveChanges();
+            this.message.setContent(this.mp);
+            this.message.saveChanges();
             System.out.println("[INFO] 开始发送...");
             //发送
-            Transport.send(message);
+            Transport.send(this.message);
             System.out.println("[INFO] 发送完成!");
             return true;
         } catch (Exception e) {
@@ -127,78 +120,53 @@ class SendMailService {
      * @param name 用户名
      * @param pass 密码
      */
-    public void setNamePass(String name, String pass) {
-        username = name;
-        password = pass;
+    void setNamePass(String name, String pass) {
+        this.username = name;
+        this.password = pass;
     }
 
     /**
      * 设置标题
      *
      * @param mailSubject 标题
-     * @return 成功失败
      */
-    public boolean setSubject(String mailSubject) {
-        try {
-            if (TextDispose.isNotEmpty(mailSubject)) {
-                subject = mailSubject;
-            }
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    void setSubject(String mailSubject) {
+        this.subject = mailSubject;
     }
 
     /**
      * 发送邮箱
      *
      * @param from 邮箱地址
-     * @return 成功失败
      */
-    public boolean setFrom(String from) {
-        try {
-            this.from = from;
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    void setFrom(String from) {
+        this.from = from;
     }
 
     /**
      * 接收邮箱
      *
      * @param to 邮箱地址
-     * @return 成功失败
      */
-    public boolean setTo(String to) {
-        if (TextDispose.isEmpty(to)) {
-            return false;
-        }
-        try {
-            this.to = to;
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    void setTo(String to) {
+        this.to = to;
     }
 
     /**
      * 设置发送内容
      *
      * @param text 发送内容
-     * @return 成功失败
      */
-    public boolean setText(String text) {
+    void setText(String text) {
         try {
             BodyPart bp = new MimeBodyPart();
             bp.setContent("<meta http-equiv=Context-Type context=text/html;charset=utf-8>" + text, "text/html;charset=UTF-8");
-            if (mp == null) {
-                mp = new MimeMultipart();
+            if (this.mp == null) {
+                this.mp = new MimeMultipart();
             }
-            mp.addBodyPart(bp);
-            return true;
+            this.mp.addBodyPart(bp);
         } catch (Exception e) {
-            return false;
+            throw new MailException("发送内容： " + text + " 错误!" + e);
         }
     }
 
@@ -208,10 +176,10 @@ class SendMailService {
      * @param filename 附件地址
      * @return 成功失败
      */
-    public boolean addFileAffix(String filename) {
+    boolean addFileAffix(String filename) {
         System.out.println("增加附件..");
-        if (mp == null) {
-            mp = new MimeMultipart();
+        if (this.mp == null) {
+            this.mp = new MimeMultipart();
         }
         if (TextDispose.isEmpty(filename)) {
             return false;
@@ -224,22 +192,22 @@ class SendMailService {
                 FileDataSource fileds = new FileDataSource(file);
                 bp.setDataHandler(new DataHandler(fileds));
                 bp.setFileName(fileds.getName());
-                mp.addBodyPart(bp);
+                this.mp.addBodyPart(bp);
             }
             return true;
         } catch (Exception e) {
-            throw new MailException("增加附件: " + filename + "--faild!" + e);
+            throw new MailException("增加附件： " + filename + " 失败!" + e);
         }
     }
 
     /**
      * 创建传入身份验证信息的 Authenticator类
      */
-    class AjavaAuthenticator extends Authenticator {
+    static class AjavaAuthenticator extends Authenticator {
         private String user;
         private String pwd;
 
-        public AjavaAuthenticator(String user, String pwd) {
+        AjavaAuthenticator(String user, String pwd) {
             this.user = user;
             this.pwd = pwd;
         }
