@@ -104,10 +104,10 @@ class SendMailService {
         try {
             this.message.setContent(this.mp);
             this.message.saveChanges();
-            System.out.println("[INFO] 开始发送...");
+            System.out.println("[Mail-INFO] 开始发送邮件 -> " + this.from + " 至 " + this.to);
             //发送
             Transport.send(this.message);
-            System.out.println("[INFO] 发送完成!");
+            System.out.println("[Mail-INFO] 发送邮件完成！");
             return true;
         } catch (Exception e) {
             throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
@@ -177,7 +177,7 @@ class SendMailService {
      * @return 成功失败
      */
     boolean addFileAffix(String filename) {
-        System.out.println("增加附件..");
+        System.out.println("开始增加附件");
         if (this.mp == null) {
             this.mp = new MimeMultipart();
         }
@@ -185,7 +185,7 @@ class SendMailService {
             return false;
         }
         String[] files = filename.split(";");
-        System.out.println("你有 " + files.length + " 个附件!");
+        System.out.println("你有 " + files.length + " 个附件！");
         try {
             for (String file : files) {
                 BodyPart bp = new MimeBodyPart();
