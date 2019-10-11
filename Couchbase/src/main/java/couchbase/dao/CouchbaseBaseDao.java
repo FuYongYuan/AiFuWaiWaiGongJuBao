@@ -84,7 +84,7 @@ public class CouchbaseBaseDao<T extends Document> {
             try {
                 CopyClass.copyClass(document, doc, entityClass, false);
             } catch (IllegalAccessException e) {
-                throw new DataBaseOperateException("诊断：修改对象传值失败");
+                throw new DataBaseOperateException("诊断：修改对象传值失败！", e);
             }
 
             return CouchbasePool.getConnection().operate.update(document);
@@ -120,7 +120,7 @@ public class CouchbaseBaseDao<T extends Document> {
                 try {
                     CopyClass.copyClass(document, doc, entityClass, false);
                 } catch (IllegalAccessException e) {
-                    throw new DataBaseOperateException("诊断：保存对象传值失败");
+                    throw new DataBaseOperateException("诊断：保存对象传值失败！", e);
                 }
 
                 return CouchbasePool.getConnection().operate.save(document);
@@ -264,7 +264,7 @@ public class CouchbaseBaseDao<T extends Document> {
         try {
             return idField != null ? idField.get(document) != null ? idField.get(document).toString() : null : null;
         } catch (IllegalAccessException e) {
-            throw new DataBaseOperateException("诊断：传入对象为空或者未找到公共基类Document的主键");
+            throw new DataBaseOperateException("诊断：传入对象为空或者未找到公共基类Document的主键！", e);
         }
     }
 }

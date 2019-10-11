@@ -67,22 +67,22 @@ public class SheetSet {
      */
     public SheetSet build(Workbook workbook) {
         if (workbook == null) {
-            throw new ExcelOperateException("诊断：工作簿对象缺失");
+            throw new ExcelOperateException("诊断：工作簿对象缺失！", new NullPointerException());
         }
 
         this.style = new Style(workbook);
         this.function = new Function(workbook);
 
         if (TextDispose.isEmpty(workbookName)) {
-            throw new ExcelOperateException("诊断：工作簿名称缺失");
+            throw new ExcelOperateException("诊断：工作簿名称缺失！", new NullPointerException());
         }
 
         if (dataClass == null) {
-            throw new ExcelOperateException("诊断：Excel对应关系缺失");
+            throw new ExcelOperateException("诊断：Excel对应关系缺失！", new NullPointerException());
         } else {
             if (workbookData != null && workbookData.size() > 0) {
                 if (workbookData.get(0).getClass() != dataClass) {
-                    throw new ExcelOperateException("诊断：Excel数据类型错误");
+                    throw new ExcelOperateException("诊断：Excel数据类型错误！", new NullPointerException());
                 }
             }
         }

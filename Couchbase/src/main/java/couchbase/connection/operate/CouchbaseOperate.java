@@ -9,9 +9,9 @@ import com.couchbase.client.java.query.N1qlQueryRow;
 import com.couchbase.client.java.query.Statement;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 import couchbase.convert.N1qlQueryToObject;
 import couchbase.entity.BucketTime;
 import couchbase.entity.Document;
@@ -85,7 +85,7 @@ public class CouchbaseOperate {
                 );
                 return true;
             } else {
-                throw new DataBaseOperateException("诊断：传入对象为空");
+                throw new DataBaseOperateException("诊断：传入对象为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,7 +111,7 @@ public class CouchbaseOperate {
                 );
                 return true;
             } else {
-                throw new DataBaseOperateException("诊断：传入对象为空或者主键为空");
+                throw new DataBaseOperateException("诊断：传入对象为空或者主键为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,7 +132,7 @@ public class CouchbaseOperate {
                 Field idField = getIdField(doc);
                 if (idField != null) {
                     if (idField.get(doc) == null) {
-                        throw new DataBaseOperateException("诊断：传入对象主键错误");
+                        throw new DataBaseOperateException("诊断：传入对象主键错误！", new NullPointerException());
                     } else {
                         JsonDocument jsonDocument = bucket.get(idField.get(doc).toString());
                         if (jsonDocument != null) {
@@ -140,14 +140,14 @@ public class CouchbaseOperate {
                             bucket.replace(objectToT(doc), bucketTime.TIME_UPDATE, bucketTime.TIME_UNIT);
                             return true;
                         } else {
-                            throw new DataBaseOperateException("诊断：传入对象根据主键未查询到匹配数据");
+                            throw new DataBaseOperateException("诊断：传入对象根据主键未查询到匹配数据！", new NullPointerException());
                         }
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入对象未继承Document的对象");
+                    throw new DataBaseOperateException("诊断：传入对象未继承Document的对象！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入对象为空");
+                throw new DataBaseOperateException("诊断：传入对象为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,7 +166,7 @@ public class CouchbaseOperate {
     public <T extends Document> boolean update(String id, T doc) {
         try {
             if (id == null || id.isEmpty()) {
-                throw new DataBaseOperateException("诊断：传入对象主键错误");
+                throw new DataBaseOperateException("诊断：传入对象主键错误！", new NullPointerException());
             } else {
                 if (doc != null) {
                     Field idField = getIdField(doc);
@@ -177,13 +177,13 @@ public class CouchbaseOperate {
                             bucket.replace(objectToT(doc), bucketTime.TIME_UPDATE, bucketTime.TIME_UNIT);
                             return true;
                         } else {
-                            throw new DataBaseOperateException("诊断：传入对象根据主键未查询到匹配数据");
+                            throw new DataBaseOperateException("诊断：传入对象根据主键未查询到匹配数据！", new NullPointerException());
                         }
                     } else {
-                        throw new DataBaseOperateException("诊断：传入对象未继承Document的对象");
+                        throw new DataBaseOperateException("诊断：传入对象未继承Document的对象！", new NullPointerException());
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入对象为空");
+                    throw new DataBaseOperateException("诊断：传入对象为空！", new NullPointerException());
                 }
             }
         } catch (Exception e) {
@@ -207,10 +207,10 @@ public class CouchbaseOperate {
                 } else if (result.status().equalsIgnoreCase(CodeConductStandard.Errors)) {
                     return 0;
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的n1ql语法错误");
+                    throw new DataBaseOperateException("诊断：传入的n1ql语法错误！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入语句对象为空或者未能将传入的对象转换成n1ql");
+                throw new DataBaseOperateException("诊断：传入语句对象为空或者未能将传入的对象转换成n1ql！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -233,10 +233,10 @@ public class CouchbaseOperate {
                 } else if (result.status().equalsIgnoreCase(CodeConductStandard.Errors)) {
                     return 0;
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的n1ql语法错误");
+                    throw new DataBaseOperateException("诊断：传入的n1ql语法错误！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的n1ql语句为空");
+                throw new DataBaseOperateException("诊断：传入的n1ql语句为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -272,10 +272,10 @@ public class CouchbaseOperate {
                         return true;
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入对象未继承Document的对象");
+                    throw new DataBaseOperateException("诊断：传入对象未继承Document的对象！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入对象为空");
+                throw new DataBaseOperateException("诊断：传入对象为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -306,10 +306,10 @@ public class CouchbaseOperate {
                         return true;
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入对象未继承Document的对象");
+                    throw new DataBaseOperateException("诊断：传入对象未继承Document的对象！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入对象为空");
+                throw new DataBaseOperateException("诊断：传入对象为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -332,10 +332,10 @@ public class CouchbaseOperate {
                     bucket.remove(idField.get(doc).toString(), bucketTime.TIME_DELETE, bucketTime.TIME_UNIT);
                     return true;
                 } else {
-                    throw new DataBaseOperateException("诊断：未找到公共基类Document的主键");
+                    throw new DataBaseOperateException("诊断：未找到公共基类Document的主键！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入对象为空");
+                throw new DataBaseOperateException("诊断：传入对象为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -355,7 +355,7 @@ public class CouchbaseOperate {
                 bucket.remove(id, bucketTime.TIME_DELETE, bucketTime.TIME_UNIT);
                 return true;
             } else {
-                throw new DataBaseOperateException("诊断：传入参数值为空");
+                throw new DataBaseOperateException("诊断：传入参数值为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -382,13 +382,13 @@ public class CouchbaseOperate {
                         }
                         return true;
                     } else {
-                        throw new DataBaseOperateException("诊断：传入对象未继承Document的对象");
+                        throw new DataBaseOperateException("诊断：传入对象未继承Document的对象！", new NullPointerException());
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的处理对象集合为空");
+                throw new DataBaseOperateException("诊断：传入的处理对象集合为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -409,12 +409,12 @@ public class CouchbaseOperate {
                     if (ids.get(i) != null && !ids.get(i).isEmpty()) {
                         bucket.remove(ids.get(i), bucketTime.TIME_DELETE, bucketTime.TIME_UNIT);
                     } else {
-                        throw new DataBaseOperateException("诊断：集合中第 " + i + " 位为空");
+                        throw new DataBaseOperateException("诊断：集合中第 " + i + " 位为空！", new NullPointerException());
                     }
                 }
                 return true;
             } else {
-                throw new DataBaseOperateException("诊断：传入集合参数值为空");
+                throw new DataBaseOperateException("诊断：传入集合参数值为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -435,12 +435,12 @@ public class CouchbaseOperate {
                     if (ids[i] != null && !ids[i].isEmpty()) {
                         bucket.remove(ids[i], bucketTime.TIME_DELETE, bucketTime.TIME_UNIT);
                     } else {
-                        throw new DataBaseOperateException("诊断：集合中第 " + i + " 位为空");
+                        throw new DataBaseOperateException("诊断：集合中第 " + i + " 位为空！", new NullPointerException());
                     }
                 }
                 return true;
             } else {
-                throw new DataBaseOperateException("诊断：传入集合参数值为空");
+                throw new DataBaseOperateException("诊断：传入集合参数值为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -466,10 +466,10 @@ public class CouchbaseOperate {
                     }
                     return result.size();
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入语句对象为空或者未能将传入的对象转换成n1ql");
+                throw new DataBaseOperateException("诊断：传入语句对象为空或者未能将传入的对象转换成n1ql！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -496,7 +496,7 @@ public class CouchbaseOperate {
                     } else if (result.status().equalsIgnoreCase(CodeConductStandard.Errors)) {
                         return 0;
                     } else {
-                        throw new DataBaseOperateException("诊断：传入的n1ql语法错误");
+                        throw new DataBaseOperateException("诊断：传入的n1ql语法错误！", new NullPointerException());
                     }
                 } else if (behaviour.equalsIgnoreCase(CodeConductStandard.Select)) {
                     if (tClass != null) {
@@ -506,13 +506,13 @@ public class CouchbaseOperate {
                         }
                         return result.size();
                     } else {
-                        throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                        throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的n1ql非DELETE语句也非SELECT语句无法处理");
+                    throw new DataBaseOperateException("诊断：传入的n1ql非DELETE语句也非SELECT语句无法处理！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的n1ql语句为空");
+                throw new DataBaseOperateException("诊断：传入的n1ql语句为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -537,10 +537,10 @@ public class CouchbaseOperate {
                             )
                     ), bucketTime.TIME_QUERY, bucketTime.TIME_UNIT), tClass);
                 } else {
-                    throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                    throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -568,13 +568,13 @@ public class CouchbaseOperate {
                             return null;
                         }
                     } else {
-                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入语句对象为空或者未能将传入的对象转换成n1ql");
+                throw new DataBaseOperateException("诊断：传入语句对象为空或者未能将传入的对象转换成n1ql！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -602,13 +602,13 @@ public class CouchbaseOperate {
                             return null;
                         }
                     } else {
-                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的n1ql语句为空");
+                throw new DataBaseOperateException("诊断：传入的n1ql语句为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -640,10 +640,10 @@ public class CouchbaseOperate {
                         return null;
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                    throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -671,13 +671,13 @@ public class CouchbaseOperate {
                             return null;
                         }
                     } else {
-                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入语句对象为空或者未能将传入的对象转换成n1ql");
+                throw new DataBaseOperateException("诊断：传入语句对象为空或者未能将传入的对象转换成n1ql！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -705,13 +705,13 @@ public class CouchbaseOperate {
                             return null;
                         }
                     } else {
-                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                    throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的n1ql语句为空");
+                throw new DataBaseOperateException("诊断：传入的n1ql语句为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -737,12 +737,12 @@ public class CouchbaseOperate {
                     }
                     return 0;
                 } else if (result.status().equalsIgnoreCase(CodeConductStandard.Errors)) {
-                    throw new DataBaseOperateException("诊断：传入的n1ql查询结果错误");
+                    throw new DataBaseOperateException("诊断：传入的n1ql查询结果错误！", new NullPointerException());
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的n1ql语法错误");
+                    throw new DataBaseOperateException("诊断：传入的n1ql语法错误！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -768,12 +768,12 @@ public class CouchbaseOperate {
                     }
                     return 0;
                 } else if (result.status().equalsIgnoreCase(CodeConductStandard.Errors)) {
-                    throw new DataBaseOperateException("诊断：传入的n1ql查询结果错误");
+                    throw new DataBaseOperateException("诊断：传入的n1ql查询结果错误！", new NullPointerException());
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的n1ql语法错误");
+                    throw new DataBaseOperateException("诊断：传入的n1ql语法错误！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的处理对象类型为空");
+                throw new DataBaseOperateException("诊断：传入的处理对象类型为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -853,7 +853,7 @@ public class CouchbaseOperate {
                     return null;
                 }
             } else {
-                throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -880,10 +880,10 @@ public class CouchbaseOperate {
                         return null;
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                    throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的索引名称为空");
+                throw new DataBaseOperateException("诊断：传入的索引名称为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -917,13 +917,13 @@ public class CouchbaseOperate {
                         bucket.query(N1qlQuery.simple(n1ql.toString()), bucketTime.TIME_QUERY, bucketTime.TIME_UNIT);
                         return true;
                     } else {
-                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                        throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
                     }
                 } else {
-                    throw new DataBaseOperateException("诊断：传入的需建索引的属性名称集合为空");
+                    throw new DataBaseOperateException("诊断：传入的需建索引的属性名称集合为空！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的索引名称为空");
+                throw new DataBaseOperateException("诊断：传入的索引名称为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -945,10 +945,10 @@ public class CouchbaseOperate {
                     bucket.query(N1qlQuery.simple(n1ql), bucketTime.TIME_QUERY, bucketTime.TIME_UNIT);
                     return true;
                 } else {
-                    throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                    throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
                 }
             } else {
-                throw new DataBaseOperateException("诊断：传入的索引名称为空");
+                throw new DataBaseOperateException("诊断：传入的索引名称为空！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -972,7 +972,7 @@ public class CouchbaseOperate {
                             , bucketTime.TIME_QUERY, bucketTime.TIME_UNIT);
                 }
             } else {
-                throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失");
+                throw new DataBaseOperateException("诊断：数据库连接初始化后数据库名称丢失！", new NullPointerException());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1035,7 +1035,7 @@ public class CouchbaseOperate {
         try {
             return idField != null ? idField.get(doc) != null ? idField.get(doc).toString() : null : null;
         } catch (IllegalAccessException e) {
-            throw new DataBaseOperateException("诊断：传入对象为空或者未找到公共基类Document的主键");
+            throw new DataBaseOperateException("诊断：传入对象为空或者未找到公共基类Document的主键！", new NullPointerException());
         }
     }
 
@@ -1124,7 +1124,7 @@ public class CouchbaseOperate {
             });
             jsonDocument = JsonDocument.create(id, JsonObject.from(docHashMap));
         } else {
-            throw new DataBaseOperateException("诊断：对象未继承公共基类Document无法存入数据库请继承后重试!");
+            throw new DataBaseOperateException("诊断：对象未继承公共基类Document无法存入数据库请继承后重试！", new NullPointerException());
         }
         return jsonDocument;
     }

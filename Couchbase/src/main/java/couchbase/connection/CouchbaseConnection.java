@@ -292,16 +292,16 @@ public class CouchbaseConnection {
     public Bucket getBucket() {
         if (bucket == null) {
             if (data_url == null || data_url.isEmpty()) {
-                throw new DataBaseConnectionException("<<<<<=====-----数据库连接地址为空!-----=====>>>>>");
+                throw new DataBaseConnectionException("诊断：数据库连接地址为空！", new NullPointerException());
             }
             if (data_name == null || data_name.isEmpty()) {
-                throw new DataBaseConnectionException("<<<<<=====-----数据库连接名称为空!-----=====>>>>>");
+                throw new DataBaseConnectionException("诊断：数据库连接名称为空！", new NullPointerException());
             }
             if (data_password == null || data_password.isEmpty()) {
-                throw new DataBaseConnectionException("<<<<<=====-----数据库连接密码为空!-----=====>>>>>");
+                throw new DataBaseConnectionException("诊断：数据库连接密码为空！", new NullPointerException());
             }
             if (bucket_name == null || bucket_name.isEmpty()) {
-                throw new DataBaseConnectionException("<<<<<=====-----数据库连接库名称为空!-----=====>>>>>");
+                throw new DataBaseConnectionException("诊断：数据库连接库名称为空！", new NullPointerException());
             }
 
             cluster = CouchbaseCluster.create(data_url);

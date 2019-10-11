@@ -4,6 +4,8 @@ import dispose.TextDispose;
 import mail.exception.MailException;
 import mail.set.Send;
 
+import java.io.IOException;
+
 /**
  * 发送邮件逻辑类
  */
@@ -62,7 +64,7 @@ public class SendMail {
             if (TextDispose.isNotEmpty(eMail)) {
                 sm.setTo(eMail);
             } else {
-                throw new MailException("<<<<<=====-----没有发送目标邮箱发送停止!-----=====>>>>>");
+                throw new MailException("诊断：没有发送目标邮箱发送停止！", new NullPointerException());
             }
             //内容
             if (TextDispose.isNotEmpty(content)) {
@@ -73,7 +75,7 @@ public class SendMail {
             //附件
             if (TextDispose.isNotEmpty(fileAffix)) {
                 if (!sm.addFileAffix(fileAffix)) {
-                    throw new MailException("<<<<<=====-----附件上传失败请检查附件地址!-----=====>>>>>");
+                    throw new MailException("诊断：附件上传失败请检查附件地址！", new IOException());
                 }
             }
             //发送
@@ -82,7 +84,7 @@ public class SendMail {
             }
             return false;
         } catch (Exception e) {
-            throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
+            throw new MailException("诊断：发送邮件错误！", e);
         }
     }
 }

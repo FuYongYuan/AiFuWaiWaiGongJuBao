@@ -37,19 +37,19 @@ public class Send {
      */
     public Send build() {
         if (TextDispose.isEmpty(this.personal)) {
-            throw new MailException("<<<<<=====-----系统名称为空创建发送邮件服务类失败!-----=====>>>>>");
+            throw new MailException("诊断：系统名称为空创建发送邮件服务类失败！", new NullPointerException());
         }
         if (TextDispose.isEmpty(this.stmp)) {
-            throw new MailException("<<<<<=====-----服务地址为空创建发送邮件服务类失败!-----=====>>>>>");
+            throw new MailException("诊断：服务地址为空创建发送邮件服务类失败！", new NullPointerException());
         }
         if (TextDispose.isEmpty(this.userName)) {
-            throw new MailException("<<<<<=====-----发送邮箱账号为空创建发送邮件服务类失败!-----=====>>>>>");
+            throw new MailException("诊断：发送邮箱账号为空创建发送邮件服务类失败！", new NullPointerException());
         }
         if (TextDispose.isEmpty(this.userPassword)) {
-            throw new MailException("<<<<<=====-----发送邮箱密码为空创建发送邮件服务类失败!-----=====>>>>>");
+            throw new MailException("诊断：发送邮箱密码为空创建发送邮件服务类失败！", new NullPointerException());
         }
         if (TextDispose.isEmpty(this.sendMail)) {
-            throw new MailException("<<<<<=====-----发送邮箱为空创建发送邮件服务类失败!-----=====>>>>>");
+            throw new MailException("诊断：发送邮箱为空创建发送邮件服务类失败！", new NullPointerException());
         }
         return this;
     }

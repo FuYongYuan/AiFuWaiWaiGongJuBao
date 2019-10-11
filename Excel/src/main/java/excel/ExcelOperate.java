@@ -47,10 +47,10 @@ public class ExcelOperate {
             } else if ("xls".equals(prefix)) {
                 workbook = new HSSFWorkbook(new FileInputStream(new File(this.path)));
             } else {
-                throw new ExcelOperateException("诊断：传入文档格式不正确");
+                throw new ExcelOperateException("诊断：传入文档格式不正确！", new IOException());
             }
         } else {
-            throw new ExcelOperateException("诊断：传入文档地址为空");
+            throw new ExcelOperateException("诊断：传入文档地址为空！", new NullPointerException());
         }
     }
 
@@ -76,10 +76,10 @@ public class ExcelOperate {
                             fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit()));
                 }
             } else {
-                new ExcelOperateException("诊断：对象中没有匹配的文档内容").printStackTrace();
+                new ExcelOperateException("诊断：对象中没有匹配的文档内容！", new NullPointerException()).printStackTrace();
             }
         } else {
-            new ExcelOperateException("诊断：传入文档表名称错误").printStackTrace();
+            new ExcelOperateException("诊断：传入文档表名称错误！", new NullPointerException()).printStackTrace();
         }
         if (0 < result) {
             this.writeDocument();
@@ -118,15 +118,15 @@ public class ExcelOperate {
                     }
                     result = true;
                 } else {
-                    new ExcelOperateException("诊断：行数不正确非正整数或超过最大行数").printStackTrace();
+                    new ExcelOperateException("诊断：行数不正确非正整数或超过最大行数！", new IOException()).printStackTrace();
                     result = false;
                 }
             } else {
-                new ExcelOperateException("诊断：对象中没有匹配的文档内容").printStackTrace();
+                new ExcelOperateException("诊断：对象中没有匹配的文档内容！", new NullPointerException()).printStackTrace();
                 result = false;
             }
         } else {
-            new ExcelOperateException("诊断：传入文档表名称错误").printStackTrace();
+            new ExcelOperateException("诊断：传入文档表名称错误！", new NullPointerException()).printStackTrace();
             result = false;
         }
         if (result) {
@@ -150,11 +150,11 @@ public class ExcelOperate {
                 sheet.removeRow(sheet.getRow(rowNumber));
                 result = true;
             } else {
-                new ExcelOperateException("诊断：行数不正确非正整数或超过最大行数").printStackTrace();
+                new ExcelOperateException("诊断：行数不正确非正整数或超过最大行数！", new IOException()).printStackTrace();
                 result = false;
             }
         } else {
-            new ExcelOperateException("诊断：传入文档表名称错误").printStackTrace();
+            new ExcelOperateException("诊断：传入文档表名称错误！", new NullPointerException()).printStackTrace();
             result = false;
         }
         if (result) {
@@ -173,10 +173,10 @@ public class ExcelOperate {
                 }
                 out.close();
             } else {
-                throw new ExcelOperateException("诊断：传入文档地址为空");
+                throw new ExcelOperateException("诊断：传入文档地址为空！", new NullPointerException());
             }
         } catch (IOException e) {
-            throw new ExcelOperateException("诊断：Excel操作写入文件被占用 -> " + e.getMessage());
+            throw new ExcelOperateException("诊断：Excel操作写入文件被占用！", e);
         }
     }
 
@@ -187,7 +187,7 @@ public class ExcelOperate {
                 workbook.close();
             }
         } catch (IOException e) {
-            throw new ExcelOperateException("诊断：Excel操作类销毁失败 -> " + e.getMessage());
+            throw new ExcelOperateException("诊断：Excel操作类销毁失败！", e);
         }
     }
 }

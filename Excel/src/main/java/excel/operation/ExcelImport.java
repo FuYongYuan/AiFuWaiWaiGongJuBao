@@ -97,7 +97,7 @@ public class ExcelImport {
                 list.add(obj);
             }
         } catch (Exception e) {
-            throw new ExcelOperateException("诊断：Excel导入失败 -> " + e.getMessage());
+            throw new ExcelOperateException("诊断：Excel导入失败！", e);
         }
         return list;
     }
@@ -222,7 +222,7 @@ public class ExcelImport {
                 }
             }
         } catch (Exception e) {
-            throw new ExcelOperateException("诊断：Excel导入赋值过程错误 -> " + e.getMessage());
+            throw new ExcelOperateException("诊断：Excel导入赋值过程错误！", e);
         }
     }
 }

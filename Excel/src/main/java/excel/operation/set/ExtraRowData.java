@@ -41,7 +41,7 @@ public class ExtraRowData {
      */
     public ExtraRowData build() {
         if (this.rowNumber == null && !this.isMaxRowNumber) {
-            throw new ExcelOperateException("诊断：缺少额外行数据行号");
+            throw new ExcelOperateException("诊断：缺少额外行数据行号！", new NullPointerException());
         }
         return this;
     }

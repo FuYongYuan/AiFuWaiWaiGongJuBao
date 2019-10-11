@@ -204,7 +204,7 @@ public class Test {
                     .setWorkbookData(CopyClass.copyMap(excelEntities, ExcelEntity.class))
                     .setDataClass(ExcelEntity.class)
                     .setIsGetMethodFieldValue(false)
-//                    .setExtraData(null
+                    .setExtraData(null
 //                            , ExtraRowData.create().setRowNumber(3).setExtraCellData(
 //                                    ExtraCellData.create().setCellNumber(2).setCellValue("ceshi").setCellType(String.class).build(),
 //                                    ExtraCellData.create().setCellNumber(3).setCellValue(1).setCellType(Integer.class).build(),
@@ -216,12 +216,12 @@ public class Test {
 //                                    ExtraCellData.create().setCellNumber(3).setCellValue(new Date()).setCellType(Date.class).build(),
 //                                    ExtraCellData.create().setCellNumber(4).setCellValue(new BigDecimal(12311)).setCellType(BigDecimal.class).setIsMoney(true).build()
 //                            ).setIsNewRow(true).build()
-//                            , ExtraRowData.create().setRowNumber(1).setExtraCellData(
-//                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试shi").setCellType(String.class).setHorizontalAlignment(HorizontalAlignment.CENTER).build(),
-//                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
-//                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setDateType(DateType.Year_Month_Day).build(),
-//                                    ExtraCellData.create().setCellNumber(4).setCellValue(new BigDecimal(12311)).setCellType(BigDecimal.class).build()
-//                            ).setIsNewRow(true).build()
+                            , ExtraRowData.create().setRowNumber(1).setExtraCellData(
+                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试shi").setCellType(String.class).setHorizontalAlignment(HorizontalAlignment.CENTER).build(),
+                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
+                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setDateType(DateType.Year_Month_Day).build(),
+                                    ExtraCellData.create().setCellNumber(4).setCellValue(new BigDecimal(12311)).setCellType(BigDecimal.class).build()
+                            ).setIsNewRow(true).build()
 //                            , ExtraRowData.create().setRowNumber(2).setExtraCellData(
 //                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试2").setCellType(String.class).setVerticalAlignment(VerticalAlignment.TOP).build(),
 //                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
@@ -250,7 +250,7 @@ public class Test {
 //                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
 //                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build()
 //                            ).setIsNewRow(true).build()
-//                    )
+                    )
                     .build(excelExport.getWorkbook());
 
             //标题样式

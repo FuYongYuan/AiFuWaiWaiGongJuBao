@@ -86,10 +86,10 @@ public class ExcelDisposeUtil {
                     }
                 }
             } else {
-                throw new ExcelOperateException("诊断：Excel导出未找到配置字段");
+                throw new ExcelOperateException("诊断：Excel导出未找到配置字段！", new NullPointerException());
             }
         } catch (Exception e) {
-            throw new ExcelOperateException("诊断：Excel对应关系错误 -> " + e.getMessage());
+            throw new ExcelOperateException("诊断：Excel对应关系错误！", e);
         }
     }
 
@@ -136,7 +136,7 @@ public class ExcelDisposeUtil {
             }
             return value;
         } catch (Exception e) {
-            throw new ExcelOperateException("诊断：Excel中数据格式转换错误 -> " + e.getMessage());
+            throw new ExcelOperateException("诊断：Excel中数据格式转换错误！", e);
         }
     }
 
@@ -165,7 +165,7 @@ public class ExcelDisposeUtil {
                 }
             }
         } catch (Exception e) {
-            throw new ExcelOperateException("诊断：Excel对应关系错误 -> " + e.getMessage());
+            throw new ExcelOperateException("诊断：Excel对应关系错误！", e);
         }
         return fieldList;
     }

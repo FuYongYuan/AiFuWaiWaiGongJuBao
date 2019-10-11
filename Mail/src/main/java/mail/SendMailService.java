@@ -91,7 +91,7 @@ class SendMailService {
             this.message.setSubject(this.subject);// 设置主题
             return true;
         } catch (Exception e) {
-            throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
+            throw new MailException("诊断：发送邮件错误！", e);
         }
     }
 
@@ -110,7 +110,7 @@ class SendMailService {
             System.out.println("[Mail-INFO] 发送邮件完成！");
             return true;
         } catch (Exception e) {
-            throw new MailException("<<<<<=====-----发送邮件错误!-----=====>>>>>");
+            throw new MailException("诊断：发送邮件错误！", e);
         }
     }
 
@@ -166,7 +166,7 @@ class SendMailService {
             }
             this.mp.addBodyPart(bp);
         } catch (Exception e) {
-            throw new MailException("发送内容： " + text + " 错误!" + e);
+            throw new MailException("诊断：发送内容： " + text + " 错误！", e);
         }
     }
 
@@ -196,7 +196,7 @@ class SendMailService {
             }
             return true;
         } catch (Exception e) {
-            throw new MailException("增加附件： " + filename + " 失败!" + e);
+            throw new MailException("诊断：增加附件： " + filename + " 失败！", e);
         }
     }
 

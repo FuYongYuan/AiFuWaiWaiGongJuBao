@@ -46,7 +46,7 @@ public class CouchbasePool {
         if (couchBasePool != null) {
             return couchBasePool;
         } else {
-            throw new DataBasePoolException("诊断：连接池读取失败内存中没有连接池对象");
+            throw new DataBasePoolException("诊断：连接池读取失败内存中没有连接池对象！", new NullPointerException());
         }
     }
 
@@ -59,7 +59,7 @@ public class CouchbasePool {
         if (couchBasePool != null && couchBasePool.connectionGroup != null) {
             return couchBasePool.connectionGroup;
         } else {
-            throw new DataBasePoolException("诊断：连接池读取失败内存中没有连接池对象");
+            throw new DataBasePoolException("诊断：连接池读取失败内存中没有连接池对象！", new NullPointerException());
         }
     }
 
@@ -72,7 +72,7 @@ public class CouchbasePool {
         if (couchBasePool != null && couchBasePool.connection != null) {
             return couchBasePool.connection;
         } else {
-            throw new DataBasePoolException("诊断：连接池连接读取失败内存中没有连接对象");
+            throw new DataBasePoolException("诊断：连接池连接读取失败内存中没有连接对象！", new NullPointerException());
         }
     }
 
@@ -86,7 +86,7 @@ public class CouchbasePool {
         if (couchBasePool != null && couchBasePool.connection != null) {
             return couchBasePool.connectionGroup.get(connectionName);
         } else {
-            throw new DataBasePoolException("诊断：连接池连接读取失败内存中没有连接对象");
+            throw new DataBasePoolException("诊断：连接池连接读取失败内存中没有连接对象！", new NullPointerException());
         }
     }
 
@@ -125,7 +125,7 @@ public class CouchbasePool {
             if (couchBaseConnection != null) {
                 connection = couchBaseConnection;
             } else {
-                throw new DataBasePoolException("诊断：可能因为没有主连接名称对应的数据库连接");
+                throw new DataBasePoolException("诊断：可能因为没有主连接名称对应的数据库连接！", new NullPointerException());
             }
         }
     }
