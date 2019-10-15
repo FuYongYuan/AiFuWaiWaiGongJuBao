@@ -177,7 +177,7 @@ public class Test {
             if ((i / 5) % 2 == 0) {
                 omap.put("bDT", 1.1);
             } else {
-                omap.put("bDT", 2.2);
+//                omap.put("bDT", 2.2);
             }
             if (i % 2 != 0) {
                 omap.put("bT", Test.randomBoolean());
