@@ -10,14 +10,17 @@ public class TotalRowIndex {
      * 当前记录列
      */
     public Field field;
+
     /**
      * 开始行
      */
     public int rowspanStart;
+
     /**
      * 结束行
      */
     public int rowspanEnd;
+
     /**
      * 记录内容
      */

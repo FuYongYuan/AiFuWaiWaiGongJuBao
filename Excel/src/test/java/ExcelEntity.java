@@ -15,7 +15,7 @@ public class ExcelEntity {
     public ExcelEntity() {
     }
 
-    public ExcelEntity(String sT, int iT, Date DT, double dT, String bDT, boolean bT) {
+    public ExcelEntity(String sT, int iT, Date DT, double dT, BigDecimal bDT, boolean bT) {
         this.sT = sT;
         this.iT = iT;
         this.DT = DT;
@@ -36,8 +36,8 @@ public class ExcelEntity {
     @ExcelField(columnName = "小数点", order = 4, decimalAfterDigit = 5, isMoney = true, columnWidth = 30)
     public Double dT;
 
-    @ExcelField(columnName = "钱", order = 2, isMoney = true, horizontalAlignment = HorizontalAlignment.CENTER, columnWidth = 40)
-    public String bDT;
+    @ExcelField(columnName = "钱", order = 2, isMoney = true, horizontalAlignment = HorizontalAlignment.CENTER, columnWidth = 40,rowspan = true)
+    public BigDecimal bDT;
 
     @ExcelField(columnName = "是否", order = 6, horizontalAlignment = HorizontalAlignment.CENTER, verticalAlignment = VerticalAlignment.CENTER, rowspan = true)
     public Boolean bT;

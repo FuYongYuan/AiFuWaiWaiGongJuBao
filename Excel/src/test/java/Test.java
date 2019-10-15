@@ -141,8 +141,6 @@ public class Test {
 //        }
 
 
-
-
 //        List<ExcelEntity> excelEntities = new ArrayList<>();
 
         List<Map<String, Object>> excelEntities = new ArrayList<Map<String, Object>>();
@@ -150,7 +148,7 @@ public class Test {
         /**
          * 在全配置下.跨行多的情况下 XSSF最多 1250 条  HSSF最多 150 条   SXSSF最多 * 条
          */
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 200; i++) {
             int ix = i / 10;
 
 //            ExcelEntity excelEntity = new ExcelEntity();
@@ -166,19 +164,24 @@ public class Test {
             omap.put("id", i);
             omap.put("sT", "测试" + ix);
             omap.put("iT", i / 5);
-//            if (i % 2 == 0) {
-//                omap.put("DT", new Date());
-//            }
+            if (i % 2 == 0) {
+                omap.put("DT", new Date());
+            }
             omap.put("DT", new Date());
             if (i % 2 != 0) {
                 omap.put("dT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
             }
-            if (i % 2 == 0) {
-                omap.put("bDT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
-            }
-//            if (i % 2 != 0) {
-            omap.put("bT", Test.randomBoolean());
+//            if (i % 2 == 0) {
+//                omap.put("bDT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
 //            }
+            if ((i / 5) % 2 == 0) {
+                omap.put("bDT", 1.1);
+            } else {
+                omap.put("bDT", 2.2);
+            }
+            if (i % 2 != 0) {
+                omap.put("bT", Test.randomBoolean());
+            }
             excelEntities.add(omap);
         }
 
@@ -205,33 +208,35 @@ public class Test {
                     .setDataClass(ExcelEntity.class)
                     .setIsGetMethodFieldValue(false)
                     .setExtraData(null
-//                            , ExtraRowData.create().setRowNumber(3).setExtraCellData(
-//                                    ExtraCellData.create().setCellNumber(2).setCellValue("ceshi").setCellType(String.class).build(),
-//                                    ExtraCellData.create().setCellNumber(3).setCellValue(1).setCellType(Integer.class).build(),
-//                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setColumnWidth(100).build()
-//                            ).setIsNewRow(true).build()
-//                            , ExtraRowData.create().setRowNumber(4).setExtraCellData(
-//                                    ExtraCellData.create().setCellNumber(1).setCellValue("测试ce").setCellType(String.class).build(),
-//                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
-//                                    ExtraCellData.create().setCellNumber(3).setCellValue(new Date()).setCellType(Date.class).build(),
-//                                    ExtraCellData.create().setCellNumber(4).setCellValue(new BigDecimal(12311)).setCellType(BigDecimal.class).setIsMoney(true).build()
-//                            ).setIsNewRow(true).build()
+                            , ExtraRowData.create().setRowNumber(3).setExtraCellData(
+                                    ExtraCellData.create().setCellNumber(2).setCellValue("ceshi").setCellType(String.class).build(),
+                                    ExtraCellData.create().setCellNumber(3).setCellValue(1).setCellType(Integer.class).build(),
+                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setColumnWidth(100).build()
+                            ).setIsNewRow(true).build()
+                            , ExtraRowData.create().setRowNumber(4).setExtraCellData(
+                                    ExtraCellData.create().setCellNumber(1).setCellValue("测试ce").setCellType(String.class).build(),
+                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
+                                    ExtraCellData.create().setCellNumber(3).setCellValue(new Date()).setCellType(Date.class).build(),
+                                    ExtraCellData.create().setCellNumber(4).setCellValue(new BigDecimal(12311)).setCellType(BigDecimal.class).setIsMoney(true).build()
+                            ).setIsNewRow(true).build()
                             , ExtraRowData.create().setRowNumber(1).setExtraCellData(
                                     ExtraCellData.create().setCellNumber(3).setCellValue("测试shi").setCellType(String.class).setHorizontalAlignment(HorizontalAlignment.CENTER).build(),
                                     ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
                                     ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setDateType(DateType.Year_Month_Day).build(),
                                     ExtraCellData.create().setCellNumber(4).setCellValue(new BigDecimal(12311)).setCellType(BigDecimal.class).build()
                             ).setIsNewRow(true).build()
-//                            , ExtraRowData.create().setRowNumber(2).setExtraCellData(
-//                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试2").setCellType(String.class).setVerticalAlignment(VerticalAlignment.TOP).build(),
-//                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
-//                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setDateType(DateType.Hour_Minute_Second).build(),
-//                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).build()
-//                            ).setIsNewRow(true).build()
+                            , ExtraRowData.create().setRowNumber(2).setExtraCellData(
+                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试2").setCellType(String.class).setVerticalAlignment(VerticalAlignment.TOP).build(),
+                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
+                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setDateType(DateType.Hour_Minute_Second).build(),
+                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).build()
+                            ).setIsNewRow(true).build()
 //                            , ExtraRowData.create().setRowNumber(7).setExtraCellData(
 //                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试1").setCellType(String.class).build(),
 //                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
 //                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build(),
+//                                    ExtraCellData.create().setCellNumber(10).setCellValue(new Date()).setCellType(Date.class).build(),
+////                                    ExtraCellData.create().setCellNumber(1).setCellValue(0).setCellType(Integer.class).build(),
 //                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).setDecimalAfterDigit(1).build()
 //                            ).setIsNewRow(false).build()
 //                            , ExtraRowData.create().setRowNumber(8).setExtraCellData(
@@ -240,12 +245,36 @@ public class Test {
 //                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setDateType(DateType.Day).setIsAutoSize(true).build(),
 //                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).setDecimalAfterDigit(5).build()
 //                            ).setIsNewRow(true).build()
-//                            , ExtraRowData.create().setIsMaxRowNumber(true).setExtraCellData(
-//                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试").setCellType(String.class).build(),
+//                            , ExtraRowData.create().setRowNumber(17).setExtraCellData(
+//                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试1").setCellType(String.class).build(),
 //                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
-//                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build()
+//                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build(),
+//                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).setDecimalAfterDigit(1).build()
+//                            ).setIsNewRow(false).build()
+//                            , ExtraRowData.create().setRowNumber(18).setExtraCellData(
+//                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试4").setCellType(String.class).build(),
+//                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
+//                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setDateType(DateType.Day).setIsAutoSize(true).build(),
+//                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).setDecimalAfterDigit(5).build()
 //                            ).setIsNewRow(true).build()
-//                            , ExtraRowData.create().setRowNumber(20).setExtraCellData(
+//                            , ExtraRowData.create().setRowNumber(27).setExtraCellData(
+//                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试1").setCellType(String.class).build(),
+//                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
+//                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build(),
+//                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).setDecimalAfterDigit(1).build()
+//                            ).setIsNewRow(false).build()
+//                            , ExtraRowData.create().setRowNumber(28).setExtraCellData(
+//                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试4").setCellType(String.class).build(),
+//                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
+//                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setDateType(DateType.Day).setIsAutoSize(true).build(),
+//                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).setDecimalAfterDigit(5).build()
+//                            ).setIsNewRow(true).build()
+                            , ExtraRowData.create().setIsMaxRowNumber(true).setExtraCellData(
+                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试").setCellType(String.class).build(),
+                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
+                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build()
+                            ).setIsNewRow(true).build()
+//                            , ExtraRowData.create().setRowNumber(40).setExtraCellData(
 //                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试").setCellType(String.class).build(),
 //                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
 //                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build()

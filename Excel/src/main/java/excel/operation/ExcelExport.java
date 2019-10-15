@@ -16,6 +16,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -58,6 +59,7 @@ public class ExcelExport {
                     //获取要执行的对象中属于Excel的字段
                     ExcelDisposeUtil.initialization(sheetSet.getFunction(), sheetSet.getSheetData(), sheetSet.getDataClass());
                     if (sheetSet.getSheetData().useField != null && sheetSet.getSheetData().useField.size() > 0) {
+                        //初始化行数
                         int initRow = 0;
                         if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
                             initRow = this.getInitRow(sheetModel, sheetSet.getExtraRowData(), initRow);
@@ -102,87 +104,61 @@ public class ExcelExport {
                         //共参
                         Map<String, TotalRowIndex> totalRowIndexMap = new HashMap<>();
                         List<Integer> occupyRows = new ArrayList<>();
+                        //额外行
                         int extrai = 0;
                         //循环对象（值）
                         int rowSize = sheetSet.getWorkbookData().size();
-                        for (int i = initRow; i < (rowSize + extrai + initRow); i++) {
+                        for (int i = initRow; i < (rowSize + initRow + extrai); i++) {
                             //创建行    （标题的下一行）
                             Row nextrow = sheetModel.createRow(i + 1);
 
+//                            boolean isExtraiDataRow = false;
                             if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
-                                if (this.getContainCreateRow(sheetSet.getExtraRowData(), i + 1)) {
-                                    //创建列
-                                    Cell cell = nextrow.createCell(0);
-                                    cell.setCellValue("");
-                                    continue;
+                                for (ExtraRowData erd : sheetSet.getExtraRowData()) {
+                                    if (erd != null) {
+                                        if (!erd.getIsMaxRowNumber() && erd.getRowNumber() == nextrow.getRowNum()) {
+                                            //抛错处理
+                                            throw new ExcelOperateException("诊断：请勿在数据行中添加额外数据！错误行数：" + (erd.getRowNumber() + 1) + " 行", new RuntimeException());
+//                                            //创建列
+//                                            for (ExtraCellData ecd : erd.getExtraCellData()) {
+//                                                Cell cell = nextrow.getCell(ecd.getCellNumber());
+//                                                if (cell == null) {
+//                                                    cell = nextrow.createCell(ecd.getCellNumber());
+//                                                }
+//                                                //获取值和计算夸列
+//                                                String cellValue = cellValueRowSpan(i, ecd.getCellNumber(), initRow, extrai, sheetModel, ecd, sheetSet, totalRowIndexMap);
+//                                                //赋值
+//                                                this.setCellValue(cell, cellValue, ecd.getCellType(), ecd);
+//                                            }
+//                                            //校准变更的数据
+//                                            extrai = extrai + 1;
+//                                            isExtraiDataRow = true;
+                                        }
+                                    }
                                 }
                             }
 
+//                            if (!isExtraiDataRow) {
                             //处理列
                             int rowCellSize = sheetSet.getSheetData().useField.size();
                             for (int j = 0; j < rowCellSize; j++) {
                                 //创建列
                                 Cell cell = nextrow.createCell(j);
-
-                                String cellValue = ExcelDisposeUtil.correspondingValue(
-                                        sheetSet.getSheetData().useField.get(j), sheetSet.getWorkbookData().get(i - extrai - initRow), sheetSet.getIsGetMethodFieldValue(),
-                                        sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).dateType(),
-                                        sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).decimalAfterDigit());
-
-                                String rowspanAlignCellValue = cellValue;
-                                if (sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() > 0) {
-                                    rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
-                                            sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1), sheetSet.getWorkbookData().get(i - extrai), sheetSet.getIsGetMethodFieldValue(),
-                                            sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).dateType(),
-                                            sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).decimalAfterDigit());
-                                }
-
-                                //跨行处理
-                                if (sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspan()) {
-                                    TotalRowIndex totalRowIndex = totalRowIndexMap.get(sheetSet.getSheetData().useField.get(j).getName());
-                                    if (totalRowIndex == null) {
-                                        totalRowIndex = new TotalRowIndex();
-                                        totalRowIndex.field = sheetSet.getSheetData().useField.get(j);
-                                        totalRowIndex.columnNo = j;
-                                    }
-                                    if (totalRowIndex.rowspanStart == 0) {
-                                        totalRowIndex.rowspanStart = i + 1;
-                                        totalRowIndex.oldCellValue = rowspanAlignCellValue;
-                                    } else {
-                                        if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(rowspanAlignCellValue)) {
-                                            totalRowIndex.rowspanEnd = i + 1;
-                                        } else {
-                                            if (totalRowIndex.rowspanEnd > 0 && totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) {
-                                                CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, j, j);
-                                                totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
-                                            }
-
-                                            totalRowIndex.rowspanStart = i + 1;
-                                            totalRowIndex.rowspanEnd = i + 1;
-                                            totalRowIndex.oldCellValue = rowspanAlignCellValue;
-                                        }
-
-                                        if (i == sheetSet.getWorkbookData().size() + extrai - 1) {
-                                            if (totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) {
-                                                CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, j, j);
-                                                totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
-                                            }
-                                        }
-                                    }
-                                    totalRowIndexMap.put(sheetSet.getSheetData().useField.get(j).getName(), totalRowIndex);
-                                }
-
+                                //获取值和计算夸列
+                                String cellValue = this.cellValueRowSpan(i, j, initRow, extrai, sheetModel, sheetSet, totalRowIndexMap);
                                 //设置单元格格式
                                 cell.setCellStyle(sheetSet.getSheetData().cellStyleMap.get(sheetSet.getSheetData().useField.get(j).getName()));
                                 //赋值
                                 this.setCellValue(sheetSet.getSheetData().useField.get(j), cell, cellValue);
                             }
+//                            }
 
                             //计算功能处理
                             //小计
                             if (sheetSet.getSheetData().subTotalReferenceField != null && totalRowIndexMap.get(sheetSet.getSheetData().subTotalReferenceField.getName()) != null) {
                                 if (this.calculation(
                                         i,
+                                        initRow,
                                         extrai,
                                         sheetModel,
                                         sheetSet,
@@ -203,6 +179,7 @@ public class ExcelExport {
                             if (sheetSet.getSheetData().totalReferenceField != null && totalRowIndexMap.get(sheetSet.getSheetData().totalReferenceField.getName()) != null) {
                                 if (this.calculation(
                                         i,
+                                        initRow,
                                         extrai,
                                         sheetModel,
                                         sheetSet,
@@ -226,10 +203,10 @@ public class ExcelExport {
                                 sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder() != null &&
                                         sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().size() > 0
                         ) {
-                            occupyRows.add(sheetSet.getWorkbookData().size() + extrai + 1);
+                            occupyRows.add(sheetSet.getWorkbookData().size() + initRow + extrai + 1);
                             this.calculationDispose(
-                                    sheetSet.getWorkbookData().size() + extrai - 1,
-                                    1,
+                                    sheetSet.getWorkbookData().size() + initRow + extrai - 1,
+                                    initRow + 1,
                                     sheetModel.getLastRowNum(),
                                     sheetModel,
                                     sheetSet,
@@ -239,25 +216,37 @@ public class ExcelExport {
                             );
                         }
                     }
+
                     //额外数据
                     if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
                         for (ExtraRowData erd : sheetSet.getExtraRowData()) {
                             if (erd != null) {
                                 if (erd.getIsMaxRowNumber()) {
-                                    erd.setRowNumber(sheetModel.getLastRowNum() + 1);
-                                }
-                                Row row = sheetModel.getRow(erd.getRowNumber());
-                                if (row == null) {
-                                    row = sheetModel.createRow(erd.getRowNumber());
-                                }
-                                for (ExtraCellData ecd : erd.getExtraCellData()) {
-                                    Cell cell = row.getCell(ecd.getCellNumber());
-                                    if (cell == null) {
-                                        cell = row.createCell(ecd.getCellNumber());
+                                    erd.setRowNumber(sheetModel.getLastRowNum() + 2);
+                                    Row row = sheetModel.getRow(erd.getRowNumber());
+                                    if (row == null) {
+                                        row = sheetModel.createRow(erd.getRowNumber());
                                     }
-                                    this.setCellValue(cell, ecd);
+                                    for (ExtraCellData ecd : erd.getExtraCellData()) {
+                                        Cell cell = row.getCell(ecd.getCellNumber());
+                                        if (cell == null) {
+                                            cell = row.createCell(ecd.getCellNumber());
+                                        }
+                                        this.setCellValue(cell, ecd);
+                                    }
+                                } else if (erd.getRowNumber() > sheetModel.getLastRowNum()) {
+                                    Row row = sheetModel.getRow(erd.getRowNumber());
+                                    if (row == null) {
+                                        row = sheetModel.createRow(erd.getRowNumber());
+                                    }
+                                    for (ExtraCellData ecd : erd.getExtraCellData()) {
+                                        Cell cell = row.getCell(ecd.getCellNumber());
+                                        if (cell == null) {
+                                            cell = row.createCell(ecd.getCellNumber());
+                                        }
+                                        this.setCellValue(cell, ecd);
+                                    }
                                 }
-
                             }
                         }
                     }
@@ -339,6 +328,30 @@ public class ExcelExport {
     /**
      * 赋值
      */
+    private void setCellValue(Cell cell, String cellValue, Type type, ExtraCellData ecd) {
+        //结果转换
+        if (type != null) {
+            //结果转换
+            if (type == Double.class || type == double.class) {
+                cell.setCellValue(Double.parseDouble(cellValue));
+            } else if (type == Integer.class || type == int.class) {
+                cell.setCellValue(Integer.parseInt(cellValue));
+            } else if (type == BigDecimal.class) {
+                cell.setCellValue(new BigDecimal(cellValue).doubleValue());
+            } else if (type == Date.class) {
+                cell.setCellValue(DateDispose.formatting_Date(DateDispose.formatting_Date(cellValue, ecd.getDateType()), ecd.getDateType()));
+            } else {
+                cell.setCellValue(cellValue);
+            }
+            cell.setCellStyle(this.setFormat(ecd));
+        } else {
+            cell.setCellValue("");
+        }
+    }
+
+    /**
+     * 赋值
+     */
     private void setCellValue(Cell cell, ExtraCellData ecd) {
         //结果转换
         if (ecd != null) {
@@ -403,10 +416,152 @@ public class ExcelExport {
     }
 
     /**
+     * 获取值和计算夸列
+     */
+    private String cellValueRowSpan(
+            int i,
+            int j,
+            int initRow,
+            int extrai,
+            Sheet sheetModel,
+            ExtraCellData ecd,
+            SheetSet sheetSet,
+            Map<String, TotalRowIndex> totalRowIndexMap
+    ) {
+        String cellValue = ExcelDisposeUtil.correspondingValue(ecd.getCellValue(), ecd.getCellType(), ecd.getDateType(), ecd.getDecimalAfterDigit());
+
+        if (sheetSet.getSheetData().useField.size() >= j) {
+            String rowspanAlignCellValue = cellValue;
+            if (sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() > 0) {
+                rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
+                        sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1), sheetSet.getWorkbookData().get(i - initRow - extrai), sheetSet.getIsGetMethodFieldValue(),
+                        sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).dateType(),
+                        sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).decimalAfterDigit());
+            }
+
+            //跨行处理
+            if (sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspan()) {
+                TotalRowIndex totalRowIndex = totalRowIndexMap.get(sheetSet.getSheetData().useField.get(j).getName());
+                if (totalRowIndex == null) {
+                    totalRowIndex = new TotalRowIndex();
+                    totalRowIndex.field = sheetSet.getSheetData().useField.get(j);
+                    totalRowIndex.columnNo = j;
+                }
+                if (totalRowIndex.rowspanStart == 0) {
+                    totalRowIndex.rowspanStart = i + 1;
+                    totalRowIndex.oldCellValue = rowspanAlignCellValue;
+                } else {
+                    if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(rowspanAlignCellValue)) {
+                        totalRowIndex.rowspanEnd = i + 1;
+                    } else {
+                        if (totalRowIndex.rowspanEnd > 0 && totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) {
+                            CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, j, j);
+                            totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
+                        }
+
+                        totalRowIndex.rowspanStart = i + 1;
+                        totalRowIndex.rowspanEnd = i + 1;
+                        totalRowIndex.oldCellValue = rowspanAlignCellValue;
+                    }
+
+                    if (i == sheetSet.getWorkbookData().size() + initRow + extrai - 1) {
+                        if (totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) {
+                            CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, j, j);
+                            totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
+                        }
+                    }
+                }
+                totalRowIndexMap.put(sheetSet.getSheetData().useField.get(j).getName(), totalRowIndex);
+            }
+        }
+
+        return cellValue;
+    }
+
+    /**
+     * 获取值和计算夸列
+     */
+    private String cellValueRowSpan(
+            int i,
+            int j,
+            int initRow,
+            int extrai,
+            Sheet sheetModel,
+            SheetSet sheetSet,
+            Map<String, TotalRowIndex> totalRowIndexMap
+    ) {
+        String cellValue = ExcelDisposeUtil.correspondingValue(
+                sheetSet.getSheetData().useField.get(j), sheetSet.getWorkbookData().get(i - initRow - extrai), sheetSet.getIsGetMethodFieldValue(),
+                sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).dateType(),
+                sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).decimalAfterDigit());
+
+        String rowspanAlignCellValue = cellValue;
+        if (sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() > 0) {
+            rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
+                    sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1), sheetSet.getWorkbookData().get(i - initRow - extrai), sheetSet.getIsGetMethodFieldValue(),
+                    sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).dateType(),
+                    sheetSet.getSheetData().useField.get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).decimalAfterDigit());
+        }
+
+        //跨行处理
+        if (sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspan()) {
+            TotalRowIndex totalRowIndex = totalRowIndexMap.get(sheetSet.getSheetData().useField.get(j).getName());
+            if (totalRowIndex == null) {
+                totalRowIndex = new TotalRowIndex();
+                totalRowIndex.field = sheetSet.getSheetData().useField.get(j);
+                totalRowIndex.columnNo = j;
+            }
+            if (totalRowIndex.rowspanStart == 0) {
+                totalRowIndex.rowspanStart = i + 1;
+                totalRowIndex.oldCellValue = rowspanAlignCellValue;
+            } else {
+                if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(rowspanAlignCellValue)) {
+                    totalRowIndex.rowspanEnd = i + 1;
+                } else {
+                    if (totalRowIndex.rowspanEnd > 0 && totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) {
+                        CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, j, j);
+                        totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
+                    }
+
+                    totalRowIndex.rowspanStart = i + 1;
+                    totalRowIndex.rowspanEnd = i + 1;
+                    totalRowIndex.oldCellValue = rowspanAlignCellValue;
+                }
+
+                if (i == sheetSet.getWorkbookData().size() + initRow + extrai - 1) {
+                    if (totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) {
+                        CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, j, j);
+                        totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
+                    }
+                }
+            }
+            totalRowIndexMap.put(sheetSet.getSheetData().useField.get(j).getName(), totalRowIndex);
+        }
+
+        return cellValue;
+    }
+
+    /**
+     * 加入排除行
+     */
+    private void addOccupyRow(TotalRowIndex totalRowIndex, List<Integer> occupyRows) {
+        int rowspan = totalRowIndex.rowspanEnd - totalRowIndex.rowspanStart;
+        if (rowspan > 1) {
+            for (int rs = 1; rs <= rowspan; rs++) {
+                int rsv = totalRowIndex.rowspanStart + rs;
+                if (!occupyRows.contains(rsv)) {
+                    occupyRows.add(rsv);
+                }
+            }
+        }
+    }
+
+    /**
      * 计算功能
      */
     private boolean calculation(
             int i,
+            int initRow,
             int extrai,
             Sheet sheetModel,
             SheetSet sheetSet,
@@ -416,12 +571,15 @@ public class ExcelExport {
             Map<String, TotalRowIndex> totalRowIndexMap,
             List<Integer> totalColumnIndexs,
             List<Integer> occupyRows
-    ) throws IllegalAccessException {
+    ) {
         if (referenceField != null) {
             TotalRowIndex totalRowIndex = totalRowIndexMap.get(referenceField.getName());
-            if ((i - extrai + 1) < sheetSet.getWorkbookData().size()) {
-                Object oldcv = referenceField.get(sheetSet.getWorkbookData().get(i - extrai));
-                Object cv = referenceField.get(sheetSet.getWorkbookData().get(i - extrai + 1));
+            if ((i - initRow - extrai + 1) < sheetSet.getWorkbookData().size()) {
+                String oldcv = totalRowIndex.oldCellValue;
+                String cv = ExcelDisposeUtil.correspondingValue(
+                        referenceField, sheetSet.getWorkbookData().get(i - initRow - extrai + 1), sheetSet.getIsGetMethodFieldValue(),
+                        referenceField.getAnnotation(ExcelField.class).dateType(),
+                        referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
                 if (oldcv != null && !oldcv.equals(cv)) {
                     if (this.calculationDispose(
                             i,
@@ -438,6 +596,7 @@ public class ExcelExport {
                         if (calculation.getSpanFieldNames() != null && calculation.getSpanFieldNames().size() > 0) {
                             this.againSpan(
                                     i,
+                                    initRow,
                                     extrai,
                                     sheetModel,
                                     sheetSet,
@@ -464,6 +623,7 @@ public class ExcelExport {
                     if (calculation.getSpanFieldNames() != null && calculation.getSpanFieldNames().size() > 0) {
                         this.againSpan(
                                 i,
+                                initRow,
                                 extrai,
                                 sheetModel,
                                 sheetSet,
@@ -535,7 +695,13 @@ public class ExcelExport {
                                 rs = rs + 1;
                             }
                             if (!occupyRows.contains(rs)) {
-                                sb.append(colString).append(rs + 1).append(":").append(colString).append(occupy).append(",");
+                                boolean rowspan = sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspan();
+                                int o = occupy;
+                                if (rowspan) {
+                                    o = rs + 1;
+                                }
+                                sb.append(colString).append(rs + 1).append(":").append(colString).append(o).append(",");
+
                                 int occupyi = occupy + 1;
                                 if (occupyi <= rowspanEnd) {
                                     if (occupyi > rs) {
@@ -552,7 +718,12 @@ public class ExcelExport {
                         sb.delete(sb.length() - 1, sb.length());
                         sumString = "SUM(" + sb.toString() + ")";
                     } else {
-                        sumString = "SUM(" + colString + (rowspanStart + 1) + ":" + colString + (rowspanEnd + 1) + ")";
+                        boolean rowspan = sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspan();
+                        int o = rowspanEnd;
+                        if (rowspan) {
+                            o = rowspanStart;
+                        }
+                        sumString = "SUM(" + colString + (rowspanStart + 1) + ":" + colString + (o + 1) + ")";
                     }
                     cell.setCellFormula(sumString);
                 }
@@ -581,17 +752,21 @@ public class ExcelExport {
      */
     private void againSpan(
             int i,
+            int initRow,
             int extrai,
             Sheet sheetModel,
             SheetSet sheetSet,
             List<Field> spanFieldNames,
             Map<String, TotalRowIndex> totalRowIndexMap
-    ) throws IllegalAccessException {
+    ) {
         for (Field field : spanFieldNames) {
             if (field != null) {
-                if ((i - extrai + 1) < sheetSet.getWorkbookData().size()) {
-                    Object oldcv = field.get(sheetSet.getWorkbookData().get(i - extrai));
-                    Object cv = field.get(sheetSet.getWorkbookData().get(i - extrai + 1));
+                if ((i - initRow - extrai + 1) < sheetSet.getWorkbookData().size()) {
+                    String oldcv = totalRowIndexMap.get(field.getName()).oldCellValue;
+                    String cv = ExcelDisposeUtil.correspondingValue(
+                            field, sheetSet.getWorkbookData().get(i - initRow - extrai + 1), sheetSet.getIsGetMethodFieldValue(),
+                            field.getAnnotation(ExcelField.class).dateType(),
+                            field.getAnnotation(ExcelField.class).decimalAfterDigit());
                     if (oldcv != null && !oldcv.equals(cv)) {
                         totalRowIndexMap.get(field.getName()).rowspanEnd = totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
                     }
@@ -623,25 +798,27 @@ public class ExcelExport {
      * 额外数据新增开始行数
      */
     private int getInitRow(Sheet sheetModel, List<ExtraRowData> extraRowData, int initRow) {
-        if (this.getContainCreateRow(extraRowData, initRow)) {
-            Row row = sheetModel.createRow(initRow);
-            Cell cell = row.createCell(0);
-            cell.setCellValue("");
+        ExtraRowData erd = null;
+        for (ExtraRowData e : extraRowData) {
+            if (e != null && e.getRowNumber() != null && e.getRowNumber() == initRow && e.getIsNewRow()) {
+                erd = e;
+            }
+        }
+        if (erd != null) {
+            Row row = sheetModel.getRow(initRow);
+            if (row == null) {
+                row = sheetModel.createRow(initRow);
+            }
+            for (ExtraCellData ecd : erd.getExtraCellData()) {
+                Cell cell = row.getCell(ecd.getCellNumber());
+                if (cell == null) {
+                    cell = row.createCell(ecd.getCellNumber());
+                }
+                this.setCellValue(cell, ecd);
+            }
             initRow = initRow + 1;
             return this.getInitRow(sheetModel, extraRowData, initRow);
         }
         return initRow;
-    }
-
-    /**
-     * 额外数据是否含该行
-     */
-    private boolean getContainCreateRow(List<ExtraRowData> extraRowData, int containRow) {
-        for (ExtraRowData erd : extraRowData) {
-            if (erd != null && erd.getRowNumber() != null && erd.getRowNumber() == containRow && erd.getIsNewRow()) {
-                return true;
-            }
-        }
-        return false;
     }
 }

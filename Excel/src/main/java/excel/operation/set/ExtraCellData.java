@@ -103,7 +103,7 @@ public class ExtraCellData {
      * 列号
      */
     public ExtraCellData setCellNumber(Integer cellNumber) {
-        this.cellNumber = cellNumber;
+        this.cellNumber = cellNumber - 1;
         return this;
     }
 
