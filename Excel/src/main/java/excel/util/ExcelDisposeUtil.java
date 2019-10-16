@@ -11,7 +11,6 @@ import excel.operation.set.SheetData;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -142,44 +141,6 @@ public class ExcelDisposeUtil {
     }
 
     /**
-     * 匹配对象中属性的值
-     *
-     * @param type              字段
-     * @param obj               对象
-     * @param dateType          日期格式
-     * @param decimalAfterDigit 保留小数
-     * @return 处理后的值
-     */
-    public static String correspondingValue(Object obj, Type type, DateType dateType, int decimalAfterDigit) {
-        try {
-            //定义一个取对象中get方法的对象
-            String value;
-            if (obj == null) {
-                value = null;
-            } else if (obj instanceof Date && !(type == String.class)) {
-                value = DateDispose.formatting_Date((Date) obj, dateType);
-            } else if (TextDispose.isDouble(obj.toString())) {
-                StringBuilder sb = new StringBuilder("#0.");
-                if (decimalAfterDigit > 0) {
-                    for (int i = 0; i < decimalAfterDigit; i++) {
-                        sb.append("0");
-                    }
-                } else {
-                    sb.append("000");
-                }
-                DecimalFormat df = new DecimalFormat(sb.toString());
-                BigDecimal bigDecimal = new BigDecimal(String.valueOf(obj));
-                value = df.format(bigDecimal);
-            } else {
-                value = obj.toString();
-            }
-            return value;
-        } catch (Exception e) {
-            throw new ExcelOperateException("诊断：Excel中数据格式转换错误！", e);
-        }
-    }
-
-    /**
      * 对象和Excel有关的属性List获取
      *
      * @param tClass 类型
@@ -196,7 +157,7 @@ public class ExcelDisposeUtil {
                     excelFields[field.getAnnotation(ExcelField.class).order() - 1] = field;
                 }
             }
-            if (excelFields != null && excelFields.length > 0) {
+            if (excelFields.length > 0) {
                 for (Field field : excelFields) {
                     if (field != null) {
                         fieldList.add(field);
