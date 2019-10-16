@@ -34,8 +34,14 @@ public class ExcelOperate {
     /**
      * 文档对象
      */
-    public Workbook workbook;
+    private Workbook workbook;
 
+    /**
+     * 文档对象
+     */
+    public Workbook getWorkbook() {
+        return workbook;
+    }
 
     public ExcelOperate(String documentPath, boolean isGetMethodFieldValue) throws ExcelOperateException, IOException {
         this.path = documentPath;
@@ -43,9 +49,9 @@ public class ExcelOperate {
             String prefix = this.path.substring(this.path.lastIndexOf(".") + 1);
             this.isGetMethodFieldValue = isGetMethodFieldValue;
             if ("xlsx".equals(prefix)) {
-                workbook = new XSSFWorkbook(new FileInputStream(new File(this.path)));
+                this.workbook = new XSSFWorkbook(new FileInputStream(new File(this.path)));
             } else if ("xls".equals(prefix)) {
-                workbook = new HSSFWorkbook(new FileInputStream(new File(this.path)));
+                this.workbook = new HSSFWorkbook(new FileInputStream(new File(this.path)));
             } else {
                 throw new ExcelOperateException("诊断：传入文档格式不正确！", new IOException());
             }
@@ -65,7 +71,7 @@ public class ExcelOperate {
         int result = 0;
         if (TextDispose.isNotEmpty(sheetName)) {
             List<Field> fieldList = ExcelDisposeUtil.getFieldList(obj.getClass());
-            if (fieldList != null && fieldList.size() > 0) {
+            if (fieldList.size() > 0) {
                 Sheet sheet = workbook.getSheet(sheetName);
                 result = sheet.getLastRowNum() + 1;
                 Row row = sheet.createRow(result);
@@ -168,7 +174,7 @@ public class ExcelOperate {
         try {
             if (TextDispose.isNotEmpty(path)) {
                 FileOutputStream out = new FileOutputStream(this.path);
-                if (workbook != null) {
+                if (this.workbook != null) {
                     workbook.write(out);
                 }
                 out.close();
@@ -183,7 +189,7 @@ public class ExcelOperate {
     //------------------------------------------------------------------------------------------------------------------除了数据操作外的方法
     public void destroy() {
         try {
-            if (workbook != null) {
+            if (this.workbook != null) {
                 workbook.close();
             }
         } catch (IOException e) {
