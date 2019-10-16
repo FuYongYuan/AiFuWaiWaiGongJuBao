@@ -36,4 +36,9 @@ public class TotalRowIndex {
      */
     public int columnNo;
 
+    /**
+     * 接下来是否会合并
+     */
+    public boolean nextRowspan;
+
 }

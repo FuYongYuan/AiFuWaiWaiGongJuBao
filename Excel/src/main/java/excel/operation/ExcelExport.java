@@ -193,6 +193,7 @@ public class ExcelExport {
                                     sheetModel,
                                     sheetSet,
                                     sheetSet.getFunction().getTotalAll(),
+                                    totalRowIndexMap,
                                     sheetSet.getSheetData().totalAllColumnIndex,
                                     occupyRows
                             );
@@ -205,29 +206,9 @@ public class ExcelExport {
                             if (erd != null) {
                                 if (erd.getIsMaxRowNumber()) {
                                     erd.setRowNumber(sheetModel.getLastRowNum() + 2);
-                                    Row row = sheetModel.getRow(erd.getRowNumber());
-                                    if (row == null) {
-                                        row = sheetModel.createRow(erd.getRowNumber());
-                                    }
-                                    for (ExtraCellData ecd : erd.getExtraCellData()) {
-                                        Cell cell = row.getCell(ecd.getCellNumber());
-                                        if (cell == null) {
-                                            cell = row.createCell(ecd.getCellNumber());
-                                        }
-                                        this.setCellValue(cell, ecd);
-                                    }
+                                    this.setExtraData(sheetModel, erd);
                                 } else if (erd.getRowNumber() > sheetModel.getLastRowNum()) {
-                                    Row row = sheetModel.getRow(erd.getRowNumber());
-                                    if (row == null) {
-                                        row = sheetModel.createRow(erd.getRowNumber());
-                                    }
-                                    for (ExtraCellData ecd : erd.getExtraCellData()) {
-                                        Cell cell = row.getCell(ecd.getCellNumber());
-                                        if (cell == null) {
-                                            cell = row.createCell(ecd.getCellNumber());
-                                        }
-                                        this.setCellValue(cell, ecd);
-                                    }
+                                    this.setExtraData(sheetModel, erd);
                                 }
                             }
                         }
@@ -400,6 +381,14 @@ public class ExcelExport {
 
         //跨行处理
         if (sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspan()) {
+            String cv = null;
+            int next = i - initRow - extrai + 1;
+            if (next < sheetSet.getWorkbookData().size()) {
+                cv = ExcelDisposeUtil.correspondingValue(
+                        sheetSet.getSheetData().useField.get(j), sheetSet.getWorkbookData().get(next), sheetSet.getIsGetMethodFieldValue(),
+                        sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).dateType(),
+                        sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).decimalAfterDigit());
+            }
             TotalRowIndex totalRowIndex = totalRowIndexMap.get(sheetSet.getSheetData().useField.get(j).getName());
             if (totalRowIndex == null) {
                 totalRowIndex = new TotalRowIndex();
@@ -430,6 +419,12 @@ public class ExcelExport {
                     }
                 }
             }
+            totalRowIndex.nextRowspan =
+                    sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspan()
+                            && rowspanAlignCellValue != null
+                            && !rowspanAlignCellValue.equals(cv)
+                            && ((totalRowIndex.rowspanEnd > 0 && totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) || (i == sheetSet.getWorkbookData().size() + initRow + extrai - 1))
+            ;
             totalRowIndexMap.put(sheetSet.getSheetData().useField.get(j).getName(), totalRowIndex);
         }
 
@@ -465,6 +460,7 @@ public class ExcelExport {
                             sheetModel,
                             sheetSet,
                             calculation,
+                            totalRowIndexMap,
                             totalColumnIndexs,
                             occupyRows
                     )) {
@@ -493,6 +489,7 @@ public class ExcelExport {
                         sheetModel,
                         sheetSet,
                         calculation,
+                        totalRowIndexMap,
                         totalColumnIndexs,
                         occupyRows
                 )) {
@@ -525,6 +522,7 @@ public class ExcelExport {
             Sheet sheetModel,
             SheetSet sheetSet,
             Function.Builder calculation,
+            Map<String, TotalRowIndex> totalRowIndexMap,
             List<Integer> totalColumnIndexs,
             List<Integer> occupyRows
     ) {
@@ -538,6 +536,8 @@ public class ExcelExport {
                 Cell cell;
 
                 boolean isDeviation = false;
+
+                TotalRowIndex totalRowIndex = totalRowIndexMap.get(sheetSet.getSheetData().useField.get(j).getName());
 
                 Integer nameValue = calculation.getCalculationFieldNameAndOrder().get(sheetSet.getSheetData().useField.get(j).getName());
                 Integer annotationValue = calculation.getCalculationFieldNameAndOrder().get(sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).columnName());
@@ -572,11 +572,25 @@ public class ExcelExport {
                                 rs = rs + 1;
                             }
                             if (!occupyRows.contains(rs)) {
-                                boolean rowspan = sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspan();
+
                                 int o = occupy;
-                                if (rowspan) {
+                                int run = 0;
+                                if (sheetModel.getNumMergedRegions() > 0) {
+                                    if (sheetModel.getMergedRegions().size() > 0) {
+                                        run = 1;
+                                        for (CellRangeAddress cellAddresses : sheetModel.getMergedRegions()) {
+                                            if (cellAddresses.isInRange(rs, j)) {
+                                                o = rs + 1;
+                                                run = 2;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (run == 0 && totalRowIndex != null && totalRowIndex.nextRowspan) {
                                     o = rs + 1;
                                 }
+
                                 sb.append(colString).append(rs + 1).append(":").append(colString).append(o).append(",");
 
                                 int occupyi = occupy + 1;
@@ -595,12 +609,11 @@ public class ExcelExport {
                         sb.delete(sb.length() - 1, sb.length());
                         sumString = "SUM(" + sb.toString() + ")";
                     } else {
-                        boolean rowspan = sheetSet.getSheetData().useField.get(j).getAnnotation(ExcelField.class).rowspan();
-                        int o = rowspanEnd;
-                        if (rowspan) {
-                            o = rowspanStart;
+                        int r = rowspanEnd;
+                        if (totalRowIndex != null && totalRowIndex.nextRowspan) {
+                            r = rowspanStart;
                         }
-                        sumString = "SUM(" + colString + (rowspanStart + 1) + ":" + colString + (o + 1) + ")";
+                        sumString = "SUM(" + colString + (rowspanStart + 1) + ":" + colString + (r + 1) + ")";
                     }
                     cell.setCellFormula(sumString);
                 }
@@ -676,6 +689,7 @@ public class ExcelExport {
         for (ExtraRowData e : extraRowData) {
             if (e != null && e.getRowNumber() != null && e.getRowNumber() == initRow && e.getIsNewRow()) {
                 erd = e;
+                break;
             }
         }
         if (erd != null) {
@@ -694,5 +708,22 @@ public class ExcelExport {
             return this.getInitRow(sheetModel, extraRowData, initRow);
         }
         return initRow;
+    }
+
+    /**
+     * 赋值额外数据
+     */
+    private void setExtraData(Sheet sheetModel, ExtraRowData erd) {
+        Row row = sheetModel.getRow(erd.getRowNumber());
+        if (row == null) {
+            row = sheetModel.createRow(erd.getRowNumber());
+        }
+        for (ExtraCellData ecd : erd.getExtraCellData()) {
+            Cell cell = row.getCell(ecd.getCellNumber());
+            if (cell == null) {
+                cell = row.createCell(ecd.getCellNumber());
+            }
+            this.setCellValue(cell, ecd);
+        }
     }
 }
