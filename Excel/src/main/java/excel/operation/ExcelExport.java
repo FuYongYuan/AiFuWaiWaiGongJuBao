@@ -56,12 +56,19 @@ public class ExcelExport {
                     //创建页签并给页签命名
                     Sheet sheetModel = this.workbook.createSheet(sheetSet.getWorkbookName());
                     //获取要执行的对象中属于Excel的字段
-                    ExcelDisposeUtil.initialization(sheetSet.getFunction(), sheetSet.getSheetData(), sheetSet.getDataClass());
+                    ExcelDisposeUtil.initialization(sheetSet);
                     if (sheetSet.getSheetData().useField != null && sheetSet.getSheetData().useField.size() > 0) {
                         //初始化行数
                         int initRow = 0;
                         if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
-                            initRow = this.getInitRow(sheetModel, sheetSet.getExtraRowData(), initRow);
+                            initRow = this.getInitRow(sheetModel, sheetSet.getExtraRowData(), initRow, sheetSet.getStyle());
+                        }
+                        //初始化样式
+                        if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
+                            sheetSet.getStyle().setTitleBorder(sheetSet.getStyle().getContextBorder());
+                        }
+                        if (sheetSet.getStyle().getContextBorderColor() != null) {
+                            sheetSet.getStyle().setTitleBorderColor(sheetSet.getStyle().getContextBorderColor());
                         }
                         //设置当前页签的第一行
                         Row row = sheetModel.createRow(initRow);
@@ -75,7 +82,7 @@ public class ExcelExport {
                             //对应单元格的标题名
                             cell.setCellValue(sheetSet.getSheetData().useField.get(i).getAnnotation(ExcelField.class).columnName());
                             //列样式记录
-                            sheetSet.getSheetData().cellStyleMap.put(sheetSet.getSheetData().useField.get(i).getName(), this.setFormat(sheetSet.getSheetData().useField.get(i)));
+                            sheetSet.getSheetData().cellStyleMap.put(sheetSet.getSheetData().useField.get(i).getName(), this.setFormat(sheetSet.getSheetData().useField.get(i), sheetSet.getStyle()));
 
 
                             if (sheetSet.getSheetData().useField.get(i).getAnnotation(ExcelField.class).columnWidth() > 0) {
@@ -206,9 +213,9 @@ public class ExcelExport {
                             if (erd != null) {
                                 if (erd.getIsMaxRowNumber()) {
                                     erd.setRowNumber(sheetModel.getLastRowNum() + 2);
-                                    this.setExtraData(sheetModel, erd);
+                                    this.setExtraData(sheetModel, erd, sheetSet.getStyle());
                                 } else if (erd.getRowNumber() > sheetModel.getLastRowNum()) {
-                                    this.setExtraData(sheetModel, erd);
+                                    this.setExtraData(sheetModel, erd, sheetSet.getStyle());
                                 }
                             }
                         }
@@ -249,7 +256,7 @@ public class ExcelExport {
     /**
      * 是否进行货币格式化
      */
-    private CellStyle setFormat(Field field) {
+    private CellStyle setFormat(Field field, Style globalStyle) {
         CellStyle cellStyle = this.workbook.createCellStyle();
 
         if (field.getAnnotation(ExcelField.class).isMoney()) {
@@ -284,6 +291,49 @@ public class ExcelExport {
         cellStyle.setAlignment(field.getAnnotation(ExcelField.class).horizontalAlignment());
         //垂直位置
         cellStyle.setVerticalAlignment(field.getAnnotation(ExcelField.class).verticalAlignment());
+        //边框
+        if (globalStyle.getContextBorder() != null && globalStyle.getContextBorder() != BorderStyle.NONE) {
+            cellStyle.setBorderTop(globalStyle.getContextBorder());
+            cellStyle.setBorderBottom(globalStyle.getContextBorder());
+            cellStyle.setBorderLeft(globalStyle.getContextBorder());
+            cellStyle.setBorderRight(globalStyle.getContextBorder());
+
+            if (globalStyle.getContextBorderColor() != null) {
+                cellStyle.setTopBorderColor(globalStyle.getContextBorderColor().getIndex());
+                cellStyle.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex());
+                cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
+                cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
+            }
+        } else {
+            if (field.getAnnotation(ExcelField.class).border() != BorderStyle.NONE) {
+                cellStyle.setBorderTop(field.getAnnotation(ExcelField.class).border());
+                cellStyle.setBorderBottom(field.getAnnotation(ExcelField.class).border());
+                cellStyle.setBorderLeft(field.getAnnotation(ExcelField.class).border());
+                cellStyle.setBorderRight(field.getAnnotation(ExcelField.class).border());
+
+                cellStyle.setTopBorderColor(field.getAnnotation(ExcelField.class).borderColor().getIndex());
+                cellStyle.setBottomBorderColor(field.getAnnotation(ExcelField.class).borderColor().getIndex());
+                cellStyle.setLeftBorderColor(field.getAnnotation(ExcelField.class).borderColor().getIndex());
+                cellStyle.setRightBorderColor(field.getAnnotation(ExcelField.class).borderColor().getIndex());
+            } else {
+                if (field.getAnnotation(ExcelField.class).borderTop() != BorderStyle.NONE) {
+                    cellStyle.setBorderTop(field.getAnnotation(ExcelField.class).borderTop());
+                    cellStyle.setTopBorderColor(field.getAnnotation(ExcelField.class).borderTopColor().getIndex());
+                }
+                if (field.getAnnotation(ExcelField.class).borderBottom() != BorderStyle.NONE) {
+                    cellStyle.setBorderBottom(field.getAnnotation(ExcelField.class).borderBottom());
+                    cellStyle.setBottomBorderColor(field.getAnnotation(ExcelField.class).borderBottomColor().getIndex());
+                }
+                if (field.getAnnotation(ExcelField.class).borderLeft() != BorderStyle.NONE) {
+                    cellStyle.setBorderLeft(field.getAnnotation(ExcelField.class).borderLeft());
+                    cellStyle.setLeftBorderColor(field.getAnnotation(ExcelField.class).borderLeftColor().getIndex());
+                }
+                if (field.getAnnotation(ExcelField.class).borderRight() != BorderStyle.NONE) {
+                    cellStyle.setBorderRight(field.getAnnotation(ExcelField.class).borderRight());
+                    cellStyle.setRightBorderColor(field.getAnnotation(ExcelField.class).borderRightColor().getIndex());
+                }
+            }
+        }
 
         return cellStyle;
     }
@@ -291,7 +341,7 @@ public class ExcelExport {
     /**
      * 赋值
      */
-    private void setCellValue(Cell cell, ExtraCellData ecd) {
+    private void setCellValue(Cell cell, ExtraCellData ecd, Style globalStyle) {
         //结果转换
         if (ecd != null) {
             //结果转换
@@ -306,7 +356,7 @@ public class ExcelExport {
             } else {
                 cell.setCellValue(ecd.getCellValue().toString());
             }
-            cell.setCellStyle(this.setFormat(ecd));
+            cell.setCellStyle(this.setFormat(ecd, globalStyle));
         } else {
             cell.setCellValue("");
         }
@@ -315,7 +365,7 @@ public class ExcelExport {
     /**
      * 是否进行货币格式化
      */
-    private CellStyle setFormat(ExtraCellData ecd) {
+    private CellStyle setFormat(ExtraCellData ecd, Style globalStyle) {
         CellStyle cellStyle = this.workbook.createCellStyle();
 
         if (ecd.getIsMoney()) {
@@ -350,6 +400,49 @@ public class ExcelExport {
         cellStyle.setAlignment(ecd.getHorizontalAlignment());
         //垂直位置
         cellStyle.setVerticalAlignment(ecd.getVerticalAlignment());
+        //边框
+        if (globalStyle.getContextBorder() != null && globalStyle.getContextBorder() != BorderStyle.NONE) {
+            cellStyle.setBorderTop(globalStyle.getContextBorder());
+            cellStyle.setBorderBottom(globalStyle.getContextBorder());
+            cellStyle.setBorderLeft(globalStyle.getContextBorder());
+            cellStyle.setBorderRight(globalStyle.getContextBorder());
+
+            if (globalStyle.getContextBorderColor() != null) {
+                cellStyle.setTopBorderColor(globalStyle.getContextBorderColor().getIndex());
+                cellStyle.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex());
+                cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
+                cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
+            }
+        } else {
+            if (ecd.getBorder() != BorderStyle.NONE) {
+                cellStyle.setBorderTop(ecd.getBorder());
+                cellStyle.setBorderBottom(ecd.getBorder());
+                cellStyle.setBorderLeft(ecd.getBorder());
+                cellStyle.setBorderRight(ecd.getBorder());
+
+                cellStyle.setTopBorderColor(ecd.getBorderColor().getIndex());
+                cellStyle.setBottomBorderColor(ecd.getBorderColor().getIndex());
+                cellStyle.setLeftBorderColor(ecd.getBorderColor().getIndex());
+                cellStyle.setRightBorderColor(ecd.getBorderColor().getIndex());
+            } else {
+                if (ecd.getBorderTop() != BorderStyle.NONE) {
+                    cellStyle.setBorderTop(ecd.getBorderTop());
+                    cellStyle.setTopBorderColor(ecd.getBorderTopColor().getIndex());
+                }
+                if (ecd.getBorderBottom() != BorderStyle.NONE) {
+                    cellStyle.setBorderBottom(ecd.getBorderBottom());
+                    cellStyle.setBottomBorderColor(ecd.getBorderBottomColor().getIndex());
+                }
+                if (ecd.getBorderLeft() != BorderStyle.NONE) {
+                    cellStyle.setBorderLeft(ecd.getBorderLeft());
+                    cellStyle.setLeftBorderColor(ecd.getBorderLeftColor().getIndex());
+                }
+                if (ecd.getBorderRight() != BorderStyle.NONE) {
+                    cellStyle.setBorderRight(ecd.getBorderRight());
+                    cellStyle.setRightBorderColor(ecd.getBorderRightColor().getIndex());
+                }
+            }
+        }
 
         return cellStyle;
     }
@@ -558,6 +651,12 @@ public class ExcelExport {
                 }
 
                 //设置样式
+                if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
+                    calculation.setBorder(sheetSet.getStyle().getContextBorder());
+                }
+                if (sheetSet.getStyle().getContextBorderColor() != null) {
+                    calculation.setBorderColor(sheetSet.getStyle().getContextBorderColor());
+                }
                 cell.setCellStyle(calculation.getStyle());
 
                 //需要计算的列
@@ -623,6 +722,12 @@ public class ExcelExport {
                         //创建列
                         cell = nextRow.createCell(j);
                         //设置样式
+                        if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
+                            calculation.setBorder(sheetSet.getStyle().getContextBorder());
+                        }
+                        if (sheetSet.getStyle().getContextBorderColor() != null) {
+                            calculation.setBorderColor(sheetSet.getStyle().getContextBorderColor());
+                        }
                         cell.setCellStyle(calculation.getStyle());
                     }
                 }
@@ -684,7 +789,7 @@ public class ExcelExport {
     /**
      * 额外数据新增开始行数
      */
-    private int getInitRow(Sheet sheetModel, List<ExtraRowData> extraRowData, int initRow) {
+    private int getInitRow(Sheet sheetModel, List<ExtraRowData> extraRowData, int initRow, Style globalStyle) {
         ExtraRowData erd = null;
         for (ExtraRowData e : extraRowData) {
             if (e != null && e.getRowNumber() != null && e.getRowNumber() == initRow && e.getIsNewRow()) {
@@ -702,10 +807,10 @@ public class ExcelExport {
                 if (cell == null) {
                     cell = row.createCell(ecd.getCellNumber());
                 }
-                this.setCellValue(cell, ecd);
+                this.setCellValue(cell, ecd, globalStyle);
             }
             initRow = initRow + 1;
-            return this.getInitRow(sheetModel, extraRowData, initRow);
+            return this.getInitRow(sheetModel, extraRowData, initRow, globalStyle);
         }
         return initRow;
     }
@@ -713,7 +818,7 @@ public class ExcelExport {
     /**
      * 赋值额外数据
      */
-    private void setExtraData(Sheet sheetModel, ExtraRowData erd) {
+    private void setExtraData(Sheet sheetModel, ExtraRowData erd, Style globalStyle) {
         Row row = sheetModel.getRow(erd.getRowNumber());
         if (row == null) {
             row = sheetModel.createRow(erd.getRowNumber());
@@ -723,7 +828,7 @@ public class ExcelExport {
             if (cell == null) {
                 cell = row.createCell(ecd.getCellNumber());
             }
-            this.setCellValue(cell, ecd);
+            this.setCellValue(cell, ecd, globalStyle);
         }
     }
 }

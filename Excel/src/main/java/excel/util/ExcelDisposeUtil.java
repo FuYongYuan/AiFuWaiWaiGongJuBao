@@ -6,8 +6,7 @@ import enumerate.CommonlyUsedType;
 import enumerate.DateType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
-import excel.operation.set.Function;
-import excel.operation.set.SheetData;
+import excel.operation.set.SheetSet;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -23,13 +22,11 @@ import java.util.List;
 public class ExcelDisposeUtil {
     /**
      * 对象和Excel有关的属性List获取
-     *
-     * @param tClass 类型
      */
-    public static void initialization(Function function, SheetData sheetData, Class tClass) {
+    public static void initialization(SheetSet sheetSet) {
         try {
             //获取正确的要赋值的字段
-            Field[] fields = tClass.getDeclaredFields();
+            Field[] fields = sheetSet.getDataClass().getDeclaredFields();
             Field[] excelFields = new Field[fields.length];
             for (Field field : fields) {
                 if (field.getAnnotation(ExcelField.class) != null) {
@@ -40,48 +37,48 @@ public class ExcelDisposeUtil {
             if (excelFields.length > 0) {
                 for (Field field : excelFields) {
                     if (field != null) {
-                        sheetData.useField.add(field);
+                        sheetSet.getSheetData().useField.add(field);
 
-                        if ((function.getSubTotal() != null && function.getSubTotal().getReferenceFieldName() != null) &&
-                                (function.getSubTotal().getReferenceFieldName().equals(field.getName()) ||
-                                        function.getSubTotal().getReferenceFieldName().equals(field.getAnnotation(ExcelField.class).columnName()))) {
-                            sheetData.subTotalReferenceField = field;
+                        if ((sheetSet.getFunction().getSubTotal() != null && sheetSet.getFunction().getSubTotal().getReferenceFieldName() != null) &&
+                                (sheetSet.getFunction().getSubTotal().getReferenceFieldName().equals(field.getName()) ||
+                                        sheetSet.getFunction().getSubTotal().getReferenceFieldName().equals(field.getAnnotation(ExcelField.class).columnName()))) {
+                            sheetSet.getSheetData().subTotalReferenceField = field;
                         }
 
-                        if ((function.getTotal() != null && function.getTotal().getReferenceFieldName() != null) &&
-                                (function.getTotal().getReferenceFieldName().equals(field.getName()) ||
-                                        function.getTotal().getReferenceFieldName().equals(field.getAnnotation(ExcelField.class).columnName()))) {
-                            sheetData.totalReferenceField = field;
+                        if ((sheetSet.getFunction().getTotal() != null && sheetSet.getFunction().getTotal().getReferenceFieldName() != null) &&
+                                (sheetSet.getFunction().getTotal().getReferenceFieldName().equals(field.getName()) ||
+                                        sheetSet.getFunction().getTotal().getReferenceFieldName().equals(field.getAnnotation(ExcelField.class).columnName()))) {
+                            sheetSet.getSheetData().totalReferenceField = field;
                         }
 
-                        if ((function.getSubTotal() != null && function.getSubTotal().getCalculationFieldNameAndOrder() != null) &&
-                                (function.getSubTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null ||
-                                        function.getSubTotal().getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName()) != null)) {
-                            sheetData.subTotalColumnIndex.add(field.getAnnotation(ExcelField.class).order());
+                        if ((sheetSet.getFunction().getSubTotal() != null && sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder() != null) &&
+                                (sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null ||
+                                        sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName()) != null)) {
+                            sheetSet.getSheetData().subTotalColumnIndex.add(field.getAnnotation(ExcelField.class).order());
                         }
 
-                        if ((function.getTotal() != null && function.getTotal().getCalculationFieldNameAndOrder() != null) &&
-                                (function.getTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null ||
-                                        function.getTotal().getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName()) != null)) {
-                            sheetData.totalColumnIndex.add(field.getAnnotation(ExcelField.class).order());
+                        if ((sheetSet.getFunction().getTotal() != null && sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder() != null) &&
+                                (sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null ||
+                                        sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName()) != null)) {
+                            sheetSet.getSheetData().totalColumnIndex.add(field.getAnnotation(ExcelField.class).order());
                         }
 
-                        if ((function.getTotalAll() != null) &&
-                                (function.getTotalAll().getCalculationFieldNameAndOrder().get(field.getName()) != null ||
-                                        function.getTotalAll().getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName()) != null)) {
-                            sheetData.totalAllColumnIndex.add(field.getAnnotation(ExcelField.class).order());
+                        if ((sheetSet.getFunction().getTotalAll() != null) &&
+                                (sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(field.getName()) != null ||
+                                        sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName()) != null)) {
+                            sheetSet.getSheetData().totalAllColumnIndex.add(field.getAnnotation(ExcelField.class).order());
                         }
 
-                        if ((function.getSubTotal() != null && function.getSubTotal().getSpanFieldNames() != null) &&
-                                (function.getSubTotal().getSpanFieldNames().contains(field.getName()) ||
-                                        function.getSubTotal().getSpanFieldNames().contains(field.getAnnotation(ExcelField.class).columnName()))) {
-                            sheetData.subTotalSpanField.add(field);
+                        if ((sheetSet.getFunction().getSubTotal() != null && sheetSet.getFunction().getSubTotal().getSpanFieldNames() != null) &&
+                                (sheetSet.getFunction().getSubTotal().getSpanFieldNames().contains(field.getName()) ||
+                                        sheetSet.getFunction().getSubTotal().getSpanFieldNames().contains(field.getAnnotation(ExcelField.class).columnName()))) {
+                            sheetSet.getSheetData().subTotalSpanField.add(field);
                         }
 
-                        if ((function.getTotal() != null && function.getTotal().getSpanFieldNames() != null) &&
-                                (function.getTotal().getSpanFieldNames().contains(field.getName()) ||
-                                        function.getTotal().getSpanFieldNames().contains(field.getAnnotation(ExcelField.class).columnName()))) {
-                            sheetData.totalSpanField.add(field);
+                        if ((sheetSet.getFunction().getTotal() != null && sheetSet.getFunction().getTotal().getSpanFieldNames() != null) &&
+                                (sheetSet.getFunction().getTotal().getSpanFieldNames().contains(field.getName()) ||
+                                        sheetSet.getFunction().getTotal().getSpanFieldNames().contains(field.getAnnotation(ExcelField.class).columnName()))) {
+                            sheetSet.getSheetData().totalSpanField.add(field);
                         }
                     }
                 }

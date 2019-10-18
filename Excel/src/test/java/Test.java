@@ -4,6 +4,7 @@ import excel.operation.ExcelExport;
 import excel.operation.set.ExtraCellData;
 import excel.operation.set.ExtraRowData;
 import excel.operation.set.SheetSet;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -175,7 +176,7 @@ public class Test {
 //                omap.put("bDT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
 //            }
             if ((i / 5) % 2 == 0) {
-                omap.put("bDT", 1.1);
+                omap.put("bDT", 111111.111111);
             } else {
 //                omap.put("bDT", 2.2);
             }
@@ -288,6 +289,13 @@ public class Test {
                     .setTitleBold(true)
                     .setTitleAlignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER)
             ;
+
+            //设置整体边框
+            sheetSet.getStyle()
+                    .setContextBorder(BorderStyle.THIN)
+                    .setContextBorderColor(IndexedColors.BLACK)
+            ;
+
             //小计 - 建造者模式
             sheetSet.getFunction().getSubTotal()
                     .setReferenceFieldName("整型")
@@ -297,6 +305,7 @@ public class Test {
                     .setExplainAndOrder("小计：", 2)
                     .setStyleColor(IndexedColors.CORAL)
                     .setStyleBold(true)
+                    .setStyleMoneyFormat(2)
                     .setAlignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER)
             ;
             //总计 - 方法写法

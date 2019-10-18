@@ -282,6 +282,92 @@ public class Function {
             style.setDataFormat(this.format.getFormat(sb.toString()));
             return this;
         }
+
+        /**
+         * 边框
+         */
+        public Function.Builder setBorder(BorderStyle borderStyle) {
+            style.setBorderTop(borderStyle);
+            style.setBorderBottom(borderStyle);
+            style.setBorderLeft(borderStyle);
+            style.setBorderRight(borderStyle);
+            return this;
+        }
+
+        /**
+         * 边框颜色
+         */
+        public Function.Builder setBorderColor(IndexedColors indexedColors) {
+            style.setTopBorderColor(indexedColors.getIndex());
+            style.setBottomBorderColor(indexedColors.getIndex());
+            style.setLeftBorderColor(indexedColors.getIndex());
+            style.setRightBorderColor(indexedColors.getIndex());
+            return this;
+        }
+
+        /**
+         * 上边框
+         */
+        public Function.Builder setBorderTop(BorderStyle borderStyle) {
+            style.setBorderTop(borderStyle);
+            return this;
+        }
+
+        /**
+         * 上边框颜色
+         */
+        public Function.Builder setBorderTopColor(IndexedColors indexedColors) {
+            style.setTopBorderColor(indexedColors.getIndex());
+            return this;
+        }
+
+        /**
+         * 下边框
+         */
+        public Function.Builder setBorderBottom(BorderStyle borderStyle) {
+            style.setBorderBottom(borderStyle);
+            return this;
+        }
+
+        /**
+         * 下边框颜色
+         */
+        public Function.Builder setBorderBottomColor(IndexedColors indexedColors) {
+            style.setBottomBorderColor(indexedColors.getIndex());
+            return this;
+        }
+
+        /**
+         * 左边框
+         */
+        public Function.Builder setBorderLeft(BorderStyle borderStyle) {
+            style.setBorderLeft(borderStyle);
+            return this;
+        }
+
+        /**
+         * 左边框颜色
+         */
+        public Function.Builder setBorderLeftColor(IndexedColors indexedColors) {
+            style.setLeftBorderColor(indexedColors.getIndex());
+            return this;
+        }
+
+        /**
+         * 右边框
+         */
+        public Function.Builder setBorderRight(BorderStyle borderStyle) {
+            style.setBorderRight(borderStyle);
+            return this;
+        }
+
+        /**
+         * 右边框颜色
+         */
+        public Function.Builder setBorderRightColor(IndexedColors indexedColors) {
+            style.setRightBorderColor(indexedColors.getIndex());
+            return this;
+        }
     }
 
     /**

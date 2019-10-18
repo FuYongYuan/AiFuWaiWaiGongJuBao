@@ -2,7 +2,9 @@ package excel.operation.set;
 
 import enumerate.DateType;
 import excel.exception.ExcelOperateException;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 
 import java.lang.reflect.Type;
@@ -52,6 +54,11 @@ public class ExtraCellData {
     private boolean isMoney;
 
     /**
+     * 是否是中国大写钱类型
+     */
+    private boolean isChinaMoney;
+
+    /**
      * 列宽
      */
     private int columnWidth;
@@ -60,6 +67,56 @@ public class ExtraCellData {
      * 是否自动调整列宽
      */
     private boolean isAutoSize;
+
+    /**
+     * 边框
+     */
+    private BorderStyle border;
+
+    /**
+     * 边框颜色
+     */
+    private IndexedColors borderColor;
+
+    /**
+     * 上边框
+     */
+    private BorderStyle borderTop;
+
+    /**
+     * 上边框颜色
+     */
+    private IndexedColors borderTopColor;
+
+    /**
+     * 下边框
+     */
+    private BorderStyle borderBottom;
+
+    /**
+     * 下边框颜色
+     */
+    private IndexedColors borderBottomColor;
+
+    /**
+     * 左边框
+     */
+    private BorderStyle borderLeft;
+
+    /**
+     * 左边框颜色
+     */
+    private IndexedColors borderLeftColor;
+
+    /**
+     * 右边框
+     */
+    private BorderStyle borderRight;
+
+    /**
+     * 右边框颜色
+     */
+    private IndexedColors borderRightColor;
 
     /**
      * 创建
@@ -71,8 +128,19 @@ public class ExtraCellData {
                 .setHorizontalAlignment(HorizontalAlignment.LEFT)
                 .setVerticalAlignment(VerticalAlignment.CENTER)
                 .setIsMoney(false)
+                .setChinaIsMoney(false)
                 .setColumnWidth(-1)
                 .setIsAutoSize(false)
+                .setBorder(BorderStyle.NONE)
+                .setBorderColor(IndexedColors.BLACK)
+                .setBorderTop(BorderStyle.NONE)
+                .setBorderTopColor(IndexedColors.BLACK)
+                .setBorderBottom(BorderStyle.NONE)
+                .setBorderBottomColor(IndexedColors.BLACK)
+                .setBorderLeft(BorderStyle.NONE)
+                .setBorderLeftColor(IndexedColors.BLACK)
+                .setBorderRight(BorderStyle.NONE)
+                .setBorderRightColor(IndexedColors.BLACK)
                 ;
     }
 
@@ -213,6 +281,21 @@ public class ExtraCellData {
     }
 
     /**
+     * 是否是中国大写钱类型
+     */
+    public boolean getIsChinaMoney() {
+        return isChinaMoney;
+    }
+
+    /**
+     * 是否是中国大写钱类型
+     */
+    public ExtraCellData setChinaIsMoney(boolean isChinaMoney) {
+        this.isChinaMoney = isChinaMoney;
+        return this;
+    }
+
+    /**
      * 列宽
      */
     public int getColumnWidth() {
@@ -239,6 +322,156 @@ public class ExtraCellData {
      */
     public ExtraCellData setIsAutoSize(boolean isAutoSize) {
         this.isAutoSize = isAutoSize;
+        return this;
+    }
+
+    /**
+     * 边框
+     */
+    public BorderStyle getBorder() {
+        return border;
+    }
+
+    /**
+     * 边框
+     */
+    public ExtraCellData setBorder(BorderStyle border) {
+        this.border = border;
+        return this;
+    }
+
+    /**
+     * 边框颜色
+     */
+    public IndexedColors getBorderColor() {
+        return borderColor;
+    }
+
+    /**
+     * 边框颜色
+     */
+    public ExtraCellData setBorderColor(IndexedColors borderColor) {
+        this.borderColor = borderColor;
+        return this;
+    }
+
+    /**
+     * 上边框
+     */
+    public BorderStyle getBorderTop() {
+        return borderTop;
+    }
+
+    /**
+     * 上边框
+     */
+    public ExtraCellData setBorderTop(BorderStyle borderTop) {
+        this.borderTop = borderTop;
+        return this;
+    }
+
+    /**
+     * 上边框颜色
+     */
+    public IndexedColors getBorderTopColor() {
+        return borderTopColor;
+    }
+
+    /**
+     * 上边框颜色
+     */
+    public ExtraCellData setBorderTopColor(IndexedColors borderTopColor) {
+        this.borderTopColor = borderTopColor;
+        return this;
+    }
+
+    /**
+     * 下边框
+     */
+    public BorderStyle getBorderBottom() {
+        return borderBottom;
+    }
+
+    /**
+     * 下边框
+     */
+    public ExtraCellData setBorderBottom(BorderStyle borderBottom) {
+        this.borderBottom = borderBottom;
+        return this;
+    }
+
+    /**
+     * 下边框颜色
+     */
+    public IndexedColors getBorderBottomColor() {
+        return borderBottomColor;
+    }
+
+    /**
+     * 下边框颜色
+     */
+    public ExtraCellData setBorderBottomColor(IndexedColors borderBottomColor) {
+        this.borderBottomColor = borderBottomColor;
+        return this;
+    }
+
+    /**
+     * 左边框
+     */
+    public BorderStyle getBorderLeft() {
+        return borderLeft;
+    }
+
+    /**
+     * 左边框
+     */
+    public ExtraCellData setBorderLeft(BorderStyle borderLeft) {
+        this.borderLeft = borderLeft;
+        return this;
+    }
+
+    /**
+     * 左边框颜色
+     */
+    public IndexedColors getBorderLeftColor() {
+        return borderLeftColor;
+    }
+
+    /**
+     * 左边框颜色
+     */
+    public ExtraCellData setBorderLeftColor(IndexedColors borderLeftColor) {
+        this.borderLeftColor = borderLeftColor;
+        return this;
+    }
+
+    /**
+     * 右边框
+     */
+    public BorderStyle getBorderRight() {
+        return borderRight;
+    }
+
+    /**
+     * 右边框
+     */
+    public ExtraCellData setBorderRight(BorderStyle borderRight) {
+        this.borderRight = borderRight;
+        return this;
+    }
+
+    /**
+     * 右边框颜色
+     */
+    public IndexedColors getBorderRightColor() {
+        return borderRightColor;
+    }
+
+    /**
+     * 右边框颜色
+     */
+    public ExtraCellData setBorderRightColor(IndexedColors borderRightColor) {
+        this.borderRightColor = borderRightColor;
         return this;
     }
 }
