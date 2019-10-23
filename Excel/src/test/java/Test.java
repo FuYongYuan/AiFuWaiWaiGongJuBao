@@ -149,7 +149,7 @@ public class Test {
         /**
          * 在全配置下.跨行多的情况下 XSSF最多 1250 条  HSSF最多 150 条   SXSSF最多 * 条
          */
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             int ix = i / 10;
 
 //            ExcelEntity excelEntity = new ExcelEntity();
@@ -164,7 +164,7 @@ public class Test {
             Map<String, Object> omap = new HashMap<>();
             omap.put("id", i);
             omap.put("sT", "测试" + ix);
-            omap.put("iT", i / 5);
+            omap.put("iT", i / 2);
             if (i % 2 == 0) {
                 omap.put("DT", new Date());
             }
@@ -173,11 +173,15 @@ public class Test {
                 omap.put("dT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
             }
 //            if (i % 2 == 0) {
-//                omap.put("bDT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
+                omap.put("bDT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
 //            }
 //            if ((i / 5) % 2 == 0) {
 //            if (i != 50 && i != 51 && i != 70 && i != 71 && i != 72 && i != 73 && i != 77 && i != 78) {
-                omap.put("bDT", 111111.111111);
+//            if (i == 9) {
+//                omap.put("bDT", 22222.22222);
+//            } else {
+//                omap.put("bDT", 111111.111111);
+//            }
 //            }
 //            } else {
 //                omap.put("bDT", 2.2);

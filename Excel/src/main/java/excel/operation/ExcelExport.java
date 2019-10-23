@@ -464,38 +464,66 @@ public class ExcelExport {
     ) {
         //获取字段
         Field field = sheetSet.getSheetData().useField.get(j);
+        //当前数据行
+        int current = i - initRow - extrai;
         //当前的字段值
         String cellValue = ExcelDisposeUtil.correspondingValue(
-                field, sheetSet.getWorkbookData().get(i - initRow - extrai), sheetSet.getIsGetMethodFieldValue(),
+                field, sheetSet.getWorkbookData().get(current), sheetSet.getIsGetMethodFieldValue(),
                 field.getAnnotation(ExcelField.class).dateType(),
                 field.getAnnotation(ExcelField.class).decimalAfterDigit());
 
         //跨行处理
         if (field.getAnnotation(ExcelField.class).rowspan()) {
+            //上一数据行
+            int previous = current - 1;
+            //下一数据行
+            int next = current + 1;
+            //是否是最后一行
+            boolean isLast = (i == sheetSet.getWorkbookData().size() + initRow + extrai - 1);
+            //参考数据行
+            int reference = field.getAnnotation(ExcelField.class).rowspanAlignOrder() - 1;
+            //获取参考字段
+            Field referenceField = null;
+            if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() > 0) {
+                referenceField = sheetSet.getSheetData().useField.get(reference);
+            }
             //参考列值
             String rowspanAlignCellValue = cellValue;
-            if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() > 0) {
+            if (referenceField != null) {
                 rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
-                        sheetSet.getSheetData().useField.get(field.getAnnotation(ExcelField.class).rowspanAlignOrder() - 1), sheetSet.getWorkbookData().get(i - initRow - extrai), sheetSet.getIsGetMethodFieldValue(),
-                        sheetSet.getSheetData().useField.get(field.getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).dateType(),
-                        sheetSet.getSheetData().useField.get(field.getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).decimalAfterDigit());
+                        referenceField, sheetSet.getWorkbookData().get(current), sheetSet.getIsGetMethodFieldValue(),
+                        referenceField.getAnnotation(ExcelField.class).dateType(),
+                        referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
             }
             //对比列下一行值
             String cv = null;
-            int next = i - initRow - extrai + 1;
+
             if (next < sheetSet.getWorkbookData().size()) {
                 if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() == 0) {
                     cv = ExcelDisposeUtil.correspondingValue(
                             field, sheetSet.getWorkbookData().get(next), sheetSet.getIsGetMethodFieldValue(),
                             field.getAnnotation(ExcelField.class).dateType(),
                             field.getAnnotation(ExcelField.class).decimalAfterDigit());
-                } else if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() > 0) {
+                } else if (referenceField != null) {
                     cv = ExcelDisposeUtil.correspondingValue(
-                            sheetSet.getSheetData().useField.get(field.getAnnotation(ExcelField.class).rowspanAlignOrder() - 1), sheetSet.getWorkbookData().get(next), sheetSet.getIsGetMethodFieldValue(),
-                            sheetSet.getSheetData().useField.get(field.getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).dateType(),
-                            sheetSet.getSheetData().useField.get(field.getAnnotation(ExcelField.class).rowspanAlignOrder() - 1).getAnnotation(ExcelField.class).decimalAfterDigit());
+                            referenceField, sheetSet.getWorkbookData().get(next), sheetSet.getIsGetMethodFieldValue(),
+                            referenceField.getAnnotation(ExcelField.class).dateType(),
+                            referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
+                }
+            } else if (isLast) {
+                if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() == 0) {
+                    cv = ExcelDisposeUtil.correspondingValue(
+                            field, sheetSet.getWorkbookData().get(previous), sheetSet.getIsGetMethodFieldValue(),
+                            field.getAnnotation(ExcelField.class).dateType(),
+                            field.getAnnotation(ExcelField.class).decimalAfterDigit());
+                } else if (referenceField != null) {
+                    cv = ExcelDisposeUtil.correspondingValue(
+                            referenceField, sheetSet.getWorkbookData().get(previous), sheetSet.getIsGetMethodFieldValue(),
+                            referenceField.getAnnotation(ExcelField.class).dateType(),
+                            referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
                 }
             }
+            //开始计算合并
             TotalRowIndex totalRowIndex = totalRowIndexMap.get(field.getName());
             if (totalRowIndex == null) {
                 totalRowIndex = new TotalRowIndex();
@@ -520,7 +548,7 @@ public class ExcelExport {
                     totalRowIndex.oldCellValue = rowspanAlignCellValue;
                 }
 
-                if (i == sheetSet.getWorkbookData().size() + initRow + extrai - 1) {
+                if (isLast) {
                     if (totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) {
                         totalRowIndex.nextRowspan = false;
                         CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, j, j);
@@ -547,7 +575,7 @@ public class ExcelExport {
                 cellValue = null;
             } else if (
                     (totalRowIndex.oldCellValue != null && !totalRowIndex.oldCellValue.equals(cv) && existTotal && totalRowIndex.nextRowspan)
-                            || (totalRowIndex.oldCellValue != null && !totalRowIndex.oldCellValue.equals(cv) && existTotal && (i == sheetSet.getWorkbookData().size() + initRow + extrai - 1))
+                            || (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(cv) && existTotal && isLast)
             ) {
                 cellValue = null;
             } else if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(cv) && existTotal) {
@@ -577,9 +605,14 @@ public class ExcelExport {
     ) throws IllegalAccessException {
         if (referenceField != null) {
             TotalRowIndex totalRowIndex = totalRowIndexMap.get(referenceField.getName());
-            if ((i - initRow - extrai + 1) < sheetSet.getWorkbookData().size()) {
-                Object oldcv = referenceField.get(sheetSet.getWorkbookData().get(i - initRow - extrai));
-                Object cv = referenceField.get(sheetSet.getWorkbookData().get(i - initRow - extrai + 1));
+            //当前数据行
+            int current = i - initRow - extrai;
+            //下一数据行
+            int next = current + 1;
+            //判断下一行不是数据最后一行
+            if ((next) < sheetSet.getWorkbookData().size()) {
+                Object oldcv = referenceField.get(sheetSet.getWorkbookData().get(current));
+                Object cv = referenceField.get(sheetSet.getWorkbookData().get(next));
                 if (oldcv != null && !oldcv.equals(cv)) {
                     if (this.calculationDispose(
                             i,
@@ -764,9 +797,14 @@ public class ExcelExport {
     ) throws IllegalAccessException {
         for (Field field : spanFieldNames) {
             if (field != null) {
-                if ((i - initRow - extrai + 1) < sheetSet.getWorkbookData().size()) {
-                    Object oldcv = field.get(sheetSet.getWorkbookData().get(i - initRow - extrai));
-                    Object cv = field.get(sheetSet.getWorkbookData().get(i - initRow - extrai + 1));
+                //当前数据行
+                int current = i - initRow - extrai;
+                //下一数据行
+                int next = current + 1;
+                //判断下一行不是数据最后一行
+                if ((next) < sheetSet.getWorkbookData().size()) {
+                    Object oldcv = field.get(sheetSet.getWorkbookData().get(current));
+                    Object cv = field.get(sheetSet.getWorkbookData().get(next));
                     if (oldcv != null && !oldcv.equals(cv)) {
                         totalRowIndexMap.get(field.getName()).rowspanEnd = totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
                     }
