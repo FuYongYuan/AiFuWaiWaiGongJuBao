@@ -692,7 +692,7 @@ public class ExcelExport {
             for (int j = 0; j < size; j++) {
                 //创建列
                 Cell cell;
-
+                //是否偏移
                 boolean isDeviation = false;
                 //获取当前字段
                 Field field = sheetSet.getSheetData().useField.get(j);
@@ -715,18 +715,10 @@ public class ExcelExport {
                     }
                 }
 
-                //设置样式
-                if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
-                    calculation.setBorder(sheetSet.getStyle().getContextBorder());
-                }
-                if (sheetSet.getStyle().getContextBorderColor() != null) {
-                    calculation.setBorderColor(sheetSet.getStyle().getContextBorderColor());
-                }
-                cell.setCellStyle(calculation.getStyle());
-
                 //需要计算的列
                 if (totalColumnIndexs.contains(j + 1)) {
-                    String colString = CellReference.convertNumToColString(j);  //长度转成ABC列
+                    //长度转成ABC列
+                    String colString = CellReference.convertNumToColString(j);
 
                     StringBuilder sb = new StringBuilder();
                     int rs = rowspanStart;
@@ -762,21 +754,35 @@ public class ExcelExport {
                     if (!calculation.getCalculationFieldNameAndOrder().containsValue(j + 1)) {
                         //创建列
                         cell = nextRow.createCell(j);
-                        //设置样式
-                        if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
-                            calculation.setBorder(sheetSet.getStyle().getContextBorder());
-                        }
-                        if (sheetSet.getStyle().getContextBorderColor() != null) {
-                            calculation.setBorderColor(sheetSet.getStyle().getContextBorderColor());
-                        }
-                        cell.setCellStyle(calculation.getStyle());
                     }
                 }
 
-                //整行标注
-                if (j == (calculation.getExplainOrder() - 1)) {
-                    this.setCellValue(field, cell, calculation.getExplain());
+                //加入当前行额外的数据
+                Function.Builder.RowExtraData rowExtraData = calculation.getRowExtraData().get(j + 1);
+                if (rowExtraData != null) {
+                    if (rowExtraData.getIsFormula()) {
+                        String cfv = rowExtraData.getValue();
+                        while (cfv.contains("[") && cfv.contains("]") && cfv.contains("this.")) {
+                            String cf = cfv.substring(cfv.indexOf("[") + 1, cfv.indexOf("]"));
+                            int cellNumber = Integer.parseInt(cf.replaceAll("this.", "")) - 1;
+                            //长度转成ABC列
+                            String colString = CellReference.convertNumToColString(cellNumber);
+                            cfv = cfv.replaceAll("\\[" + cf + "]", colString + (nextRow.getRowNum() + 1));
+                        }
+                        cell.setCellFormula(cfv);
+                    } else {
+                        cell.setCellValue(rowExtraData.getValue());
+                    }
                 }
+
+                //设置样式
+                if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
+                    calculation.setBorder(sheetSet.getStyle().getContextBorder());
+                }
+                if (sheetSet.getStyle().getContextBorderColor() != null) {
+                    calculation.setBorderColor(sheetSet.getStyle().getContextBorderColor());
+                }
+                cell.setCellStyle(calculation.getStyle());
             }
             return true;
         }

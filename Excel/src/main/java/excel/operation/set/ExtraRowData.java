@@ -30,6 +30,12 @@ public class ExtraRowData {
     private List<ExtraCellData> extraCellData;
 
     /**
+     * 内部构造
+     */
+    private ExtraRowData() {
+    }
+
+    /**
      * 创建
      */
     public static ExtraRowData create() {

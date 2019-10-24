@@ -3,11 +3,13 @@ import enumerate.DateType;
 import excel.operation.ExcelExport;
 import excel.operation.set.ExtraCellData;
 import excel.operation.set.ExtraRowData;
+import excel.operation.set.Function;
 import excel.operation.set.SheetSet;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileOutputStream;
@@ -173,7 +175,7 @@ public class Test {
                 omap.put("dT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
             }
 //            if (i % 2 == 0) {
-                omap.put("bDT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
+            omap.put("bDT", Test.randomNumberByWithin(i) + "." + Test.randomNumberByWithin(i));
 //            }
 //            if ((i / 5) % 2 == 0) {
 //            if (i != 50 && i != 51 && i != 70 && i != 71 && i != 72 && i != 73 && i != 77 && i != 78) {
@@ -329,8 +331,18 @@ public class Test {
             sheetSet.getFunction().getTotalAll()
                     .setCalculationFieldNameAndOrder("小数点", 2)
                     .setCalculationFieldNameAndOrder("钱", 4)
-                    .setExplain("总计所有：")
-                    .setExplainOrder(3)
+                    .setRowExtraData(
+                            Function.Builder.RowExtraData.create()
+                                    .setOrder(3)
+                                    .setValue("总计所有：")
+                                    .build(),
+                            Function.Builder.RowExtraData.create()
+                                    .setOrder(5)
+                                    .setValue("[this.2]-([this.4]+[this.2])*[this.4]")
+//                                    .setValue("D22-B22")
+                                    .setIsFormula(true)
+                                    .build()
+                    )
                     .setStyleColor(IndexedColors.LIME)
                     .setStyleBold(true)
                     .setStyleNumberFormat(2)
@@ -338,7 +350,7 @@ public class Test {
                     .setVerticalAlignment(VerticalAlignment.CENTER)
             ;
 
-
+//            System.out.println(CellReference.convertNumToColString(1));  //长度转成ABC列
             sheetSets.add(sheetSet);
 
             endTime = System.currentTimeMillis();

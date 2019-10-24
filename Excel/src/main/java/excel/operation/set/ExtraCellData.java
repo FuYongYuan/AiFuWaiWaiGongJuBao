@@ -119,6 +119,12 @@ public class ExtraCellData {
     private IndexedColors borderRightColor;
 
     /**
+     * 内部构造
+     */
+    private ExtraCellData() {
+    }
+
+    /**
      * 创建
      */
     public static ExtraCellData create() {

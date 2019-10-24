@@ -1,5 +1,6 @@
 package excel.operation.set;
 
+import excel.exception.ExcelOperateException;
 import org.apache.poi.ss.usermodel.*;
 
 import java.util.Arrays;
@@ -58,28 +59,23 @@ public class Function {
     /**
      * 计算配置构建基础类
      */
-    public class Builder {
+    public static class Builder {
         /**
          * 需要计算字段名,排序
          */
         private Map<String, Integer> calculationFieldNameAndOrder;
 
         /**
-         * 说明标注
-         */
-        private String explain;
-
-        /**
-         * 说明标注离结果位置
-         */
-        private int explainOrder;
-
-        /**
          * 样式
          */
         private CellStyle style;
 
-        //---------------------------------------------------------------------------------------------内部参数
+        /**
+         * 行内额外数据
+         */
+        private Map<Integer, RowExtraData> rowExtraData;
+
+        //--------------------------------------------------------------------------------------------------------------内部参数
         /**
          * 字体
          */
@@ -90,16 +86,108 @@ public class Function {
          */
         private DataFormat format;
 
-        //---------------------------------------------------------------------------------------------构造
+        //--------------------------------------------------------------------------------------------------------------内部类
+
+        /**
+         * 当前行额外数据
+         */
+        public static class RowExtraData {
+            /**
+             * 结果位置
+             */
+            private int order;
+            /**
+             * 值
+             */
+            private String value;
+            /**
+             * 是否是公式
+             */
+            private boolean isFormula;
+
+            /**
+             * 内部构造
+             */
+            private RowExtraData() {
+            }
+
+            /**
+             * 创建
+             */
+            public static RowExtraData create() {
+                return new RowExtraData().setIsFormula(false);
+            }
+
+            /**
+             * 初始化
+             */
+            public RowExtraData build() {
+                if (order < 1) {
+                    throw new ExcelOperateException("诊断：缺少当前行额外列数据列号！", new NullPointerException());
+                }
+                if (value == null) {
+                    throw new ExcelOperateException("诊断：缺少当前行额外列数据值！", new NullPointerException());
+                }
+                return this;
+            }
+
+            /**
+             * 结果位置
+             */
+            public int getOrder() {
+                return order;
+            }
+
+            /**
+             * 结果位置
+             */
+            public RowExtraData setOrder(int order) {
+                this.order = order;
+                return this;
+            }
+
+            /**
+             * 值
+             */
+            public String getValue() {
+                return value;
+            }
+
+            /**
+             * 值
+             */
+            public RowExtraData setValue(String value) {
+                this.value = value;
+                return this;
+            }
+
+            /**
+             * 是否是公式
+             */
+            public boolean getIsFormula() {
+                return isFormula;
+            }
+
+            /**
+             * 是否是公式
+             */
+            public RowExtraData setIsFormula(boolean formula) {
+                isFormula = formula;
+                return this;
+            }
+        }
+
+        //--------------------------------------------------------------------------------------------------------------构造
         //构造
         private Builder(Workbook workbook) {
             this.style = workbook.createCellStyle();
             this.font = workbook.createFont();
             this.format = workbook.createDataFormat();
             this.calculationFieldNameAndOrder = new HashMap<>();
+            this.rowExtraData = new HashMap<>();
         }
 
-        //--------------------------------------------------------------------------------------------GetSet
+        //--------------------------------------------------------------------------------------------------------------GetSet
 
         /**
          * 计算字段名 - 可以多个
@@ -141,42 +229,56 @@ public class Function {
             return this.calculationFieldNameAndOrder;
         }
 
-        /**
-         * 说明标注
-         */
-        public String getExplain() {
-            return explain;
-        }
-
-        /**
-         * 说明标注
-         */
-        public Function.Builder setExplain(String explain) {
-            this.explain = explain;
-            return this;
-        }
-
-        /**
-         * 说明标注离结果位置
-         */
-        public int getExplainOrder() {
-            return explainOrder;
-        }
-
-        /**
-         * 说明标注离结果位置
-         */
-        public Function.Builder setExplainOrder(int explainOrder) {
-            this.explainOrder = explainOrder;
-            return this;
-        }
 
         /**
          * 说明标注
          */
         public Function.Builder setExplainAndOrder(String explain, int explainOrder) {
-            this.explain = explain;
-            this.explainOrder = explainOrder;
+            RowExtraData rowExtraData = RowExtraData.create()
+                    .setOrder(explainOrder)
+                    .setValue(explain)
+                    .build();
+            this.rowExtraData.put(rowExtraData.order, rowExtraData);
+            return this;
+        }
+
+        /**
+         * 行内额外数据
+         */
+        public Map<Integer, RowExtraData> getRowExtraData() {
+            return rowExtraData;
+        }
+
+        /**
+         * 行内额外数据
+         */
+        public Builder setRowExtraData(Map<Integer, RowExtraData> rowExtraData) {
+            this.rowExtraData = rowExtraData;
+            return this;
+        }
+
+        /**
+         * 行内额外数据
+         */
+        public Builder setRowExtraData(RowExtraData... rowExtraData) {
+            for (RowExtraData red : rowExtraData) {
+                if (red != null && red.getOrder() > 0) {
+                    this.rowExtraData.put(red.order, red);
+                }
+            }
+            return this;
+        }
+
+        /**
+         * 行内额外数据
+         */
+        public Builder setRowExtraData(int order, String value, boolean isFormula) {
+            RowExtraData rowExtraData = RowExtraData.create()
+                    .setOrder(order)
+                    .setValue(value)
+                    .setIsFormula(isFormula)
+                    .build();
+            this.rowExtraData.put(rowExtraData.order, rowExtraData);
             return this;
         }
 
@@ -373,7 +475,7 @@ public class Function {
     /**
      * 计算配置类
      */
-    public class Calculation extends Builder {
+    public static class Calculation extends Builder {
         /**
          * 插入参考字段名 - 只能一个
          */
@@ -414,7 +516,7 @@ public class Function {
             super.setCalculationFieldNameAndOrder(calculationFieldNameAndOrder).setExplainAndOrder(explain, explainOrder);
         }
 
-        //--------------------------------------------------------------------------------------------GetSet
+        //--------------------------------------------------------------------------------------------------------------GetSet
 
         /**
          * 插入参考字段名 - 只能一个
