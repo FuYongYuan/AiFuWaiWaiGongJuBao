@@ -54,7 +54,7 @@ public class ExcelExport {
                 //循环页签数组对象
                 for (SheetSet sheetSet : sheetSets) {
                     //创建页签并给页签命名
-                    Sheet sheetModel = this.workbook.createSheet(sheetSet.getWorkbookName());
+                    Sheet sheetModel = this.workbook.createSheet(sheetSet.getSheetName());
                     //获取要执行的对象中属于Excel的字段
                     ExcelDisposeUtil.initialization(sheetSet);
                     if (sheetSet.getSheetData().useField != null && sheetSet.getSheetData().useField.size() > 0) {

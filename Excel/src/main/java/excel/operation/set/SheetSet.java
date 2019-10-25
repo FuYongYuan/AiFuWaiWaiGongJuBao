@@ -12,7 +12,7 @@ public class SheetSet {
     /**
      * 工作簿页名称
      */
-    private String workbookName;
+    private String sheetName;
 
     /**
      * 导出对象集合
@@ -73,8 +73,8 @@ public class SheetSet {
         this.style = new Style(workbook);
         this.function = new Function(workbook);
 
-        if (TextDispose.isEmpty(workbookName)) {
-            throw new ExcelOperateException("诊断：工作簿名称缺失！", new NullPointerException());
+        if (TextDispose.isEmpty(sheetName)) {
+            throw new ExcelOperateException("诊断：工作簿页签名称缺失！", new NullPointerException());
         }
 
         if (dataClass == null) {
@@ -100,15 +100,15 @@ public class SheetSet {
     /**
      * 工作簿页名称
      */
-    public String getWorkbookName() {
-        return workbookName;
+    public String getSheetName() {
+        return sheetName;
     }
 
     /**
      * 工作簿页名称
      */
-    public SheetSet setWorkbookName(String workbookName) {
-        this.workbookName = workbookName;
+    public SheetSet setSheetName(String sheetName) {
+        this.sheetName = sheetName;
         return this;
     }
 
