@@ -115,7 +115,7 @@ public class ExcelExport {
                         //额外行
                         int extrai = 0;
                         //循环对象（值）
-                        int rowSize = sheetSet.getWorkbookData().size();
+                        int rowSize = sheetSet.getSheetData().size();
                         for (int i = initRow; i < (rowSize + initRow + extrai); i++) {
                             //创建行    （标题的下一行）
                             Row nextrow = sheetModel.createRow(i + 1);
@@ -196,9 +196,9 @@ public class ExcelExport {
                                 sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder() != null &&
                                         sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().size() > 0
                         ) {
-                            occupyRows.add(sheetSet.getWorkbookData().size() + initRow + extrai + 1);
+                            occupyRows.add(sheetSet.getSheetData().size() + initRow + extrai + 1);
                             this.calculationDispose(
-                                    sheetSet.getWorkbookData().size() + initRow + extrai - 1,
+                                    sheetSet.getSheetData().size() + initRow + extrai - 1,
                                     initRow + 1,
                                     sheetModel.getLastRowNum(),
                                     sheetModel,
@@ -468,7 +468,7 @@ public class ExcelExport {
         int current = i - initRow - extrai;
         //当前的字段值
         String cellValue = ExcelDisposeUtil.correspondingValue(
-                field, sheetSet.getWorkbookData().get(current), sheetSet.getIsGetMethodFieldValue(),
+                field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
                 field.getAnnotation(ExcelField.class).dateType(),
                 field.getAnnotation(ExcelField.class).decimalAfterDigit());
 
@@ -479,7 +479,7 @@ public class ExcelExport {
             //下一数据行
             int next = current + 1;
             //是否是最后一行
-            boolean isLast = (i == sheetSet.getWorkbookData().size() + initRow + extrai - 1);
+            boolean isLast = (i == sheetSet.getSheetData().size() + initRow + extrai - 1);
             //参考数据行
             int reference = field.getAnnotation(ExcelField.class).rowspanAlignOrder() - 1;
             //获取参考字段
@@ -491,34 +491,34 @@ public class ExcelExport {
             String rowspanAlignCellValue = cellValue;
             if (referenceField != null) {
                 rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
-                        referenceField, sheetSet.getWorkbookData().get(current), sheetSet.getIsGetMethodFieldValue(),
+                        referenceField, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
                         referenceField.getAnnotation(ExcelField.class).dateType(),
                         referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
             }
             //对比列下一行值
             String cv = null;
 
-            if (next < sheetSet.getWorkbookData().size()) {
+            if (next < sheetSet.getSheetData().size()) {
                 if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() == 0) {
                     cv = ExcelDisposeUtil.correspondingValue(
-                            field, sheetSet.getWorkbookData().get(next), sheetSet.getIsGetMethodFieldValue(),
+                            field, sheetSet.getSheetData().get(next), sheetSet.getIsGetMethodFieldValue(),
                             field.getAnnotation(ExcelField.class).dateType(),
                             field.getAnnotation(ExcelField.class).decimalAfterDigit());
                 } else if (referenceField != null) {
                     cv = ExcelDisposeUtil.correspondingValue(
-                            referenceField, sheetSet.getWorkbookData().get(next), sheetSet.getIsGetMethodFieldValue(),
+                            referenceField, sheetSet.getSheetData().get(next), sheetSet.getIsGetMethodFieldValue(),
                             referenceField.getAnnotation(ExcelField.class).dateType(),
                             referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
                 }
             } else if (isLast) {
                 if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() == 0) {
                     cv = ExcelDisposeUtil.correspondingValue(
-                            field, sheetSet.getWorkbookData().get(previous), sheetSet.getIsGetMethodFieldValue(),
+                            field, sheetSet.getSheetData().get(previous), sheetSet.getIsGetMethodFieldValue(),
                             field.getAnnotation(ExcelField.class).dateType(),
                             field.getAnnotation(ExcelField.class).decimalAfterDigit());
                 } else if (referenceField != null) {
                     cv = ExcelDisposeUtil.correspondingValue(
-                            referenceField, sheetSet.getWorkbookData().get(previous), sheetSet.getIsGetMethodFieldValue(),
+                            referenceField, sheetSet.getSheetData().get(previous), sheetSet.getIsGetMethodFieldValue(),
                             referenceField.getAnnotation(ExcelField.class).dateType(),
                             referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
                 }
@@ -610,9 +610,9 @@ public class ExcelExport {
             //下一数据行
             int next = current + 1;
             //判断下一行不是数据最后一行
-            if ((next) < sheetSet.getWorkbookData().size()) {
-                Object oldcv = referenceField.get(sheetSet.getWorkbookData().get(current));
-                Object cv = referenceField.get(sheetSet.getWorkbookData().get(next));
+            if ((next) < sheetSet.getSheetData().size()) {
+                Object oldcv = referenceField.get(sheetSet.getSheetData().get(current));
+                Object cv = referenceField.get(sheetSet.getSheetData().get(next));
                 if (oldcv != null && !oldcv.equals(cv)) {
                     if (this.calculationDispose(
                             i,
@@ -808,9 +808,9 @@ public class ExcelExport {
                 //下一数据行
                 int next = current + 1;
                 //判断下一行不是数据最后一行
-                if ((next) < sheetSet.getWorkbookData().size()) {
-                    Object oldcv = field.get(sheetSet.getWorkbookData().get(current));
-                    Object cv = field.get(sheetSet.getWorkbookData().get(next));
+                if ((next) < sheetSet.getSheetData().size()) {
+                    Object oldcv = field.get(sheetSet.getSheetData().get(current));
+                    Object cv = field.get(sheetSet.getSheetData().get(next));
                     if (oldcv != null && !oldcv.equals(cv)) {
                         totalRowIndexMap.get(field.getName()).rowspanEnd = totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
                     }

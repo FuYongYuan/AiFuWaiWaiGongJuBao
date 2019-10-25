@@ -213,7 +213,7 @@ public class Test {
             List<SheetSet> sheetSets = new ArrayList<>();
             SheetSet sheetSet = SheetSet.create()
                     .setSheetName("测试")
-                    .setWorkbookData(CopyClass.copyMap(excelEntities, ExcelEntity.class))
+                    .setSheetData(CopyClass.copyMap(excelEntities, ExcelEntity.class))
                     .setDataClass(ExcelEntity.class)
                     .setIsGetMethodFieldValue(false)
                     .setExtraData(null

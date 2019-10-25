@@ -17,7 +17,7 @@ public class SheetSet {
     /**
      * 导出对象集合
      */
-    private List<?> workbookData;
+    private List<?> sheetData;
 
     /**
      * 当前页数据类型
@@ -80,8 +80,8 @@ public class SheetSet {
         if (dataClass == null) {
             throw new ExcelOperateException("诊断：Excel对应关系缺失！", new NullPointerException());
         } else {
-            if (workbookData != null && workbookData.size() > 0) {
-                if (workbookData.get(0).getClass() != dataClass) {
+            if (sheetData != null && sheetData.size() > 0) {
+                if (sheetData.get(0).getClass() != dataClass) {
                     throw new ExcelOperateException("诊断：Excel数据类型错误！", new NullPointerException());
                 }
             }
@@ -115,15 +115,15 @@ public class SheetSet {
     /**
      * 导出对象集合
      */
-    public List<?> getWorkbookData() {
-        return workbookData;
+    public List<?> getSheetData() {
+        return sheetData;
     }
 
     /**
      * 导出对象集合
      */
-    public SheetSet setWorkbookData(List<?> workbookData) {
-        this.workbookData = workbookData;
+    public SheetSet setSheetData(List<?> sheetData) {
+        this.sheetData = sheetData;
         return this;
     }
 
