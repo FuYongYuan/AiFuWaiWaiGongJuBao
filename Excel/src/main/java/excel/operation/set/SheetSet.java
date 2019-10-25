@@ -42,7 +42,7 @@ public class SheetSet {
     /**
      * 对应当前页的数据缓存
      */
-    private SheetData sheetData;
+    private SheetCache sheetCache;
 
     /**
      * 额外数据集合
@@ -87,7 +87,7 @@ public class SheetSet {
             }
         }
 
-        this.sheetData = new SheetData();
+        this.sheetCache = new SheetCache();
 
         if (this.isGetMethodFieldValue == null) {
             this.isGetMethodFieldValue = true;
@@ -159,8 +159,8 @@ public class SheetSet {
     /**
      * 对应当前页的数据缓存
      */
-    public SheetData getSheetData() {
-        return sheetData;
+    public SheetCache getSheetCache() {
+        return sheetCache;
     }
 
     /**

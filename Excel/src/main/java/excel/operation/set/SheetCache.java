@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 运转基础类
  */
-public class SheetData {
+public class SheetCache {
 
     /**
      * 使用到的字段

@@ -57,7 +57,7 @@ public class ExcelExport {
                     Sheet sheetModel = this.workbook.createSheet(sheetSet.getSheetName());
                     //获取要执行的对象中属于Excel的字段
                     ExcelDisposeUtil.initialization(sheetSet);
-                    if (sheetSet.getSheetData().useField != null && sheetSet.getSheetData().useField.size() > 0) {
+                    if (sheetSet.getSheetCache().useField != null && sheetSet.getSheetCache().useField.size() > 0) {
                         //初始化行数
                         int initRow = 0;
                         if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
@@ -73,10 +73,10 @@ public class ExcelExport {
                         //设置当前页签的第一行
                         Row row = sheetModel.createRow(initRow);
                         //循环标题（列名）
-                        int titleCellSize = sheetSet.getSheetData().useField.size();
+                        int titleCellSize = sheetSet.getSheetCache().useField.size();
                         for (int i = 0; i < titleCellSize; i++) {
                             //获取字段
-                            Field field = sheetSet.getSheetData().useField.get(i);
+                            Field field = sheetSet.getSheetCache().useField.get(i);
                             //创建列
                             Cell cell = row.createCell(i);
                             //设置样式
@@ -84,7 +84,7 @@ public class ExcelExport {
                             //对应单元格的标题名
                             cell.setCellValue(field.getAnnotation(ExcelField.class).columnName());
                             //列样式记录
-                            sheetSet.getSheetData().cellStyleMap.put(field.getName(), this.setFormat(field, sheetSet.getStyle()));
+                            sheetSet.getSheetCache().cellStyleMap.put(field.getName(), this.setFormat(field, sheetSet.getStyle()));
 
 
                             if (field.getAnnotation(ExcelField.class).columnWidth() > 0) {
@@ -132,23 +132,23 @@ public class ExcelExport {
                             }
 
                             //处理列
-                            int rowCellSize = sheetSet.getSheetData().useField.size();
+                            int rowCellSize = sheetSet.getSheetCache().useField.size();
                             for (int j = 0; j < rowCellSize; j++) {
                                 //获取字段
-                                Field field = sheetSet.getSheetData().useField.get(j);
+                                Field field = sheetSet.getSheetCache().useField.get(j);
                                 //创建列
                                 Cell cell = nextrow.createCell(j);
                                 //获取值和计算夸列
                                 String cellValue = this.cellValueRowSpan(i, j, initRow, extrai, sheetModel, sheetSet, totalRowIndexMap);
                                 //设置单元格格式
-                                cell.setCellStyle(sheetSet.getSheetData().cellStyleMap.get(field.getName()));
+                                cell.setCellStyle(sheetSet.getSheetCache().cellStyleMap.get(field.getName()));
                                 //赋值
                                 this.setCellValue(field, cell, cellValue);
                             }
 
                             //计算功能处理
                             //小计
-                            if (sheetSet.getSheetData().subTotalReferenceField != null && totalRowIndexMap.get(sheetSet.getSheetData().subTotalReferenceField.getName()) != null) {
+                            if (sheetSet.getSheetCache().subTotalReferenceField != null && totalRowIndexMap.get(sheetSet.getSheetCache().subTotalReferenceField.getName()) != null) {
                                 if (this.calculation(
                                         i,
                                         initRow,
@@ -156,10 +156,10 @@ public class ExcelExport {
                                         sheetModel,
                                         sheetSet,
                                         sheetSet.getFunction().getSubTotal(),
-                                        sheetSet.getSheetData().subTotalReferenceField,
-                                        sheetSet.getSheetData().subTotalSpanField,
+                                        sheetSet.getSheetCache().subTotalReferenceField,
+                                        sheetSet.getSheetCache().subTotalSpanField,
                                         totalRowIndexMap,
-                                        sheetSet.getSheetData().subTotalColumnIndex,
+                                        sheetSet.getSheetCache().subTotalColumnIndex,
                                         occupyRows
                                 )) {
                                     //校准变更的数据
@@ -169,7 +169,7 @@ public class ExcelExport {
                             }
 
                             //总计
-                            if (sheetSet.getSheetData().totalReferenceField != null && totalRowIndexMap.get(sheetSet.getSheetData().totalReferenceField.getName()) != null) {
+                            if (sheetSet.getSheetCache().totalReferenceField != null && totalRowIndexMap.get(sheetSet.getSheetCache().totalReferenceField.getName()) != null) {
                                 if (this.calculation(
                                         i,
                                         initRow,
@@ -177,10 +177,10 @@ public class ExcelExport {
                                         sheetModel,
                                         sheetSet,
                                         sheetSet.getFunction().getTotal(),
-                                        sheetSet.getSheetData().totalReferenceField,
-                                        sheetSet.getSheetData().totalSpanField,
+                                        sheetSet.getSheetCache().totalReferenceField,
+                                        sheetSet.getSheetCache().totalSpanField,
                                         totalRowIndexMap,
-                                        sheetSet.getSheetData().totalColumnIndex,
+                                        sheetSet.getSheetCache().totalColumnIndex,
                                         occupyRows
                                 )) {
                                     //校准变更的数据
@@ -204,7 +204,7 @@ public class ExcelExport {
                                     sheetModel,
                                     sheetSet,
                                     sheetSet.getFunction().getTotalAll(),
-                                    sheetSet.getSheetData().totalAllColumnIndex,
+                                    sheetSet.getSheetCache().totalAllColumnIndex,
                                     occupyRows
                             );
                         }
@@ -463,7 +463,7 @@ public class ExcelExport {
             Map<String, TotalRowIndex> totalRowIndexMap
     ) {
         //获取字段
-        Field field = sheetSet.getSheetData().useField.get(j);
+        Field field = sheetSet.getSheetCache().useField.get(j);
         //当前数据行
         int current = i - initRow - extrai;
         //当前的字段值
@@ -485,7 +485,7 @@ public class ExcelExport {
             //获取参考字段
             Field referenceField = null;
             if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() > 0) {
-                referenceField = sheetSet.getSheetData().useField.get(reference);
+                referenceField = sheetSet.getSheetCache().useField.get(reference);
             }
             //参考列值
             String rowspanAlignCellValue = cellValue;
@@ -688,14 +688,14 @@ public class ExcelExport {
             //创建行    （标题的下一行）
             Row nextRow = sheetModel.createRow(i + 2);
             //循环处理要统计的列
-            int size = sheetSet.getSheetData().useField.size();
+            int size = sheetSet.getSheetCache().useField.size();
             for (int j = 0; j < size; j++) {
                 //创建列
                 Cell cell;
                 //是否偏移
                 boolean isDeviation = false;
                 //获取当前字段
-                Field field = sheetSet.getSheetData().useField.get(j);
+                Field field = sheetSet.getSheetCache().useField.get(j);
 
                 Integer nameValue = calculation.getCalculationFieldNameAndOrder().get(field.getName());
                 Integer annotationValue = calculation.getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName());
