@@ -5,6 +5,8 @@ import mail.exception.MailException;
 import mail.set.Send;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 发送邮件逻辑类
@@ -30,11 +32,38 @@ public class SendMail {
      *
      * @param theme   邮件主题
      * @param content 邮件内容
-     * @param eMail   收件人--收信邮箱
+     * @param to      收信邮箱
      * @return String
      */
-    public boolean sendMail(String theme, String content, String eMail) {
-        return this.sendMail(theme, content, eMail, null);
+    public boolean sendMail(String theme, String content, String... to) {
+        return this.sendMail(theme, content, Arrays.asList(to), null, null, null);
+    }
+
+    /**
+     * 发送邮件
+     *
+     * @param theme   邮件主题
+     * @param content 邮件内容
+     * @param to      收信邮箱
+     * @param cc      抄送邮箱
+     * @return String
+     */
+    public boolean sendMail(String theme, String content, List<String> to, List<String> cc) {
+        return this.sendMail(theme, content, to, cc, null, null);
+    }
+
+    /**
+     * 发送邮件
+     *
+     * @param theme   邮件主题
+     * @param content 邮件内容
+     * @param to      收信邮箱
+     * @param cc      抄送邮箱
+     * @param bcc     密送邮箱
+     * @return String
+     */
+    public boolean sendMail(String theme, String content, List<String> to, List<String> cc, List<String> bcc) {
+        return this.sendMail(theme, content, to, cc, bcc, null);
     }
 
     /**
@@ -42,11 +71,13 @@ public class SendMail {
      *
      * @param theme     邮件主题
      * @param content   邮件内容
-     * @param eMail     收件人--收信邮箱
+     * @param to        收信邮箱
+     * @param cc        抄送邮箱
+     * @param bcc       密送邮箱
      * @param fileAffix 附件地址
      * @return String家庭经济管理系统
      */
-    public boolean sendMail(String theme, String content, String eMail, String fileAffix) {
+    public boolean sendMail(String theme, String content, List<String> to, List<String> cc, List<String> bcc, String fileAffix) {
         try {
             //发送邮件对象并初始化服务地址
             SendMailService sm = new SendMailService(send.getStmp());
@@ -60,11 +91,19 @@ public class SendMail {
             } else {
                 sm.setSubject("无主题");
             }
-            //接收邮箱
-            if (TextDispose.isNotEmpty(eMail)) {
-                sm.setTo(eMail);
+            //收信邮箱
+            if (to != null && to.size() > 0) {
+                sm.setTo(to);
             } else {
                 throw new MailException("诊断：没有发送目标邮箱发送停止！", new NullPointerException());
+            }
+            //抄送邮箱
+            if (cc != null && cc.size() > 0) {
+                sm.setCc(cc);
+            }
+            //密送邮箱
+            if (bcc != null && bcc.size() > 0) {
+                sm.setBcc(bcc);
             }
             //内容
             if (TextDispose.isNotEmpty(content)) {

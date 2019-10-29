@@ -10,6 +10,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.util.List;
 import java.util.Properties;
 
 class SendMailService {
@@ -20,7 +21,15 @@ class SendMailService {
     /**
      * 收信邮箱
      */
-    private String to = "";
+    private List<String> to;
+    /**
+     * 抄送邮箱
+     */
+    private List<String> cc;
+    /**
+     * 密送邮箱
+     */
+    private List<String> bcc;
     /**
      * 邮件主题
      */
@@ -82,13 +91,36 @@ class SendMailService {
 
         try {
             if (this.message == null) {
-                this.message = new MimeMessage(session);// Message存储发送的电子邮件信息
+                // Message存储发送的电子邮件信息
+                this.message = new MimeMessage(session);
             }
+            //设置发件人
             InternetAddress setfrom = new InternetAddress(this.from, personal);
-            this.message.setFrom(setfrom);    //设置发件人
-            //message.setFrom(new InternetAddress(from));
-            this.message.setRecipient(Message.RecipientType.TO, new InternetAddress(this.to));// 设置收信邮箱
-            this.message.setSubject(this.subject);// 设置主题
+            this.message.setFrom(setfrom);
+            //设置收信邮箱
+            if (this.to != null && this.to.size() > 0) {
+                InternetAddress[] toIA = new InternetAddress[this.to.size()];
+                for (int i = 0; i < this.to.size(); i++) {
+                    toIA[i] = new InternetAddress(this.to.get(i));
+                }
+                this.message.setRecipients(Message.RecipientType.TO, toIA);
+            }
+            if (this.cc != null && this.cc.size() > 0) {
+                InternetAddress[] ccIA = new InternetAddress[this.cc.size()];
+                for (int i = 0; i < this.cc.size(); i++) {
+                    ccIA[i] = new InternetAddress(this.cc.get(i));
+                }
+                this.message.setRecipients(Message.RecipientType.CC, ccIA);
+            }
+            if (this.bcc != null && this.bcc.size() > 0) {
+                InternetAddress[] bccIA = new InternetAddress[this.bcc.size()];
+                for (int i = 0; i < this.bcc.size(); i++) {
+                    bccIA[i] = new InternetAddress(this.bcc.get(i));
+                }
+                this.message.setRecipients(Message.RecipientType.BCC, bccIA);
+            }
+            //设置主题
+            this.message.setSubject(this.subject);
             return true;
         } catch (Exception e) {
             throw new MailException("诊断：发送邮件错误！", e);
@@ -104,7 +136,11 @@ class SendMailService {
         try {
             this.message.setContent(this.mp);
             this.message.saveChanges();
-            System.out.println("[Mail-INFO] 开始发送邮件 -> " + this.from + " 至 " + this.to);
+            System.out.println("[Mail-INFO] 开始发送邮件 -> " + this.from
+                    + " 至 收件人：" + (this.to == null ? "无" : this.to)
+                    + " 与 抄送人：" + (this.cc == null ? "无" : this.cc)
+                    + " 与 密送人：" + (this.bcc == null ? "无" : this.bcc)
+            );
             //发送
             Transport.send(this.message);
             System.out.println("[Mail-INFO] 发送邮件完成！");
@@ -144,12 +180,30 @@ class SendMailService {
     }
 
     /**
-     * 接收邮箱
+     * 收信邮箱
      *
      * @param to 邮箱地址
      */
-    void setTo(String to) {
+    void setTo(List<String> to) {
         this.to = to;
+    }
+
+    /**
+     * 抄送邮箱
+     *
+     * @param cc 邮箱地址
+     */
+    void setCc(List<String> cc) {
+        this.cc = cc;
+    }
+
+    /**
+     * 密送邮箱
+     *
+     * @param bcc 邮箱地址
+     */
+    void setBcc(List<String> bcc) {
+        this.bcc = bcc;
     }
 
     /**

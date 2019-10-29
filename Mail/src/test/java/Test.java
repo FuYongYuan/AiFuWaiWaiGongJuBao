@@ -9,7 +9,7 @@ public class Test {
                         .setStmp("smtp.sina.cn")
                         .setUserName("fuyongyuan277@sina.cn")
                         .setUserPassword("d0afada3105a3a39")
-                        .setSendMail("fuyongyuan277@sina.cn")
+                        .setSendMail("fuyongyuan277@sina.cn").build()
         );
 
         sendMail.sendMail("格式测试验证码", "您好：<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;您的验证码是：999999！", "360687243@qq.com");
