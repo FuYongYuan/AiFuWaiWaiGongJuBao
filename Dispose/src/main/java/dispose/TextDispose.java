@@ -517,7 +517,7 @@ public class TextDispose {
         }
         for (len--; len >= 0; len--) {
             res = ChineseUnit[i++] + res;
-            int num = Integer.parseInt(moneyNum.charAt(len) + "");
+            int num = Integer.parseInt(String.valueOf(moneyNum.charAt(len)));
             res = ChineseNum[num] + res;
         }
         return res

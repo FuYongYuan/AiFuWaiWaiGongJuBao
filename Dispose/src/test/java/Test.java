@@ -1,30 +1,104 @@
 import dispose.DateDispose;
+import enumerate.DateType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Test {
-    private static void test(Map<String,Object> map) {
-        Map<String,Object> map1= new HashMap<>();
-        map1.put("A","1");
-        map1.put("B","2");
-        map.putAll(map1);
+//    private static void test(Map<String,Object> map) {
+//        Map<String,Object> map1= new HashMap<>();
+//        map1.put("A","1");
+//        map1.put("B","2");
+//        map.putAll(map1);
+//    }
+
+    private static void geti(Integer i) {
+        i = i + 1;
     }
 
     public static void main(String[] args) {
-        Map<String,Object> map = new HashMap<>();
-        map.put("A","2");
-        map.put("B","1");
 
-        System.out.println(map.get("A"));
-        System.out.println(map.get("B"));
+//
+//        List<String> list = null;
+//        if(list==null){
+//
+//        }
+//        for (String s : list) {
+//            if(s){
+//
+//            }
+//        }
 
-        test(map);
+//        D d = D.newD();
 
-        System.out.println(map.get("A"));
-        System.out.println(map.get("B"));
+
+//        B b=new B();
+//
+//        System.out.println(b.a);
+//        System.out.println(b.b);
+
+//        List<String> list = new ArrayList<>();
+//        list.add("1");
+//        list.add("1");
+//        list.add("1");
+//        list.add("2");
+//        list.add("3");
+//
+////        for(String s: list){
+////            System.out.println(s);
+////            if(s.equals("2")){
+////                list.remove(s);
+////            }
+////        }
+////
+////        list.get(0);
+//
+//
+//        Map<Integer, String> map = new HashMap<>();
+//        map.put(0, "1");
+//        map.put(1, "1");
+//        map.put(2, "1");
+//        map.put(3, "2");
+//        map.put(4, "3");
+//
+//        map.get(0);
+//
+////        List<Map<String,Object>>
+//
+//
+////        for (Map.Entry<Integer, String> m : map.entrySet()) {
+////            System.out.println(m.getKey());
+////            System.out.println(m.getValue());
+////        }
+//
+//        for (Integer i : map.keySet()) {
+//            System.out.println(i);
+//            System.out.println(map.get(i));
+//        }
+
+//        list.forEach(System.out::println);
+
+//        Integer[] i =new Integer[]{};
+
+//        Integer x =1;
+//        geti(x);
+//        System.out.println(x);
+
+//        String ds = "2019-10-31";
+//
+//        System.out.println(DateDispose.formatting_Date(DateDispose.formatting_Date(ds, DateType.Hour_Minute_Second),DateType.Hour_Minute_Second));
+
+
+//        Map<String,Object> map = new HashMap<>();
+//        map.put("A","2");
+//        map.put("B","1");
+//
+//        System.out.println(map.get("A"));
+//        System.out.println(map.get("B"));
+//
+//        test(map);
+//
+//        System.out.println(map.get("A"));
+//        System.out.println(map.get("B"));
 
 
 //        System.out.println(DateDispose.formatting_DateToString(DateDispose.formatting_StringToDate("2013-12-12 23:23:23.112324233")));

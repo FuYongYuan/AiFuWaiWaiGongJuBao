@@ -7,16 +7,16 @@ public class PageEntity {
     /**
      * 创建页标签实体类
      *
-     * @param pageName      页标签名称
+     * @param pageShow      页标签名称
      * @param pageNumber    实际对应的页数
      * @param pageUrl       页标签地址
-     * @param isShow        是否要显示
+     * @param isShow        是否要显示 1显示 2不显示
      * @param isCurrentPage 是否当前页 1是 2否
      */
-    public PageEntity(String pageName, Integer pageNumber, String pageUrl, int isShow, int isCurrentPage) {
-        this.pageName = pageName;
+    public PageEntity(String pageShow, long pageNumber, String pageUrl, boolean isShow, boolean isCurrentPage) {
+        this.pageShow = pageShow;
         this.pageNumber = pageNumber;
-        this.pageUrl = pageUrl.replaceFirst("\\$", pageNumber.toString());
+        this.pageUrl = pageUrl.replaceFirst("\\$", String.valueOf(pageNumber));
         this.isShow = isShow;
         this.isCurrentPage = isCurrentPage;
     }
@@ -24,61 +24,91 @@ public class PageEntity {
     /**
      * 页标签名称
      */
-    private String pageName;
+    private String pageShow;
     /**
      * 实际页数
      */
-    private int pageNumber;
+    private long pageNumber;
     /**
      * 页标签地址
      */
     private String pageUrl;
     /**
-     * 是否显示 1显示 2不显示
+     * 是否显示 true显示 false不显示
      */
-    private int isShow;
+    private boolean isShow;
     /**
-     * 是否当前页 1是 2否
+     * 是否当前页 true是 false否
      */
-    private int isCurrentPage;
+    private boolean isCurrentPage;
 
-    public String getPageName() {
-        return pageName;
+    /**
+     * 页标签名称
+     */
+    public String getPageShow() {
+        return pageShow;
     }
 
-    public void setPageName(String pageName) {
-        this.pageName = pageName;
+    /**
+     * 页标签名称
+     */
+    public void setPageShow(String pageShow) {
+        this.pageShow = pageShow;
     }
 
-    public int getPageNumber() {
+    /**
+     * 实际页数
+     */
+    public long getPageNumber() {
         return pageNumber;
     }
 
-    public void setPageNumber(int pageNumber) {
+    /**
+     * 实际页数
+     */
+    public void setPageNumber(long pageNumber) {
         this.pageNumber = pageNumber;
     }
 
-    public int getIsShow() {
+    /**
+     * 是否显示 true显示 false不显示
+     */
+    public boolean getIsShow() {
         return isShow;
     }
 
-    public void setIsShow(int isShow) {
+    /**
+     * 是否显示 true显示 false不显示
+     */
+    public void setIsShow(boolean isShow) {
         this.isShow = isShow;
     }
 
+    /**
+     * 页标签地址
+     */
     public String getPageUrl() {
         return pageUrl;
     }
 
+    /**
+     * 页标签地址
+     */
     public void setPageUrl(String pageUrl) {
         this.pageUrl = pageUrl;
     }
 
-    public int getIsCurrentPage() {
+    /**
+     * 是否当前页 true是 false否
+     */
+    public boolean getIsCurrentPage() {
         return isCurrentPage;
     }
 
-    public void setIsCurrentPage(int isCurrentPage) {
+    /**
+     * 是否当前页 true是 false否
+     */
+    public void setIsCurrentPage(boolean isCurrentPage) {
         this.isCurrentPage = isCurrentPage;
     }
 }

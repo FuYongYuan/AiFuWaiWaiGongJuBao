@@ -3,7 +3,7 @@ package page;
 
 import java.util.List;
 
-public class PageBean<T> {
+public class PageBean {
 
     /**
      * 初始化
@@ -15,7 +15,7 @@ public class PageBean<T> {
      * @param rearPage       后方最多有多少页
      * @param pageUrl        带$的跳转地址地址 如 http:localhost:8080/xxx/xxx?页数=$&参数=*&参数=*
      */
-    public PageBean(int currentPage, int maxNumber, int eachPageNumber, int frontPage, int rearPage, String pageUrl) {
+    public PageBean(long currentPage, long maxNumber, long eachPageNumber, long frontPage, long rearPage, String pageUrl) {
         this.currentPage = currentPage;
         this.maxNumber = maxNumber;
         this.eachPageNumber = eachPageNumber;
@@ -30,8 +30,6 @@ public class PageBean<T> {
         this.currentPage = this.getCurrentPage();
         this.maxNumber = this.getMaxNumber();
         this.eachPageNumber = this.getEachPageNumber();
-        this.startNumber = this.getStartNumber();
-        this.endNumber = this.getEndNumber();
         //计算标签页
         this.totalPage = frontPage + rearPage + 1;
         if (0 > (this.getCurrentPage() - (this.getTotalPage() - this.getRearPage()))) {
@@ -46,12 +44,12 @@ public class PageBean<T> {
     /**
      * 首页
      */
-    private int homePage;
+    private long homePage;
 
     /**
      * 尾页
      */
-    private int backPage;
+    private long backPage;
 
     /**
      * 首页地址
@@ -66,12 +64,12 @@ public class PageBean<T> {
     /**
      * 上一页
      */
-    private int previousPage;
+    private long previousPage;
 
     /**
      * 下一页
      */
-    private int nextPage;
+    private long nextPage;
 
     /**
      * 上一页地址
@@ -86,42 +84,32 @@ public class PageBean<T> {
     /**
      * 当前页
      */
-    private int currentPage;
+    private long currentPage;
 
     /**
      * 最大数据数量
      */
-    private int maxNumber;
+    private long maxNumber;
 
     /**
      * 每页多少条
      */
-    private int eachPageNumber;
-
-    /**
-     * 跳转起始数据
-     */
-    private int startNumber;
-
-    /**
-     * 跳转结束数据
-     */
-    private int endNumber;
+    private long eachPageNumber;
 
     /**
      * 前方最多有多少页
      */
-    private int frontPage;
+    private long frontPage;
 
     /**
      * 后方最多有多少页
      */
-    private int rearPage;
+    private long rearPage;
 
     /**
      * 总共显示几个标签页
      */
-    private int totalPage;
+    private long totalPage;
 
     /**
      * 页标签
@@ -131,7 +119,7 @@ public class PageBean<T> {
     /**
      * 查询
      */
-    private List<T> list;
+    private List list;
 
     /**
      * 带$的跳转地址地址
@@ -139,23 +127,23 @@ public class PageBean<T> {
     private String pageUrl;
 
     /**
-     * 是否是图片地址作为页标签名称.1.不是 2.是
+     * 是否是图片地址作为页标签名称.true.是 false.不是
      */
-    private int isImageUrl;
+    private boolean isImageUrl;
 
     /**
      * 首页
      */
-    public int getHomePage() {
+    public long getHomePage() {
         return 1;
     }
 
     /**
      * 尾页
      */
-    public int getBackPage() {
-        double b = Double.parseDouble(maxNumber + "") / Double.parseDouble(eachPageNumber + "");
-        int i = (int) b;
+    public long getBackPage() {
+        double b = Double.parseDouble(String.valueOf(maxNumber)) / Double.parseDouble(String.valueOf(eachPageNumber));
+        long i = (long) b;
         if (i < b) {
             return i + 1;
         } else if (b < 1) {
@@ -168,70 +156,70 @@ public class PageBean<T> {
     /**
      * 上一页
      */
-    public int getPreviousPage() {
+    public long getPreviousPage() {
         return currentPage <= 1 ? 1 : currentPage - 1;
     }
 
     /**
      * 下一页
      */
-    public int getNextPage() {
+    public long getNextPage() {
         return currentPage == this.getBackPage() ? this.getBackPage() : currentPage < this.getBackPage() ? currentPage + 1 : this.getBackPage();
     }
 
     /**
      * 当前页
      */
-    public int getCurrentPage() {
+    public long getCurrentPage() {
         return currentPage;
     }
 
     /**
      * 当前页
      */
-    public void setCurrentPage(int currentPage) {
+    public void setCurrentPage(long currentPage) {
         this.currentPage = currentPage;
     }
 
     /**
      * 最大数据数量
      */
-    public int getMaxNumber() {
+    public long getMaxNumber() {
         return maxNumber;
     }
 
     /**
      * 最大数据数量
      */
-    public void setMaxNumber(int maxNumber) {
+    public void setMaxNumber(long maxNumber) {
         this.maxNumber = maxNumber;
     }
 
     /**
      * 每页多少条
      */
-    public int getEachPageNumber() {
+    public long getEachPageNumber() {
         return eachPageNumber;
     }
 
     /**
      * 每页多少条
      */
-    public void setEachPageNumber(int eachPageNumber) {
+    public void setEachPageNumber(long eachPageNumber) {
         this.eachPageNumber = eachPageNumber;
     }
 
     /**
      * 跳转起始数据
      */
-    public int getStartNumber() {
+    public long getStartNumber() {
         return (currentPage - 1) * eachPageNumber;
     }
 
     /**
      * 跳转结束数据
      */
-    public int getEndNumber() {
+    public long getEndNumber() {
         return currentPage * eachPageNumber;
     }
 
@@ -240,14 +228,14 @@ public class PageBean<T> {
      *
      * @param frontPage 页数
      */
-    public void setFrontPage(int frontPage) {
+    public void setFrontPage(long frontPage) {
         this.frontPage = frontPage;
     }
 
     /**
      * 前方最多有多少页
      */
-    public int getFrontPage() {
+    public long getFrontPage() {
         return frontPage;
     }
 
@@ -256,21 +244,21 @@ public class PageBean<T> {
      *
      * @param rearPage 页数
      */
-    public void setRearPage(int rearPage) {
+    public void setRearPage(long rearPage) {
         this.rearPage = rearPage;
     }
 
     /**
      * 后方最多有多少页
      */
-    public int getRearPage() {
+    public long getRearPage() {
         return rearPage;
     }
 
     /**
      * 总共多少个标签页
      */
-    public int getTotalPage() {
+    public long getTotalPage() {
         return totalPage;
     }
 
@@ -279,7 +267,7 @@ public class PageBean<T> {
      *
      * @param totalPage =frontPage+rearPage
      */
-    public void setTotalPage(int totalPage) {
+    public void setTotalPage(long totalPage) {
         this.totalPage = totalPage;
     }
 
@@ -294,102 +282,104 @@ public class PageBean<T> {
      * 页标签
      */
     public void setPage(String pageUrl) {
-        this.page = new PageEntity[this.getBackPage()];
+        this.page = new PageEntity[Math.toIntExact(this.getBackPage())];
         for (int i = 1; i < (this.getBackPage() + 1); i++) {
-            String name = i + "";
-            int isShow = 0;
-            int isCurrentPage = 2;
+            String name = String.valueOf(i);
+            boolean isShow = false;
+            boolean isCurrentPage = false;
             if (this.getCurrentPage() > i) {
-                if (i < this.getCurrentPage() && i >= (this.getCurrentPage() - this.getFrontPage())) {
-                    isShow = 1;
-                } else {
-                    isShow = 2;
-                }
+                isShow = i < this.getCurrentPage() && i >= (this.getCurrentPage() - this.getFrontPage());
             } else if (this.getCurrentPage() == i) {
-                isShow = 1;
-                isCurrentPage = 1;
+                isShow = true;
+                isCurrentPage = true;
             } else if (this.getCurrentPage() < i) {
-                if (i > this.getCurrentPage() && i <= (this.getCurrentPage() + this.getRearPage())) {
-                    isShow = 1;
-                } else {
-                    isShow = 2;
-                }
+                isShow = i > this.getCurrentPage() && i <= (this.getCurrentPage() + this.getRearPage());
             }
             page[i - 1] = new PageEntity(name, i, pageUrl, isShow, isCurrentPage);
         }
-        this.isImageUrl = 1;
+        this.isImageUrl = false;
     }
 
     /**
      * 页标签
      */
-    public void setPage(String pageUrl, String pageName) {
-        this.page = new PageEntity[this.getBackPage()];
+    public void setPage(String pageUrl, String pageShow) {
+        this.page = new PageEntity[Math.toIntExact(this.getBackPage())];
         for (int i = 1; i < (this.getBackPage() + 1); i++) {
-            int isShow = 0;
-            int isCurrentPage = 2;
+            boolean isShow = false;
+            boolean isCurrentPage = false;
             if (this.getCurrentPage() > i) {
-                if (i < this.getCurrentPage() && i >= (this.getCurrentPage() - this.getFrontPage())) {
-                    isShow = 1;
-                } else {
-                    isShow = 2;
-                }
+                isShow = i < this.getCurrentPage() && i >= (this.getCurrentPage() - this.getFrontPage());
             } else if (this.getCurrentPage() == i) {
-                isShow = 1;
-                isCurrentPage = 1;
+                isShow = true;
+                isCurrentPage = true;
             } else if (this.getCurrentPage() < i) {
-                if (i > this.getCurrentPage() && i <= (this.getCurrentPage() + this.getRearPage())) {
-                    isShow = 1;
-                } else {
-                    isShow = 2;
-                }
+                isShow = i > this.getCurrentPage() && i <= (this.getCurrentPage() + this.getRearPage());
             }
-            page[i - 1] = new PageEntity(pageName, i, pageUrl, isShow, isCurrentPage);
+            page[i - 1] = new PageEntity(pageShow, i, pageUrl, isShow, isCurrentPage);
         }
-        this.isImageUrl = 1;
+        this.isImageUrl = false;
     }
 
     /**
      * 页标签
      */
-    public void setPage(String pageUrl, String[] pageName) {
-        this.page = new PageEntity[this.getBackPage()];
-        if (pageName.length == page.length) {
+    public void setPage(String pageUrl, String pageShowSingular, String pageShowPlural) {
+        this.page = new PageEntity[Math.toIntExact(this.getBackPage())];
+        for (int i = 1; i < (this.getBackPage() + 1); i++) {
+            boolean isShow = false;
+            boolean isCurrentPage = false;
+            if (this.getCurrentPage() > i) {
+                isShow = i < this.getCurrentPage() && i >= (this.getCurrentPage() - this.getFrontPage());
+            } else if (this.getCurrentPage() == i) {
+                isShow = true;
+                isCurrentPage = true;
+            } else if (this.getCurrentPage() < i) {
+                isShow = i > this.getCurrentPage() && i <= (this.getCurrentPage() + this.getRearPage());
+            }
+            String pageShow = pageShowSingular;
+            if (i % 2 == 0) {
+                pageShow = pageShowPlural;
+            }
+            page[i - 1] = new PageEntity(pageShow, i, pageUrl, isShow, isCurrentPage);
+        }
+        this.isImageUrl = false;
+    }
+
+    /**
+     * 页标签
+     */
+    public void setPage(String pageUrl, String[] pageShow) {
+        this.page = new PageEntity[Math.toIntExact(this.getBackPage())];
+        if (pageShow.length == page.length) {
             for (int i = 1; i < (this.getBackPage() + 1); i++) {
-                int isShow = 0;
-                int isCurrentPage = 2;
+                boolean isShow = false;
+                boolean isCurrentPage = false;
                 if (this.getCurrentPage() > i) {
-                    if (i < this.getCurrentPage() && i >= (this.getCurrentPage() - this.getFrontPage())) {
-                        isShow = 1;
-                    } else {
-                        isShow = 2;
-                    }
+                    isShow = i < this.getCurrentPage() && i >= (this.getCurrentPage() - this.getFrontPage());
                 } else if (this.getCurrentPage() == i) {
-                    isShow = 1;
+                    isShow = true;
+                    isCurrentPage = true;
                 } else if (this.getCurrentPage() < i) {
-                    if (i > this.getCurrentPage() && i <= (this.getCurrentPage() + this.getRearPage())) {
-                        isShow = 1;
-                    } else {
-                        isShow = 2;
-                    }
+                    isShow = i > this.getCurrentPage() && i <= (this.getCurrentPage() + this.getRearPage());
                 }
-                page[i - 1] = new PageEntity(pageName[i], i, pageUrl, isShow, isCurrentPage);
+                page[i - 1] = new PageEntity(pageShow[i], i, pageUrl, isShow, isCurrentPage);
             }
         }
-        this.isImageUrl = 1;
+        this.isImageUrl = false;
     }
 
     /**
      * 查询对象的list
      */
-    public List<T> getList() {
+    public List getList() {
         return list;
     }
 
     /**
      * @param list 查询对象的list
      */
-    public void setList(List<T> list) {
+    public void setList(List list) {
         this.list = list;
     }
 
@@ -397,41 +387,41 @@ public class PageBean<T> {
      * 下一页地址
      */
     public String getNextPageUrl() {
-        return pageUrl.replaceFirst("\\$", nextPage + "");
+        return pageUrl.replaceFirst("\\$", String.valueOf(nextPage));
     }
 
     /**
      * 上一页地址
      */
     public String getPreviousPageUrl() {
-        return pageUrl.replaceFirst("\\$", previousPage + "");
+        return pageUrl.replaceFirst("\\$", String.valueOf(previousPage));
     }
 
     /**
      * 首页地址
      */
     public String getHomePageUrl() {
-        return pageUrl.replaceFirst("\\$", homePage + "");
+        return pageUrl.replaceFirst("\\$", String.valueOf(homePage));
     }
 
     /**
      * 尾页地址
      */
     public String getBackPageUrl() {
-        return pageUrl.replaceFirst("\\$", backPage + "");
+        return pageUrl.replaceFirst("\\$", String.valueOf(backPage));
     }
 
     /**
      * 是否是图片地址作为显示页标签名称
      */
-    public int getIsImageUrl() {
+    public boolean getIsImageUrl() {
         return isImageUrl;
     }
 
     /**
      * 是否是图片地址作为显示页标签名称
      */
-    public void setIsImageUrl(int isImageUrl) {
+    public void setIsImageUrl(boolean isImageUrl) {
         this.isImageUrl = isImageUrl;
     }
 }
