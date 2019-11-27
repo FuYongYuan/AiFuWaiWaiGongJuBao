@@ -32,7 +32,7 @@ public class CopyClass {
             String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
             Method method = object1.getClass().getMethod("get" + fieldNameFirstUpperCase);
             Object value = method.invoke(object1);
-            if ((value != null && !"".equals(value)) || !getNull) {
+            if ((value != null && !"".equals(value)) || getNull) {
                 method = getMethod(clazz, field, fieldNameFirstUpperCase);
                 method.invoke(object2, value);
             }
@@ -51,7 +51,7 @@ public class CopyClass {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             Object value = field.get(object1);
-            if ((value != null && !"".equals(value)) || !getNull) {
+            if ((value != null && !"".equals(value)) || getNull) {
                 if (field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
                     if (value != null) {
                         field.set(object2, value.toString());
