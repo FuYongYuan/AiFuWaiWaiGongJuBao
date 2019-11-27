@@ -23,16 +23,16 @@ public class CopyClass {
      * @param object1 被取值的对象
      * @param object2 要赋值的对象
      * @param clazz   取值对象类型
-     * @param notNull 是否取空值
+     * @param getNull 是否取空值
      */
-    public static <T> void copyClassGetSet(Object object1, Object object2, Class<T> clazz, boolean notNull) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static <T> void copyClassGetSet(Object object1, Object object2, Class<T> clazz, boolean getNull) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();
             String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
             Method method = object1.getClass().getMethod("get" + fieldNameFirstUpperCase);
             Object value = method.invoke(object1);
-            if ((value != null && !"".equals(value)) || !notNull) {
+            if ((value != null && !"".equals(value)) || !getNull) {
                 method = getMethod(clazz, field, fieldNameFirstUpperCase);
                 method.invoke(object2, value);
             }
@@ -45,13 +45,13 @@ public class CopyClass {
      * @param object1 被取值的对象
      * @param object2 要赋值的对象
      * @param clazz   取值对象类型
-     * @param notNull 是否取空值
+     * @param getNull 是否取空值
      */
-    public static void copyClass(Object object1, Object object2, Class clazz, boolean notNull) throws IllegalAccessException {
+    public static void copyClass(Object object1, Object object2, Class clazz, boolean getNull) throws IllegalAccessException {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             Object value = field.get(object1);
-            if ((value != null && !"".equals(value)) || !notNull) {
+            if ((value != null && !"".equals(value)) || !getNull) {
                 if (field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
                     if (value != null) {
                         field.set(object2, value.toString());

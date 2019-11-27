@@ -5,8 +5,10 @@ import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
-        PageBean pageBean = new PageBean(1,5,7,3,2,"");
-        List<String> list = new ArrayList<>();
-        pageBean.setList(list);
+//        PageBean pageBean = new PageBean(1,5,7,3,2,"");
+//        List<String> list = new ArrayList<>();
+//        pageBean.setList(list);
+        
+        System.out.println(28D/10D);
     }
 }
