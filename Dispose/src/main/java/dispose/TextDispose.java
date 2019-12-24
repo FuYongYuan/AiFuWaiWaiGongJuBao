@@ -448,7 +448,7 @@ public class TextDispose {
     private static final char[] ChineseUnit = {'里', '分', '角', '元', '拾', '佰', '仟', '万', '拾', '佰', '仟', '亿', '拾', '佰', '仟', '万', '拾', '佰', '仟', '兆', '拾', '佰', '仟', '万', '拾', '佰', '仟'};
 
     /**
-     * 返回关于钱的中文式大写数字,支仅持到亿
+     * 返回关于钱的中文式大写数字,支仅持到兆
      */
     public static String arabNumberToChineseRMB(long moneyNum) {
         String res = "";
@@ -471,7 +471,7 @@ public class TextDispose {
     }
 
     /**
-     * 返回关于钱的中文式大写数字,支仅持到亿
+     * 返回关于钱的中文式大写数字,支仅持到兆
      */
     public static String arabNumberToChineseRMB(int moneyNum) {
         String res = "";
@@ -526,13 +526,13 @@ public class TextDispose {
     }
 
     /**
-     * 返回关于钱的中文式大写数字,支仅持到亿
+     * 返回关于钱的中文式大写数字,支仅持到兆
      */
     private static String arabNumberToChineseRMB(String moneyNum) throws Exception {
         String res = "";
         int i = 3;
         int len = moneyNum.length();
-        if (len > 24) {
+        if (len > 17) {
             throw new Exception("超过最大位数!");
         }
         if ("0".equals(moneyNum)) {
