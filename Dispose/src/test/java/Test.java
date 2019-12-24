@@ -1,4 +1,5 @@
 import dispose.DateDispose;
+import dispose.TextDispose;
 import enumerate.DateType;
 
 import java.util.*;
@@ -16,6 +17,17 @@ public class Test {
     }
 
     public static void main(String[] args) {
+
+//        String s = "1";
+//        int i = 1;
+//        int x = 2;
+//        int y = i + x;
+
+        try {
+            System.out.println(TextDispose.arabNumberToChineseRMB(100010001000L));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 //
 //        List<String> list = null;

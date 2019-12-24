@@ -151,7 +151,7 @@ public class Test {
         /**
          * 在全配置下.跨行多的情况下 XSSF最多 1250 条  HSSF最多 150 条   SXSSF最多 * 条
          */
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 500; i++) {
             int ix = i / 10;
 
 //            ExcelEntity excelEntity = new ExcelEntity();

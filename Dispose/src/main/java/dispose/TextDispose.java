@@ -445,7 +445,30 @@ public class TextDispose {
     //------------------------------------------------------------------------------------------------------------------钱额度中文数字转换
 
     private static final char[] ChineseNum = {'零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'};
-    private static final char[] ChineseUnit = {'里', '分', '角', '元', '拾', '佰', '仟', '万', '拾', '佰', '仟', '亿', '拾', '佰', '仟'};
+    private static final char[] ChineseUnit = {'里', '分', '角', '元', '拾', '佰', '仟', '万', '拾', '佰', '仟', '亿', '拾', '佰', '仟', '万', '拾', '佰', '仟', '兆', '拾', '佰', '仟', '万', '拾', '佰', '仟'};
+
+    /**
+     * 返回关于钱的中文式大写数字,支仅持到亿
+     */
+    public static String arabNumberToChineseRMB(long moneyNum) {
+        String res = "";
+        int i = 3;
+        if (moneyNum == 0) {
+            return "零元";
+        }
+        while (moneyNum > 0) {
+            res = ChineseUnit[i++] + res;
+            res = ChineseNum[Math.toIntExact(moneyNum % 10)] + res;
+            moneyNum /= 10;
+        }
+        return res
+                .replaceAll("零[拾佰仟]", "零")
+                .replaceAll("零零零零亿", "").replaceAll("零+亿", "亿")
+                .replaceAll("零零零零万", "").replaceAll("零+万", "万")
+                .replaceAll("零+元", "元")
+                .replaceAll("零+", "零");
+
+    }
 
     /**
      * 返回关于钱的中文式大写数字,支仅持到亿
@@ -463,8 +486,8 @@ public class TextDispose {
         }
         return res
                 .replaceAll("零[拾佰仟]", "零")
-                .replaceAll("零+亿", "亿")
-                .replaceAll("零+万", "万")
+                .replaceAll("零零零零亿", "").replaceAll("零+亿", "亿")
+                .replaceAll("零零零零万", "").replaceAll("零+万", "万")
                 .replaceAll("零+元", "元")
                 .replaceAll("零+", "零");
 
@@ -498,7 +521,7 @@ public class TextDispose {
         try {
             return arabNumberToChineseRMB(inte) + res;
         } catch (Exception e) {
-            return null;
+            return e.getMessage();
         }
     }
 
@@ -509,7 +532,7 @@ public class TextDispose {
         String res = "";
         int i = 3;
         int len = moneyNum.length();
-        if (len > 12) {
+        if (len > 24) {
             throw new Exception("超过最大位数!");
         }
         if ("0".equals(moneyNum)) {
@@ -522,8 +545,8 @@ public class TextDispose {
         }
         return res
                 .replaceAll("零[拾佰仟]", "零")
-                .replaceAll("零+亿", "亿")
-                .replaceAll("零+万", "万")
+                .replaceAll("零零零零亿", "").replaceAll("零+亿", "亿")
+                .replaceAll("零零零零万", "").replaceAll("零+万", "万")
                 .replaceAll("零+元", "元")
                 .replaceAll("零+", "零");
 

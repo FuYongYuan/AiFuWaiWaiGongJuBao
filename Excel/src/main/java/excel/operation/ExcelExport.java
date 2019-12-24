@@ -77,28 +77,30 @@ public class ExcelExport {
                         for (int i = 0; i < titleCellSize; i++) {
                             //获取字段
                             Field field = sheetSet.getSheetCache().useField.get(i);
+                            //获取字段注解
+                            ExcelField excelField = field.getAnnotation(ExcelField.class);
                             //创建列
                             Cell cell = row.createCell(i);
                             //设置样式
                             cell.setCellStyle(sheetSet.getStyle().getTitle());
                             //对应单元格的标题名
-                            cell.setCellValue(field.getAnnotation(ExcelField.class).columnName());
+                            cell.setCellValue(excelField.columnName());
                             //列样式记录
-                            sheetSet.getSheetCache().cellStyleMap.put(field.getName(), this.setFormat(field, sheetSet.getStyle()));
+                            sheetSet.getSheetCache().cellStyleMap.put(field.getName(), this.setFormat(field, excelField, sheetSet.getStyle()));
 
 
-                            if (field.getAnnotation(ExcelField.class).columnWidth() > 0) {
+                            if (excelField.columnWidth() > 0) {
                                 //设置列宽
-                                sheetModel.setColumnWidth(i, field.getAnnotation(ExcelField.class).columnWidth() * 256);
-                            } else if (field.getAnnotation(ExcelField.class).columnWidth() == 0) {
+                                sheetModel.setColumnWidth(i, excelField.columnWidth() * 256);
+                            } else if (excelField.columnWidth() == 0) {
                                 //是否隐藏当前列
                                 sheetModel.setColumnHidden(i, true);
                             } else {
-                                if (field.getAnnotation(ExcelField.class).isHidden()) {
+                                if (excelField.isHidden()) {
                                     //是否隐藏当前列
                                     sheetModel.setColumnHidden(i, true);
                                 }
-                                if (field.getAnnotation(ExcelField.class).isAutoSize()) {
+                                if (excelField.isAutoSize()) {
                                     //自动适应时要先跟踪
                                     if (this.workbook instanceof SXSSFWorkbook) {
                                         ((SXSSFSheet) sheetModel).trackAllColumnsForAutoSizing();
@@ -136,10 +138,12 @@ public class ExcelExport {
                             for (int j = 0; j < rowCellSize; j++) {
                                 //获取字段
                                 Field field = sheetSet.getSheetCache().useField.get(j);
+                                //获取字段注解
+                                ExcelField excelField = field.getAnnotation(ExcelField.class);
                                 //创建列
                                 Cell cell = nextrow.createCell(j);
                                 //获取值和计算夸列
-                                String cellValue = this.cellValueRowSpan(i, j, initRow, extrai, sheetModel, sheetSet, totalRowIndexMap);
+                                String cellValue = this.cellValueRowSpan(i, j, initRow, extrai, sheetModel, sheetSet, totalRowIndexMap, field, excelField);
                                 //设置单元格格式
                                 cell.setCellStyle(sheetSet.getSheetCache().cellStyleMap.get(field.getName()));
                                 //赋值
@@ -259,19 +263,19 @@ public class ExcelExport {
     /**
      * 是否进行货币格式化
      */
-    private CellStyle setFormat(Field field, Style globalStyle) {
+    private CellStyle setFormat(Field field, ExcelField excelField, Style globalStyle) {
         CellStyle cellStyle = this.workbook.createCellStyle();
 
-        if (field.getAnnotation(ExcelField.class).isMoney()) {
+        if (excelField.isMoney()) {
             DataFormat format = this.workbook.createDataFormat();
             StringBuilder moneyFormat = new StringBuilder("#,##0");
             if ((field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())
                     || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())
                     || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue()))
-                    && field.getAnnotation(ExcelField.class).decimalAfterDigit() > 0
+                    && excelField.decimalAfterDigit() > 0
             ) {
                 moneyFormat.append(".");
-                int decimalAfterDigit = field.getAnnotation(ExcelField.class).decimalAfterDigit();
+                int decimalAfterDigit = excelField.decimalAfterDigit();
                 for (int i = 0; i < decimalAfterDigit; i++) {
                     moneyFormat.append("0");
                 }
@@ -280,20 +284,20 @@ public class ExcelExport {
         } else if ((field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())
                 || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())
                 || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue()))
-                && field.getAnnotation(ExcelField.class).decimalAfterDigit() > 0
+                && excelField.decimalAfterDigit() > 0
         ) {
             DataFormat format = this.workbook.createDataFormat();
             StringBuilder sb = new StringBuilder("#0.");
-            int decimalAfterDigit = field.getAnnotation(ExcelField.class).decimalAfterDigit();
+            int decimalAfterDigit = excelField.decimalAfterDigit();
             for (int i = 0; i < decimalAfterDigit; i++) {
                 sb.append("0");
             }
             cellStyle.setDataFormat(format.getFormat(sb.toString()));
         }
         //水平位置
-        cellStyle.setAlignment(field.getAnnotation(ExcelField.class).horizontalAlignment());
+        cellStyle.setAlignment(excelField.horizontalAlignment());
         //垂直位置
-        cellStyle.setVerticalAlignment(field.getAnnotation(ExcelField.class).verticalAlignment());
+        cellStyle.setVerticalAlignment(excelField.verticalAlignment());
         //边框
         if (globalStyle.getContextBorder() != null && globalStyle.getContextBorder() != BorderStyle.NONE) {
             cellStyle.setBorderTop(globalStyle.getContextBorder());
@@ -308,32 +312,32 @@ public class ExcelExport {
                 cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
             }
         } else {
-            if (field.getAnnotation(ExcelField.class).border() != BorderStyle.NONE) {
-                cellStyle.setBorderTop(field.getAnnotation(ExcelField.class).border());
-                cellStyle.setBorderBottom(field.getAnnotation(ExcelField.class).border());
-                cellStyle.setBorderLeft(field.getAnnotation(ExcelField.class).border());
-                cellStyle.setBorderRight(field.getAnnotation(ExcelField.class).border());
+            if (excelField.border() != BorderStyle.NONE) {
+                cellStyle.setBorderTop(excelField.border());
+                cellStyle.setBorderBottom(excelField.border());
+                cellStyle.setBorderLeft(excelField.border());
+                cellStyle.setBorderRight(excelField.border());
 
-                cellStyle.setTopBorderColor(field.getAnnotation(ExcelField.class).borderColor().getIndex());
-                cellStyle.setBottomBorderColor(field.getAnnotation(ExcelField.class).borderColor().getIndex());
-                cellStyle.setLeftBorderColor(field.getAnnotation(ExcelField.class).borderColor().getIndex());
-                cellStyle.setRightBorderColor(field.getAnnotation(ExcelField.class).borderColor().getIndex());
+                cellStyle.setTopBorderColor(excelField.borderColor().getIndex());
+                cellStyle.setBottomBorderColor(excelField.borderColor().getIndex());
+                cellStyle.setLeftBorderColor(excelField.borderColor().getIndex());
+                cellStyle.setRightBorderColor(excelField.borderColor().getIndex());
             } else {
-                if (field.getAnnotation(ExcelField.class).borderTop() != BorderStyle.NONE) {
-                    cellStyle.setBorderTop(field.getAnnotation(ExcelField.class).borderTop());
-                    cellStyle.setTopBorderColor(field.getAnnotation(ExcelField.class).borderTopColor().getIndex());
+                if (excelField.borderTop() != BorderStyle.NONE) {
+                    cellStyle.setBorderTop(excelField.borderTop());
+                    cellStyle.setTopBorderColor(excelField.borderTopColor().getIndex());
                 }
-                if (field.getAnnotation(ExcelField.class).borderBottom() != BorderStyle.NONE) {
-                    cellStyle.setBorderBottom(field.getAnnotation(ExcelField.class).borderBottom());
-                    cellStyle.setBottomBorderColor(field.getAnnotation(ExcelField.class).borderBottomColor().getIndex());
+                if (excelField.borderBottom() != BorderStyle.NONE) {
+                    cellStyle.setBorderBottom(excelField.borderBottom());
+                    cellStyle.setBottomBorderColor(excelField.borderBottomColor().getIndex());
                 }
-                if (field.getAnnotation(ExcelField.class).borderLeft() != BorderStyle.NONE) {
-                    cellStyle.setBorderLeft(field.getAnnotation(ExcelField.class).borderLeft());
-                    cellStyle.setLeftBorderColor(field.getAnnotation(ExcelField.class).borderLeftColor().getIndex());
+                if (excelField.borderLeft() != BorderStyle.NONE) {
+                    cellStyle.setBorderLeft(excelField.borderLeft());
+                    cellStyle.setLeftBorderColor(excelField.borderLeftColor().getIndex());
                 }
-                if (field.getAnnotation(ExcelField.class).borderRight() != BorderStyle.NONE) {
-                    cellStyle.setBorderRight(field.getAnnotation(ExcelField.class).borderRight());
-                    cellStyle.setRightBorderColor(field.getAnnotation(ExcelField.class).borderRightColor().getIndex());
+                if (excelField.borderRight() != BorderStyle.NONE) {
+                    cellStyle.setBorderRight(excelField.borderRight());
+                    cellStyle.setRightBorderColor(excelField.borderRightColor().getIndex());
                 }
             }
         }
@@ -460,67 +464,70 @@ public class ExcelExport {
             int extrai,
             Sheet sheetModel,
             SheetSet sheetSet,
-            Map<String, TotalRowIndex> totalRowIndexMap
+            Map<String, TotalRowIndex> totalRowIndexMap,
+            Field field,
+            ExcelField excelField
     ) {
-        //获取字段
-        Field field = sheetSet.getSheetCache().useField.get(j);
         //当前数据行
         int current = i - initRow - extrai;
         //当前的字段值
         String cellValue = ExcelDisposeUtil.correspondingValue(
                 field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
-                field.getAnnotation(ExcelField.class).dateType(),
-                field.getAnnotation(ExcelField.class).decimalAfterDigit());
+                excelField.dateType(),
+                excelField.decimalAfterDigit());
 
         //跨行处理
-        if (field.getAnnotation(ExcelField.class).rowspan()) {
+        if (excelField.rowspan()) {
             //上一数据行
             int previous = current - 1;
             //下一数据行
             int next = current + 1;
             //是否是最后一行
             boolean isLast = (i == sheetSet.getSheetData().size() + initRow + extrai - 1);
-            //参考数据行
-            int reference = field.getAnnotation(ExcelField.class).rowspanAlignOrder() - 1;
             //获取参考字段
             Field referenceField = null;
-            if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() > 0) {
+            //获取字段注解
+            ExcelField referenceExcelField = null;
+            if (excelField.rowspanAlignOrder() > 0) {
+                //参考数据行
+                int reference = excelField.rowspanAlignOrder() - 1;
                 referenceField = sheetSet.getSheetCache().useField.get(reference);
+                referenceExcelField = referenceField.getAnnotation(ExcelField.class);
             }
             //参考列值
             String rowspanAlignCellValue = cellValue;
-            if (referenceField != null) {
+            if (referenceField != null && referenceExcelField != null) {
                 rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
                         referenceField, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
-                        referenceField.getAnnotation(ExcelField.class).dateType(),
-                        referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
+                        referenceExcelField.dateType(),
+                        referenceExcelField.decimalAfterDigit());
             }
             //对比列下一行值
             String cv = null;
 
             if (next < sheetSet.getSheetData().size()) {
-                if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() == 0) {
+                if (excelField.rowspanAlignOrder() == 0) {
                     cv = ExcelDisposeUtil.correspondingValue(
                             field, sheetSet.getSheetData().get(next), sheetSet.getIsGetMethodFieldValue(),
-                            field.getAnnotation(ExcelField.class).dateType(),
-                            field.getAnnotation(ExcelField.class).decimalAfterDigit());
-                } else if (referenceField != null) {
+                            excelField.dateType(),
+                            excelField.decimalAfterDigit());
+                } else if (referenceField != null && referenceExcelField != null) {
                     cv = ExcelDisposeUtil.correspondingValue(
                             referenceField, sheetSet.getSheetData().get(next), sheetSet.getIsGetMethodFieldValue(),
-                            referenceField.getAnnotation(ExcelField.class).dateType(),
-                            referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
+                            referenceExcelField.dateType(),
+                            referenceExcelField.decimalAfterDigit());
                 }
             } else if (isLast) {
-                if (field.getAnnotation(ExcelField.class).rowspanAlignOrder() == 0) {
+                if (excelField.rowspanAlignOrder() == 0) {
                     cv = ExcelDisposeUtil.correspondingValue(
                             field, sheetSet.getSheetData().get(previous), sheetSet.getIsGetMethodFieldValue(),
-                            field.getAnnotation(ExcelField.class).dateType(),
-                            field.getAnnotation(ExcelField.class).decimalAfterDigit());
-                } else if (referenceField != null) {
+                            excelField.dateType(),
+                            excelField.decimalAfterDigit());
+                } else if (referenceField != null && referenceExcelField != null) {
                     cv = ExcelDisposeUtil.correspondingValue(
                             referenceField, sheetSet.getSheetData().get(previous), sheetSet.getIsGetMethodFieldValue(),
-                            referenceField.getAnnotation(ExcelField.class).dateType(),
-                            referenceField.getAnnotation(ExcelField.class).decimalAfterDigit());
+                            referenceExcelField.dateType(),
+                            referenceExcelField.decimalAfterDigit());
                 }
             }
             //开始计算合并
@@ -561,15 +568,15 @@ public class ExcelExport {
                     sheetSet.getFunction().getSubTotal()
                             .getCalculationFieldNameAndOrder().get(field.getName()) != null
                             || sheetSet.getFunction().getSubTotal().
-                            getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName()) != null
+                            getCalculationFieldNameAndOrder().get(excelField.columnName()) != null
                             || sheetSet.getFunction().getTotal()
                             .getCalculationFieldNameAndOrder().get(field.getName()) != null
                             || sheetSet.getFunction().getTotal().
-                            getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName()) != null
+                            getCalculationFieldNameAndOrder().get(excelField.columnName()) != null
                             || sheetSet.getFunction().getTotalAll()
                             .getCalculationFieldNameAndOrder().get(field.getName()) != null
                             || sheetSet.getFunction().getTotalAll().
-                            getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName()) != null;
+                            getCalculationFieldNameAndOrder().get(excelField.columnName()) != null;
 
             if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(cv) && existTotal && totalRowIndex.nextRowspan) {
                 cellValue = null;
@@ -696,9 +703,11 @@ public class ExcelExport {
                 boolean isDeviation = false;
                 //获取当前字段
                 Field field = sheetSet.getSheetCache().useField.get(j);
+                //获取字段注解
+                ExcelField excelField = field.getAnnotation(ExcelField.class);
 
                 Integer nameValue = calculation.getCalculationFieldNameAndOrder().get(field.getName());
-                Integer annotationValue = calculation.getCalculationFieldNameAndOrder().get(field.getAnnotation(ExcelField.class).columnName());
+                Integer annotationValue = calculation.getCalculationFieldNameAndOrder().get(excelField.columnName());
                 if (annotationValue != null && annotationValue > 0) {
                     cell = nextRow.createCell(annotationValue - 1);
                     isDeviation = true;
