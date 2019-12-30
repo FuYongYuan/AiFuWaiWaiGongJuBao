@@ -461,12 +461,13 @@ public class TextDispose {
             res = ChineseNum[Math.toIntExact(moneyNum % 10)] + res;
             moneyNum /= 10;
         }
-        return res
+        return (res
                 .replaceAll("零[拾佰仟]", "零")
                 .replaceAll("零零零零亿", "").replaceAll("零+亿", "亿")
                 .replaceAll("零零零零万", "").replaceAll("零+万", "万")
                 .replaceAll("零+元", "元")
-                .replaceAll("零+", "零");
+                .replaceAll("零+", "零"))
+                + "整";
 
     }
 
@@ -484,12 +485,13 @@ public class TextDispose {
             res = ChineseNum[moneyNum % 10] + res;
             moneyNum /= 10;
         }
-        return res
+        return (res
                 .replaceAll("零[拾佰仟]", "零")
                 .replaceAll("零零零零亿", "").replaceAll("零+亿", "亿")
                 .replaceAll("零零零零万", "").replaceAll("零+万", "万")
                 .replaceAll("零+元", "元")
-                .replaceAll("零+", "零");
+                .replaceAll("零+", "零"))
+                + "整";
 
     }
 
@@ -516,10 +518,11 @@ public class TextDispose {
             res = "零" + res;
         }
         res = res.replaceAll("零+", "零");
-        if (res.endsWith("零"))
+        if (res.endsWith("零")) {
             res = res.substring(0, res.length() - 1);
+        }
         try {
-            return arabNumberToChineseRMB(inte) + res;
+            return arabNumberToChineseRMB(inte) + ("".equals(res) ? "整" : (res.contains("角") && !res.contains("分") && !res.contains("里")) ? res + "整" : res);
         } catch (Exception e) {
             return e.getMessage();
         }

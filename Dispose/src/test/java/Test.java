@@ -24,7 +24,11 @@ public class Test {
 //        int y = i + x;
 
         try {
-            System.out.println(TextDispose.arabNumberToChineseRMB(100010001000L));
+            System.out.println(TextDispose.arabNumberToChineseRMB(5.5));
+            System.out.println(TextDispose.arabNumberToChineseRMB(5.55));
+            System.out.println(TextDispose.arabNumberToChineseRMB(5.555));
+            System.out.println(TextDispose.arabNumberToChineseRMB(5.50));
+            System.out.println(TextDispose.arabNumberToChineseRMB(5.505));
         } catch (Exception e) {
             e.printStackTrace();
         }
