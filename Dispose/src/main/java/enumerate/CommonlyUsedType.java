@@ -14,7 +14,8 @@ public enum CommonlyUsedType {
     Type_boolean("boolean"),
     Type_BigDecimal("java.math.BigDecimal"),
     Type_Timestamp("java.sql.Timestamp"),
-    Type_Sql_Date("java.sql.Date");
+    Type_Sql_Date("java.sql.Date"),
+    Type_BigInteger("java.math.BigInteger");
 
 
     private String value;
