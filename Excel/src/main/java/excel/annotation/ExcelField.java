@@ -28,29 +28,19 @@ public @interface ExcelField {
     int order();
 
     /**
-     * 日期格式
-     */
-    DateType dateType() default DateType.Year_Month_Day_Hour_Minute_Second;
-
-    /**
      * 保留位数
      */
     int decimalAfterDigit() default 3;
 
     /**
-     * 水平位置
+     * 日期格式
      */
-    HorizontalAlignment horizontalAlignment() default HorizontalAlignment.LEFT;
+    DateType dateType() default DateType.Year_Month_Day_Hour_Minute_Second;
 
     /**
-     * 上下位置
+     * 替换值集
      */
-    VerticalAlignment verticalAlignment() default VerticalAlignment.CENTER;
-
-    /**
-     * 列宽
-     */
-    int columnWidth() default -1;
+    String valueLimit() default "";
 
     /**
      * 是否是钱类型
@@ -68,6 +58,16 @@ public @interface ExcelField {
     boolean rowspan() default false;
 
     /**
+     * 合并参考列序号
+     */
+    int rowspanAlignOrder() default 0;
+
+    /**
+     * 列宽
+     */
+    int columnWidth() default -1;
+
+    /**
      * 是否隐藏该列
      */
     boolean isHidden() default false;
@@ -78,9 +78,14 @@ public @interface ExcelField {
     boolean isAutoSize() default false;
 
     /**
-     * 合并参考列序号
+     * 水平位置
      */
-    int rowspanAlignOrder() default 0;
+    HorizontalAlignment horizontalAlignment() default HorizontalAlignment.LEFT;
+
+    /**
+     * 上下位置
+     */
+    VerticalAlignment verticalAlignment() default VerticalAlignment.CENTER;
 
     /**
      * 边框

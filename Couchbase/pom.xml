@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.couchbase.client</groupId>
             <artifactId>java-client</artifactId>
-            <version>[${couchbase.version},)</version>
+            <version>${couchbase.version}</version>
         </dependency>
 
         <!-- json -->

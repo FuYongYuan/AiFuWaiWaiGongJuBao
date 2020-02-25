@@ -16,6 +16,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -467,7 +468,7 @@ public class ExcelExport {
             Map<String, TotalRowIndex> totalRowIndexMap,
             Field field,
             ExcelField excelField
-    ) {
+    ) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         //当前数据行
         int current = i - initRow - extrai;
         //当前的字段值
@@ -475,6 +476,9 @@ public class ExcelExport {
                 field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
                 excelField.dateType(),
                 excelField.decimalAfterDigit());
+
+        //获取转换值集中对应值
+        cellValue = ExcelDisposeUtil.getValueLimit(sheetSet, cellValue, excelField);
 
         //跨行处理
         if (excelField.rowspan()) {

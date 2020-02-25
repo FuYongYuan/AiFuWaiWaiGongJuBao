@@ -7,14 +7,17 @@ import enumerate.DateType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.set.SheetSet;
+import excel.operation.set.ValueLimit;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Excel属性处理帮助工具类
@@ -167,5 +170,69 @@ public class ExcelDisposeUtil {
             throw new ExcelOperateException("诊断：Excel对应关系错误！", e);
         }
         return fieldList;
+    }
+
+    /**
+     * 值集转换
+     *
+     * @param sheetSet   页签对象
+     * @param cellValue  原值
+     * @param excelField 字段注解
+     * @return 值集转换后
+     */
+    public static String getValueLimit(SheetSet sheetSet, String cellValue, ExcelField excelField) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        //获取转换值集中对应值
+        if (!excelField.valueLimit().isEmpty()) {
+            if (excelField.valueLimit().contains("=")) {
+                String[] valueLimits = excelField.valueLimit().split(";");
+                for (String valueLimit : valueLimits) {
+                    String[] vl = valueLimit.split("=");
+                    if (vl.length == 2) {
+                        if (vl[0].equals(cellValue)) {
+                            cellValue = vl[1];
+                        }
+                    }
+                }
+            } else {
+                ValueLimit vl = sheetSet.getValueLimit(excelField.valueLimit());
+                if (vl != null) {
+                    if (vl.getIsMap()) {
+                        for (Object m : vl.getValueList()) {
+                            Map map = (Map) m;
+                            if (map.get(vl.getContrastFieldName()).toString().equals(cellValue)) {
+                                cellValue = map.get(vl.getReplaceFieldName()).toString();
+                            }
+                        }
+                    } else {
+                        for (Object o : vl.getValueList()) {
+                            Field contrastField = o.getClass().getDeclaredField(vl.getContrastFieldName());
+                            Object contrastValue;
+                            if (vl.getIsGetMethodFieldValue()) {
+                                String fieldName = contrastField.getName();
+                                String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
+                                Method method = o.getClass().getMethod("get" + fieldNameFirstUpperCase);
+                                contrastValue = method.invoke(o);
+                            } else {
+                                contrastValue = contrastField.get(o);
+                            }
+                            if (contrastValue.toString().equals(cellValue)) {
+                                Field replaceField = o.getClass().getDeclaredField(vl.getReplaceFieldName());
+                                Object replaceValue;
+                                if (vl.getIsGetMethodFieldValue()) {
+                                    String fieldName = replaceField.getName();
+                                    String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
+                                    Method method = o.getClass().getMethod("get" + fieldNameFirstUpperCase);
+                                    replaceValue = method.invoke(o);
+                                } else {
+                                    replaceValue = replaceField.get(o);
+                                }
+                                cellValue = replaceValue.toString();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return cellValue;
     }
 }

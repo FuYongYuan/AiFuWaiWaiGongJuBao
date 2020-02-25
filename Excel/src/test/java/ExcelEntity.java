@@ -36,14 +36,15 @@ public class ExcelEntity {
     @ExcelField(columnName = "小数点", order = 4, decimalAfterDigit = 5, isMoney = true, columnWidth = 30)
     public Double dT;
 
-    @ExcelField(columnName = "钱", order = 2, isMoney = true, horizontalAlignment = HorizontalAlignment.CENTER, columnWidth = 40,rowspan = true, rowspanAlignOrder = 1)
+    @ExcelField(columnName = "钱", order = 2, isMoney = true, horizontalAlignment = HorizontalAlignment.CENTER, columnWidth = 40, rowspan = true, rowspanAlignOrder = 1)
     public BigDecimal bDT;
 
     @ExcelField(columnName = "是否", order = 6, horizontalAlignment = HorizontalAlignment.CENTER, verticalAlignment = VerticalAlignment.CENTER, rowspan = true)
     public Boolean bT;
 
-
+    @ExcelField(columnName = "类型", order = 7, valueLimit = "sT2")//valueLimit = "TYPE01=类型1;TYPE02=类型2;"
     public String sT2;
+
     public int iT2;
     public Date dT2;
     public BigDecimal bBD2;

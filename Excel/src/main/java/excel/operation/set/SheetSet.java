@@ -50,6 +50,11 @@ public class SheetSet {
     private List<ExtraRowData> extraRowData;
 
     /**
+     * 转换值集
+     */
+    private List<ValueLimit> valueLimit;
+
+    /**
      * 构造
      */
     private SheetSet() {
@@ -198,6 +203,41 @@ public class SheetSet {
      */
     public SheetSet setExtraData(ExtraRowData... extraRowData) {
         this.extraRowData = Arrays.asList(extraRowData);
+        return this;
+    }
+
+    /**
+     * 转换值集
+     */
+    public List<ValueLimit> getValueLimit() {
+        return valueLimit;
+    }
+
+    /**
+     * 转换值集
+     */
+    public ValueLimit getValueLimit(String valueListName) {
+        for (ValueLimit vl : valueLimit) {
+            if (vl.getValueListName().equals(valueListName)) {
+                return vl;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 转换值集
+     */
+    public SheetSet setValueLimit(List<ValueLimit> valueLimit) {
+        this.valueLimit = valueLimit;
+        return this;
+    }
+
+    /**
+     * 转换值集
+     */
+    public SheetSet setValueLimit(ValueLimit... valueLimit) {
+        this.valueLimit = Arrays.asList(valueLimit);
         return this;
     }
 }
