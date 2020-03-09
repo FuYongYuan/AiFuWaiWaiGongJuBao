@@ -2,6 +2,7 @@ import dispose.DateDispose;
 import dispose.TextDispose;
 import enumerate.DateType;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class Test {
@@ -18,9 +19,13 @@ public class Test {
 
     public static void main(String[] args) {
 
-        String s=".keyID(\"test\")";
+        System.out.println(Double.parseDouble(String.valueOf(83629750.59)));
+        System.out.println(Double.parseDouble(new String("83629750.59")));
+        System.out.println(new BigDecimal(new String("83629750.59")));
 
-        System.out.println(s.replaceAll("\\.keyID\\(\"test\"\\)","\\.keyID(\"test\" + i)"));
+//        String s=".keyID(\"test\")";
+//
+//        System.out.println(s.replaceAll("\\.keyID\\(\"test\"\\)","\\.keyID(\"test\" + i)"));
 
 //        byte[] b=new byte[]{-128,127};
 //

@@ -249,7 +249,7 @@ public class ExcelExport {
                 } else if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue())) {
                     cell.setCellValue(Integer.parseInt(cellValue));
                 } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())) {
-                    cell.setCellValue(new BigDecimal(cellValue).doubleValue());
+                    cell.setCellValue(new BigDecimal(cellValue).toString());
                 } else {
                     cell.setCellValue(cellValue);
                 }
@@ -358,7 +358,7 @@ public class ExcelExport {
             } else if (ecd.getCellType() == Integer.class || ecd.getCellType() == int.class) {
                 cell.setCellValue(Integer.parseInt(ecd.getCellValue().toString()));
             } else if (ecd.getCellType() == BigDecimal.class) {
-                cell.setCellValue(new BigDecimal(ecd.getCellValue().toString()).doubleValue());
+                cell.setCellValue(new BigDecimal(ecd.getCellValue().toString()).toString());
             } else if (ecd.getCellType() == Date.class) {
                 cell.setCellValue(DateDispose.formatting_Date((Date) ecd.getCellValue(), ecd.getDateType()));
             } else {
@@ -521,7 +521,7 @@ public class ExcelExport {
                             referenceExcelField.dateType(),
                             referenceExcelField.decimalAfterDigit());
                 }
-            } else if (isLast) {
+            } else if (isLast && sheetSet.getSheetData().size() > 1) {
                 if (excelField.rowspanAlignOrder() == 0) {
                     cv = ExcelDisposeUtil.correspondingValue(
                             field, sheetSet.getSheetData().get(previous), sheetSet.getIsGetMethodFieldValue(),
