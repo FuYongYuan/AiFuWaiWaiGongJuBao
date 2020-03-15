@@ -42,7 +42,7 @@ public class ExcelEntity {
     @ExcelField(columnName = "是否", order = 6, horizontalAlignment = HorizontalAlignment.CENTER, verticalAlignment = VerticalAlignment.CENTER, rowspan = true)
     public Boolean bT;
 
-    @ExcelField(columnName = "类型", order = 7, valueLimit = "sT2")//valueLimit = "TYPE01=类型1;TYPE02=类型2;"
+    @ExcelField(columnName = "类型", order = 7, valueLimit = "TYPE01=类型1;TYPE02=类型2;")//valueLimit = "TYPE01=类型1;TYPE02=类型2;"
     public String sT2;
 
     public int iT2;
