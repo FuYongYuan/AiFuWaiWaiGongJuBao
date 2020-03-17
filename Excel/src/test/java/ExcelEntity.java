@@ -33,7 +33,7 @@ public class ExcelEntity {
     @ExcelField(columnName = "日期", order = 5, dateType = DateType.Year_Month_Day, columnWidth = 20, rowspan = true, rowspanAlignOrder = 1)
     public Date DT;
 
-    @ExcelField(columnName = "小数点", order = 4, decimalAfterDigit = 5, isMoney = true, columnWidth = 30)
+    @ExcelField(columnName = "小数点", order = 4, decimalAfterDigit = 5,  columnWidth = 30)
     public Double dT;
 
     @ExcelField(columnName = "钱", order = 2, isMoney = true, horizontalAlignment = HorizontalAlignment.CENTER, columnWidth = 40, rowspan = true, rowspanAlignOrder = 1)

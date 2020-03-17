@@ -3,6 +3,7 @@ import dispose.TextDispose;
 import enumerate.DateType;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Test {
@@ -21,7 +22,10 @@ public class Test {
 
         System.out.println(Double.parseDouble(String.valueOf(83629750.59)));
         System.out.println(Double.parseDouble(new String("83629750.59")));
-        System.out.println(new BigDecimal(new String("83629750.59")));
+        System.out.println(new BigDecimal("83629750.59"));
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(3);//这里是小数位
+        System.out.println(df.format(new BigDecimal("83629750.59").doubleValue()));
 
 //        String s=".keyID(\"test\")";
 //
