@@ -15,9 +15,11 @@ public class Test {
 
         System.out.println(DateDispose.formatting_Date(sd, DateType.Year_Month_Day_Hour_Minute_Second_MS));
 
-        CalcHistCompare calcHistCompare = new CalcHistCompare();
+        CalcHistCompare calcHistCompare = CalcHistCompare.create()
+                .setThreshold(0.9)
+                .build();
 
-        LinkedHashMap<String, Double> map = calcHistCompare.compare(basePicPath + "1.jpg", basePicPath);
+        LinkedHashMap<String, Double> map = calcHistCompare.compare(basePicPath + "2.jpg", basePicPath);
 
         for (Map.Entry<String, Double> entry : map.entrySet()) {
             System.out.println("图片：" + entry.getKey() + " 对比值：" + entry.getValue());

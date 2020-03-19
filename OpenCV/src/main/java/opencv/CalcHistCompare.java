@@ -18,44 +18,41 @@ public class CalcHistCompare {
      * 颜色范围开始值
      */
     private float startRanges = 0f;
+
     /**
      * 颜色范围结束值
      */
     private float endRanges = 256f;
+
     /**
      * 直方图大小， 越大匹配越精确 (越慢)
      */
     private int calcHistSize = 1000;
 
     /**
-     * 初始化
+     * 筛选阈值
      */
-    public CalcHistCompare() {
+    private double threshold = 0.72;
+
+    /**
+     * 构造
+     */
+    private CalcHistCompare() {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
     /**
-     * 初始化
-     *
-     * @param calcHistSize 直方图大小， 越大匹配越精确 (越慢)
+     * 创建
      */
-    public CalcHistCompare(int calcHistSize) {
-        this.calcHistSize = calcHistSize;
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    public static CalcHistCompare create() {
+        return new CalcHistCompare();
     }
 
     /**
-     * 初始化
-     *
-     * @param startRanges  颜色范围开始值
-     * @param endRanges    颜色范围结束值
-     * @param calcHistSize 直方图大小， 越大匹配越精确 (越慢)
+     * 初始化 需要工作簿对象
      */
-    public CalcHistCompare(float startRanges, float endRanges, int calcHistSize) {
-        this.startRanges = startRanges;
-        this.endRanges = endRanges;
-        this.calcHistSize = calcHistSize;
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    public CalcHistCompare build() {
+        return this;
     }
 
     /**
@@ -92,7 +89,10 @@ public class CalcHistCompare {
                 //结果
                 double compareResult = Imgproc.compareHist(imageHist, fileHist, Imgproc.CV_COMP_CORREL);
 
-                map.put(f.getPath(), compareResult);
+                //超过阈值则返回
+                if (compareResult >= threshold) {
+                    map.put(f.getPath(), compareResult);
+                }
             }
         }
 
@@ -110,5 +110,37 @@ public class CalcHistCompare {
 
         //返回结果
         return result;
+    }
+
+    /**
+     * 颜色范围开始值
+     */
+    public CalcHistCompare setStartRanges(float startRanges) {
+        this.startRanges = startRanges;
+        return this;
+    }
+
+    /**
+     * 颜色范围结束值
+     */
+    public CalcHistCompare setEndRanges(float endRanges) {
+        this.endRanges = endRanges;
+        return this;
+    }
+
+    /**
+     * 直方图大小， 越大匹配越精确 (越慢)
+     */
+    public CalcHistCompare setCalcHistSize(int calcHistSize) {
+        this.calcHistSize = calcHistSize;
+        return this;
+    }
+
+    /**
+     * 筛选阈值
+     */
+    public CalcHistCompare setThreshold(double threshold) {
+        this.threshold = threshold;
+        return this;
     }
 }
