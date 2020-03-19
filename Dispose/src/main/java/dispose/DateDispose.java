@@ -55,6 +55,10 @@ public class DateDispose {
         return formatting_Date(new Date(), DateType.Year_Month_Day_Hour_Minute_Second);
     }
 
+    public static String Year_Month_Day_Hour_Minute_Second_MS() {
+        return formatting_Date(new Date(), DateType.Year_Month_Day_Hour_Minute_Second_MS);
+    }
+
     public static String Hour_Minute_Second() {
         return formatting_Date(new Date(), DateType.Hour_Minute_Second);
     }

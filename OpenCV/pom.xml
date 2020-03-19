@@ -20,6 +20,21 @@
     </properties>
 
     <dependencies>
+        <!-- Project -->
+        <dependency>
+            <groupId>cn.fyy</groupId>
+            <artifactId>project</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- dispose -->
+        <dependency>
+            <groupId>cn.fyy</groupId>
+            <artifactId>dispose</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+
         <!-- OpenCV -->
         <dependency>
             <groupId>com.opencv</groupId>

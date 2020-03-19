@@ -1,43 +1,38 @@
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfFloat;
-import org.opencv.core.MatOfInt;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
+import dispose.DateDispose;
+import enumerate.DateType;
+import opencv.CalcHistCompare;
 
-import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Test {
-    static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
+    private static String basePicPath = "D:\\Project\\AiFuWaiWaiGongJuBao\\OpenCV\\src\\main\\resources\\image\\";
 
-    public static double compare_image(String img_1, String img_2) {
-        Mat mat_1 = Imgcodecs.imread(img_1);
-        Mat mat_2 = Imgcodecs.imread(img_2);
-        Mat hist_1 = new Mat();
-        Mat hist_2 = new Mat();
-
-        //颜色范围
-        MatOfFloat ranges = new MatOfFloat(0f, 256f);
-        //直方图大小， 越大匹配越精确 (越慢)
-        MatOfInt histSize = new MatOfInt(1000);
-
-        Imgproc.calcHist(Arrays.asList(mat_1), new MatOfInt(0), new Mat(), hist_1, histSize, ranges);
-        Imgproc.calcHist(Arrays.asList(mat_2), new MatOfInt(0), new Mat(), hist_2, histSize, ranges);
-
-        // CORREL 相关系数
-        return Imgproc.compareHist(hist_1, hist_2, Imgproc.CV_COMP_CORREL);
-    }
 
     public static void main(String[] args) {
-        String basePicPath = "E:\\fuyy\\AiFuWaiWaiGongJuBao\\OpenCV\\src\\main\\resources\\image\\";
-        double compareHist = compare_image(basePicPath + "1.jpg", basePicPath + "3.jpg");
-        System.out.println(compareHist);
-        if (compareHist > 0.72) {
-            System.out.println("匹配");
-        } else {
-            System.out.println("不匹配");
+        Date sd = new Date();
+
+        System.out.println(DateDispose.formatting_Date(sd, DateType.Year_Month_Day_Hour_Minute_Second_MS));
+
+        CalcHistCompare calcHistCompare = new CalcHistCompare();
+
+        LinkedHashMap<String, Double> map = calcHistCompare.compare(basePicPath + "1.jpg", basePicPath);
+
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
+            System.out.println("图片：" + entry.getKey() + " 对比值：" + entry.getValue());
         }
+
+        Date ed = new Date();
+        System.out.println(DateDispose.formatting_Date(ed, DateType.Year_Month_Day_Hour_Minute_Second_MS));
+        System.out.println("执行时间为：" + (sd.getTime() - ed.getTime()) + "毫秒");
+
+//        double compareHist = compare_image(basePicPath + "1.jpg", basePicPath + "3.jpg");
+//        System.out.println(compareHist);
+//        if (compareHist > 0.72) {
+//            System.out.println("匹配");
+//        } else {
+//            System.out.println("不匹配");
+//        }
     }
 }
