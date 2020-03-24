@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Test {
-    private static String basePicPath = "D:\\Project\\AiFuWaiWaiGongJuBao\\OpenCV\\src\\main\\resources\\image\\";
+    private static String basePicPath = "D:\\Project\\FYY\\AiFuWaiWaiGongJuBao\\OpenCV\\src\\main\\resources\\image\\";
 
 
     public static void main(String[] args) {

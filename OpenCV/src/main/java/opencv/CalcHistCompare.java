@@ -35,6 +35,11 @@ public class CalcHistCompare {
     private double threshold = 0.72;
 
     /**
+     * 筛选数量
+     */
+    private Integer number = 20;
+
+    /**
      * 构造
      */
     private CalcHistCompare() {
@@ -104,7 +109,12 @@ public class CalcHistCompare {
         });
         /*转换成新map输出*/
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
+        int num = 0;
         for (Map.Entry<String, Double> entry : infoIds) {
+            num++;
+            if (num > number) {
+                break;
+            }
             result.put(entry.getKey(), entry.getValue());
         }
 
@@ -141,6 +151,14 @@ public class CalcHistCompare {
      */
     public CalcHistCompare setThreshold(double threshold) {
         this.threshold = threshold;
+        return this;
+    }
+
+    /**
+     * 筛选数量
+     */
+    public CalcHistCompare setNumber(Integer number) {
+        this.number = number;
         return this;
     }
 }
