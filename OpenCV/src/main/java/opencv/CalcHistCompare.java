@@ -107,14 +107,17 @@ public class CalcHistCompare {
             //降序排序
             return o2.getValue().compareTo(o1.getValue());
         });
-        /*转换成新map输出*/
+        //转换成新map输出
         LinkedHashMap<String, Double> result = new LinkedHashMap<>();
+        //返回数量
         int num = 0;
         for (Map.Entry<String, Double> entry : infoIds) {
+            //限制返回数量
             num++;
             if (num > number) {
                 break;
             }
+            //返回内容
             result.put(entry.getKey(), entry.getValue());
         }
 
