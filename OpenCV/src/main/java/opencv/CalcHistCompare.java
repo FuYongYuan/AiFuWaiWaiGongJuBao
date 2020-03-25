@@ -96,7 +96,7 @@ public class CalcHistCompare {
 
                 //超过阈值则返回
                 if (compareResult >= threshold) {
-                    map.put(f.getPath(), compareResult);
+                    map.put(f.getName(), compareResult);
                 }
             }
         }
