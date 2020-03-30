@@ -7,13 +7,11 @@ import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.set.*;
 import excel.util.ExcelDisposeUtil;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -51,17 +49,17 @@ public class ExcelExport {
      */
     public Workbook setExcel(List<SheetSet> sheetSets) {
         try {
-            if (sheetSets != null && sheetSets.size() > 0) {
+            if (sheetSets != null && !sheetSets.isEmpty()) {
                 //循环页签数组对象
                 for (SheetSet sheetSet : sheetSets) {
                     //创建页签并给页签命名
                     Sheet sheetModel = this.workbook.createSheet(sheetSet.getSheetName());
                     //获取要执行的对象中属于Excel的字段
                     ExcelDisposeUtil.initialization(sheetSet);
-                    if (sheetSet.getSheetCache().useField != null && sheetSet.getSheetCache().useField.size() > 0) {
+                    if (sheetSet.getSheetCache().useField != null && !sheetSet.getSheetCache().useField.isEmpty()) {
                         //初始化行数
                         int initRow = 0;
-                        if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
+                        if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
                             initRow = this.getInitRow(sheetModel, sheetSet.getExtraRowData(), initRow, sheetSet.getStyle());
                         }
                         //初始化样式
@@ -123,7 +121,7 @@ public class ExcelExport {
                             //创建行    （标题的下一行）
                             Row nextrow = sheetModel.createRow(i + 1);
 
-                            if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
+                            if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
                                 for (ExtraRowData erd : sheetSet.getExtraRowData()) {
                                     if (erd != null) {
                                         if (!erd.getIsMaxRowNumber() && erd.getRowNumber() == nextrow.getRowNum()) {
@@ -216,7 +214,7 @@ public class ExcelExport {
                     }
 
                     //额外数据
-                    if (sheetSet.getExtraRowData() != null && sheetSet.getExtraRowData().size() > 0) {
+                    if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
                         for (ExtraRowData erd : sheetSet.getExtraRowData()) {
                             if (erd != null) {
                                 if (erd.getIsMaxRowNumber()) {
@@ -637,7 +635,7 @@ public class ExcelExport {
                     )) {
                         occupyRows.add(i + 2);
                         //重新合并
-                        if (calculation.getSpanFieldNames() != null && calculation.getSpanFieldNames().size() > 0) {
+                        if (calculation.getSpanFieldNames() != null && !calculation.getSpanFieldNames().isEmpty()) {
                             this.againSpan(
                                     i,
                                     initRow,
@@ -664,7 +662,7 @@ public class ExcelExport {
                         occupyRows
                 )) {
                     //重新合并
-                    if (calculation.getSpanFieldNames() != null && calculation.getSpanFieldNames().size() > 0) {
+                    if (calculation.getSpanFieldNames() != null && !calculation.getSpanFieldNames().isEmpty()) {
                         this.againSpan(
                                 i,
                                 initRow,
@@ -830,17 +828,7 @@ public class ExcelExport {
                 } else {
                     totalRowIndexMap.get(field.getName()).rowspanEnd = totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
                     List<CellRangeAddress> cellRangeAddressList = sheetModel.getMergedRegions();
-
-                    int regionIndex = 0;
-                    if (this.workbook instanceof XSSFWorkbook || this.workbook instanceof SXSSFWorkbook) {
-                        if (totalRowIndexMap.get(field.getName()).regionIndex > 0) {
-                            regionIndex = totalRowIndexMap.get(field.getName()).regionIndex - 1;
-                        }
-                    } else if (this.workbook instanceof HSSFWorkbook) {
-                        regionIndex = totalRowIndexMap.get(field.getName()).regionIndex;
-                    }
-
-                    CellRangeAddress cellAddresses = sheetModel.getMergedRegion(regionIndex);
+                    CellRangeAddress cellAddresses = sheetModel.getMergedRegion(totalRowIndexMap.get(field.getName()).regionIndex);
                     if (cellRangeAddressList.contains(cellAddresses)) {
                         sheetModel.removeMergedRegion(cellRangeAddressList.indexOf(cellAddresses));
                     }

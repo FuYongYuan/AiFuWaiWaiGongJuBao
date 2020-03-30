@@ -16,7 +16,7 @@
 
     <properties>
         <!--excel导出导入-->
-        <poi.version>4.1.0</poi.version>
+        <poi.version>4.1.2</poi.version>
     </properties>
 
     <dependencies>
