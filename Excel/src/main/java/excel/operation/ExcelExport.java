@@ -145,8 +145,20 @@ public class ExcelExport {
                                 String cellValue = this.cellValueRowSpan(i, j, initRow, extrai, sheetModel, sheetSet, totalRowIndexMap, field, excelField);
                                 //设置单元格格式
                                 cell.setCellStyle(sheetSet.getSheetCache().cellStyleMap.get(field.getName()));
-                                //赋值
-                                this.setCellValue(field, cell, cellValue);
+                                //判断是否需要赋值
+                                boolean isSetValue = true;
+                                if (!totalRowIndexMap.isEmpty()) {
+                                    TotalRowIndex totalRowIndex = totalRowIndexMap.get(field.getName());
+                                    if (totalRowIndex != null) {
+                                        if (totalRowIndex.rowspanStart != (i + 1) && totalRowIndex.rowspanEnd != 0 && totalRowIndex.rowspanStart < (i + 1) && (i + 1) <= totalRowIndex.rowspanEnd) {
+                                            isSetValue = false;
+                                        }
+                                    }
+                                }
+                                if (isSetValue) {
+                                    //赋值
+                                    this.setCellValue(field, cell, cellValue);
+                                }
                             }
 
                             //计算功能处理
