@@ -10,6 +10,7 @@ import excel.util.ExcelDisposeUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
@@ -872,6 +873,18 @@ public class ExcelExport {
                 if (cell == null) {
                     cell = row.createCell(ecd.getCellNumber());
                 }
+                if (ecd.getColspan() != null && ecd.getColspan() > 1) {
+                    CellRangeAddress cellAddresses = new CellRangeAddress(initRow, initRow, ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
+                    sheetModel.addMergedRegion(cellAddresses);
+                    RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                    RegionUtil.setBorderBottom(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                    RegionUtil.setBorderLeft(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                    RegionUtil.setBorderRight(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                    RegionUtil.setTopBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
+                    RegionUtil.setBottomBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
+                    RegionUtil.setLeftBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
+                    RegionUtil.setRightBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
+                }
                 this.setCellValue(cell, ecd, globalStyle);
             }
             initRow = initRow + 1;
@@ -892,6 +905,18 @@ public class ExcelExport {
             Cell cell = row.getCell(ecd.getCellNumber());
             if (cell == null) {
                 cell = row.createCell(ecd.getCellNumber());
+            }
+            if (ecd.getColspan() != null && ecd.getColspan() > 1) {
+                CellRangeAddress cellAddresses = new CellRangeAddress(erd.getRowNumber(), erd.getRowNumber(), ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
+                sheetModel.addMergedRegion(cellAddresses);
+                RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                RegionUtil.setBorderBottom(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                RegionUtil.setBorderLeft(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                RegionUtil.setBorderRight(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                RegionUtil.setTopBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
+                RegionUtil.setBottomBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
+                RegionUtil.setLeftBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
+                RegionUtil.setRightBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
             }
             this.setCellValue(cell, ecd, globalStyle);
         }

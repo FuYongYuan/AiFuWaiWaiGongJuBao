@@ -51,9 +51,9 @@ public class Test {
                     .setValueLimit(ValueLimit.create().setValueList(st2).setValueListName("sT2").setContrastFieldName("name").setReplaceFieldName("value").build())
                     .setExtraData(null
                             , ExtraRowData.create().setRowNumber(3).setExtraCellData(
-                                    ExtraCellData.create().setCellNumber(2).setCellValue("ceshi").setCellType(String.class).build(),
-                                    ExtraCellData.create().setCellNumber(3).setCellValue(1).setCellType(Integer.class).build(),
-                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setColumnWidth(100).build()
+//                                    ExtraCellData.create().setCellNumber(2).setCellValue("ceshi").setCellType(String.class).build(),
+//                                    ExtraCellData.create().setCellNumber(3).setCellValue(1).setCellType(Integer.class).build(),
+                                    ExtraCellData.create().setCellNumber(1).setColspan(3).setCellValue(new Date()).setCellType(Date.class).setColumnWidth(100).build()
                             ).setIsNewRow(true).build()
                             , ExtraRowData.create().setRowNumber(4).setExtraCellData(
                                     ExtraCellData.create().setCellNumber(1).setCellValue("测试ce").setCellType(String.class).build(),
