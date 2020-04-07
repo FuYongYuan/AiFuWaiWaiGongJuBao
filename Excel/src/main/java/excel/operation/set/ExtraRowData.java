@@ -2,7 +2,9 @@ package excel.operation.set;
 
 import excel.exception.ExcelOperateException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -49,6 +51,22 @@ public class ExtraRowData {
         if (this.rowNumber == null && !this.isMaxRowNumber) {
             throw new ExcelOperateException("诊断：缺少额外行数据行号！", new NullPointerException());
         }
+
+        List<Integer> occupy = new ArrayList<>();
+        for (ExtraCellData cell : extraCellData) {
+            if (cell.getColspan() != null && cell.getColspan() > 1) {
+                for (int i = 1; i <= cell.getColspan(); i++) {
+                    occupy.add(cell.getCellNumber() + (i - 1));
+                }
+            } else {
+                occupy.add(cell.getCellNumber());
+            }
+        }
+        boolean isRepeat = occupy.size() != new HashSet<>(occupy).size();
+        if (isRepeat) {
+            throw new ExcelOperateException("诊断：存在夸列重叠请检查列号及夸列数设置！", new IndexOutOfBoundsException());
+        }
+
         return this;
     }
 

@@ -19,6 +19,11 @@ public class Test {
     }
 
     public static void main(String[] args) {
+        String i ="dasda";
+
+        if("String"==i){
+          System.out.println();
+        }
 
         System.out.println(Double.parseDouble(String.valueOf(83629750.59)));
         System.out.println(Double.parseDouble(new String("83629750.59")));

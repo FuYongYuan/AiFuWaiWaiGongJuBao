@@ -19,6 +19,11 @@ public class ExtraCellData {
     private Integer cellNumber;
 
     /**
+     * 夸列数量 包含自身 默认1
+     */
+    private Integer colspan;
+
+    /**
      * 列值
      */
     private Object cellValue;
@@ -129,6 +134,7 @@ public class ExtraCellData {
      */
     public static ExtraCellData create() {
         return new ExtraCellData()
+                .setColspan(1)
                 .setDecimalAfterDigit(3)
                 .setDateType(DateType.Year_Month_Day_Hour_Minute_Second)
                 .setHorizontalAlignment(HorizontalAlignment.LEFT)
@@ -178,6 +184,21 @@ public class ExtraCellData {
      */
     public ExtraCellData setCellNumber(Integer cellNumber) {
         this.cellNumber = cellNumber - 1;
+        return this;
+    }
+
+    /**
+     * 夸列数量
+     */
+    public Integer getColspan() {
+        return colspan;
+    }
+
+    /**
+     * 夸列数量
+     */
+    public ExtraCellData setColspan(Integer colspan) {
+        this.colspan = colspan;
         return this;
     }
 
