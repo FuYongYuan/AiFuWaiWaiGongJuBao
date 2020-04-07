@@ -421,6 +421,18 @@ public class ExcelExport {
         cellStyle.setVerticalAlignment(ecd.getVerticalAlignment());
         //边框
         if (globalStyle.getContextBorder() != null && globalStyle.getContextBorder() != BorderStyle.NONE) {
+            //处理原单元格
+            cellStyle.setBorderTop(globalStyle.getContextBorder());
+            cellStyle.setBorderBottom(globalStyle.getContextBorder());
+            cellStyle.setBorderLeft(globalStyle.getContextBorder());
+            cellStyle.setBorderRight(globalStyle.getContextBorder());
+
+            if (globalStyle.getContextBorderColor() != null) {
+                cellStyle.setTopBorderColor(globalStyle.getContextBorderColor().getIndex());
+                cellStyle.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex());
+                cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
+                cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
+            }
             //处理合并单元格
             if (cellAddresses != null) {
                 RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
@@ -435,19 +447,36 @@ public class ExcelExport {
                     RegionUtil.setRightBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
                 }
             }
-            //处理原单元格
-            cellStyle.setBorderTop(globalStyle.getContextBorder());
-            cellStyle.setBorderBottom(globalStyle.getContextBorder());
-            cellStyle.setBorderLeft(globalStyle.getContextBorder());
-            cellStyle.setBorderRight(globalStyle.getContextBorder());
-
-            if (globalStyle.getContextBorderColor() != null) {
-                cellStyle.setTopBorderColor(globalStyle.getContextBorderColor().getIndex());
-                cellStyle.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex());
-                cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
-                cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
-            }
         } else {
+            //处理原单元格
+            if (ecd.getBorder() != BorderStyle.NONE) {
+                cellStyle.setBorderTop(ecd.getBorder());
+                cellStyle.setBorderBottom(ecd.getBorder());
+                cellStyle.setBorderLeft(ecd.getBorder());
+                cellStyle.setBorderRight(ecd.getBorder());
+
+                cellStyle.setTopBorderColor(ecd.getBorderColor().getIndex());
+                cellStyle.setBottomBorderColor(ecd.getBorderColor().getIndex());
+                cellStyle.setLeftBorderColor(ecd.getBorderColor().getIndex());
+                cellStyle.setRightBorderColor(ecd.getBorderColor().getIndex());
+            } else {
+                if (ecd.getBorderTop() != BorderStyle.NONE) {
+                    cellStyle.setBorderTop(ecd.getBorderTop());
+                    cellStyle.setTopBorderColor(ecd.getBorderTopColor().getIndex());
+                }
+                if (ecd.getBorderBottom() != BorderStyle.NONE) {
+                    cellStyle.setBorderBottom(ecd.getBorderBottom());
+                    cellStyle.setBottomBorderColor(ecd.getBorderBottomColor().getIndex());
+                }
+                if (ecd.getBorderLeft() != BorderStyle.NONE) {
+                    cellStyle.setBorderLeft(ecd.getBorderLeft());
+                    cellStyle.setLeftBorderColor(ecd.getBorderLeftColor().getIndex());
+                }
+                if (ecd.getBorderRight() != BorderStyle.NONE) {
+                    cellStyle.setBorderRight(ecd.getBorderRight());
+                    cellStyle.setRightBorderColor(ecd.getBorderRightColor().getIndex());
+                }
+            }
             //处理合并单元格
             if (cellAddresses != null) {
                 if (ecd.getBorder() != BorderStyle.NONE) {
@@ -477,35 +506,6 @@ public class ExcelExport {
                         RegionUtil.setBorderRight(ecd.getBorderRight(), cellAddresses, sheetModel);
                         RegionUtil.setRightBorderColor(ecd.getBorderRightColor().getIndex(), cellAddresses, sheetModel);
                     }
-                }
-            }
-            //处理原单元格
-            if (ecd.getBorder() != BorderStyle.NONE) {
-                cellStyle.setBorderTop(ecd.getBorder());
-                cellStyle.setBorderBottom(ecd.getBorder());
-                cellStyle.setBorderLeft(ecd.getBorder());
-                cellStyle.setBorderRight(ecd.getBorder());
-
-                cellStyle.setTopBorderColor(ecd.getBorderColor().getIndex());
-                cellStyle.setBottomBorderColor(ecd.getBorderColor().getIndex());
-                cellStyle.setLeftBorderColor(ecd.getBorderColor().getIndex());
-                cellStyle.setRightBorderColor(ecd.getBorderColor().getIndex());
-            } else {
-                if (ecd.getBorderTop() != BorderStyle.NONE) {
-                    cellStyle.setBorderTop(ecd.getBorderTop());
-                    cellStyle.setTopBorderColor(ecd.getBorderTopColor().getIndex());
-                }
-                if (ecd.getBorderBottom() != BorderStyle.NONE) {
-                    cellStyle.setBorderBottom(ecd.getBorderBottom());
-                    cellStyle.setBottomBorderColor(ecd.getBorderBottomColor().getIndex());
-                }
-                if (ecd.getBorderLeft() != BorderStyle.NONE) {
-                    cellStyle.setBorderLeft(ecd.getBorderLeft());
-                    cellStyle.setLeftBorderColor(ecd.getBorderLeftColor().getIndex());
-                }
-                if (ecd.getBorderRight() != BorderStyle.NONE) {
-                    cellStyle.setBorderRight(ecd.getBorderRight());
-                    cellStyle.setRightBorderColor(ecd.getBorderRightColor().getIndex());
                 }
             }
         }
