@@ -86,7 +86,7 @@ public class ExcelExport {
                             //对应单元格的标题名
                             cell.setCellValue(excelField.columnName());
                             //列样式记录
-                            sheetSet.getSheetCache().cellStyleMap.put(field.getName(), this.setFormat(field, excelField, sheetSet.getStyle()));
+                            sheetSet.getSheetCache().cellStyleMap.put(field.getName(), this.getCellStyle(field, excelField, sheetSet.getStyle()));
 
 
                             if (excelField.columnWidth() > 0) {
@@ -273,9 +273,9 @@ public class ExcelExport {
     }
 
     /**
-     * 是否进行货币格式化
+     * 获取单元格样式
      */
-    private CellStyle setFormat(Field field, ExcelField excelField, Style globalStyle) {
+    private CellStyle getCellStyle(Field field, ExcelField excelField, Style globalStyle) {
         CellStyle cellStyle = this.workbook.createCellStyle();
 
         if (excelField.isMoney()) {
@@ -360,7 +360,7 @@ public class ExcelExport {
     /**
      * 赋值
      */
-    private void setCellValue(Cell cell, ExtraCellData ecd, Style globalStyle) {
+    private void setCellValue(Sheet sheetModel, Cell cell, ExtraCellData ecd, Style globalStyle, CellRangeAddress cellAddresses) {
         //结果转换
         if (ecd != null) {
             //结果转换
@@ -375,16 +375,16 @@ public class ExcelExport {
             } else {
                 cell.setCellValue(ecd.getCellValue().toString());
             }
-            cell.setCellStyle(this.setFormat(ecd, globalStyle));
+            cell.setCellStyle(this.getCellStyle(sheetModel, ecd, globalStyle, cellAddresses));
         } else {
             cell.setCellValue("");
         }
     }
 
     /**
-     * 是否进行货币格式化
+     * 获取单元格样式
      */
-    private CellStyle setFormat(ExtraCellData ecd, Style globalStyle) {
+    private CellStyle getCellStyle(Sheet sheetModel, ExtraCellData ecd, Style globalStyle, CellRangeAddress cellAddresses) {
         CellStyle cellStyle = this.workbook.createCellStyle();
 
         if (ecd.getIsMoney()) {
@@ -421,6 +421,19 @@ public class ExcelExport {
         cellStyle.setVerticalAlignment(ecd.getVerticalAlignment());
         //边框
         if (globalStyle.getContextBorder() != null && globalStyle.getContextBorder() != BorderStyle.NONE) {
+            if (cellAddresses != null) {
+                RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                RegionUtil.setBorderBottom(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                RegionUtil.setBorderLeft(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+                RegionUtil.setBorderRight(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+
+                if (globalStyle.getContextBorderColor() != null) {
+                    RegionUtil.setTopBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
+                    RegionUtil.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
+                    RegionUtil.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
+                    RegionUtil.setRightBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
+                }
+            }
             cellStyle.setBorderTop(globalStyle.getContextBorder());
             cellStyle.setBorderBottom(globalStyle.getContextBorder());
             cellStyle.setBorderLeft(globalStyle.getContextBorder());
@@ -432,7 +445,38 @@ public class ExcelExport {
                 cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
                 cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
             }
+
         } else {
+            if (cellAddresses != null) {
+                if (ecd.getBorder() != BorderStyle.NONE) {
+                    RegionUtil.setBorderTop(ecd.getBorder(), cellAddresses, sheetModel);
+                    RegionUtil.setBorderBottom(ecd.getBorder(), cellAddresses, sheetModel);
+                    RegionUtil.setBorderLeft(ecd.getBorder(), cellAddresses, sheetModel);
+                    RegionUtil.setBorderRight(ecd.getBorder(), cellAddresses, sheetModel);
+
+                    RegionUtil.setTopBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
+                    RegionUtil.setBottomBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
+                    RegionUtil.setLeftBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
+                    RegionUtil.setRightBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
+                } else {
+                    if (ecd.getBorderTop() != BorderStyle.NONE) {
+                        RegionUtil.setBorderTop(ecd.getBorderTop(), cellAddresses, sheetModel);
+                        RegionUtil.setTopBorderColor(ecd.getBorderTopColor().getIndex(), cellAddresses, sheetModel);
+                    }
+                    if (ecd.getBorderBottom() != BorderStyle.NONE) {
+                        RegionUtil.setBorderBottom(ecd.getBorderBottom(), cellAddresses, sheetModel);
+                        RegionUtil.setBottomBorderColor(ecd.getBorderBottomColor().getIndex(), cellAddresses, sheetModel);
+                    }
+                    if (ecd.getBorderLeft() != BorderStyle.NONE) {
+                        RegionUtil.setBorderLeft(ecd.getBorderLeft(), cellAddresses, sheetModel);
+                        RegionUtil.setLeftBorderColor(ecd.getBorderLeftColor().getIndex(), cellAddresses, sheetModel);
+                    }
+                    if (ecd.getBorderRight() != BorderStyle.NONE) {
+                        RegionUtil.setBorderRight(ecd.getBorderRight(), cellAddresses, sheetModel);
+                        RegionUtil.setRightBorderColor(ecd.getBorderRightColor().getIndex(), cellAddresses, sheetModel);
+                    }
+                }
+            }
             if (ecd.getBorder() != BorderStyle.NONE) {
                 cellStyle.setBorderTop(ecd.getBorder());
                 cellStyle.setBorderBottom(ecd.getBorder());
@@ -461,6 +505,7 @@ public class ExcelExport {
                     cellStyle.setRightBorderColor(ecd.getBorderRightColor().getIndex());
                 }
             }
+
         }
 
         return cellStyle;
@@ -873,19 +918,12 @@ public class ExcelExport {
                 if (cell == null) {
                     cell = row.createCell(ecd.getCellNumber());
                 }
+                CellRangeAddress cellAddresses = null;
                 if (ecd.getColspan() != null && ecd.getColspan() > 1) {
-                    CellRangeAddress cellAddresses = new CellRangeAddress(initRow, initRow, ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
+                    cellAddresses = new CellRangeAddress(initRow, initRow, ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
                     sheetModel.addMergedRegion(cellAddresses);
-                    RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                    RegionUtil.setBorderBottom(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                    RegionUtil.setBorderLeft(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                    RegionUtil.setBorderRight(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                    RegionUtil.setTopBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
-                    RegionUtil.setBottomBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
-                    RegionUtil.setLeftBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
-                    RegionUtil.setRightBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
                 }
-                this.setCellValue(cell, ecd, globalStyle);
+                this.setCellValue(sheetModel, cell, ecd, globalStyle, cellAddresses);
             }
             initRow = initRow + 1;
             return this.getInitRow(sheetModel, extraRowData, initRow, globalStyle);
@@ -906,19 +944,12 @@ public class ExcelExport {
             if (cell == null) {
                 cell = row.createCell(ecd.getCellNumber());
             }
+            CellRangeAddress cellAddresses = null;
             if (ecd.getColspan() != null && ecd.getColspan() > 1) {
-                CellRangeAddress cellAddresses = new CellRangeAddress(erd.getRowNumber(), erd.getRowNumber(), ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
+                cellAddresses = new CellRangeAddress(erd.getRowNumber(), erd.getRowNumber(), ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
                 sheetModel.addMergedRegion(cellAddresses);
-                RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                RegionUtil.setBorderBottom(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                RegionUtil.setBorderLeft(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                RegionUtil.setBorderRight(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                RegionUtil.setTopBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
-                RegionUtil.setBottomBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
-                RegionUtil.setLeftBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
-                RegionUtil.setRightBorderColor(globalStyle.getContextBorderColor().index, cellAddresses, sheetModel);
             }
-            this.setCellValue(cell, ecd, globalStyle);
+            this.setCellValue(sheetModel, cell, ecd, globalStyle, cellAddresses);
         }
     }
 }
