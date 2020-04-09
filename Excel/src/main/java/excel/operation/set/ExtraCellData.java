@@ -2,10 +2,7 @@ package excel.operation.set;
 
 import enumerate.DateType;
 import excel.exception.ExcelOperateException;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Type;
 
@@ -44,6 +41,16 @@ public class ExtraCellData {
     private DateType dateType;
 
     /**
+     * 填充颜色类型
+     */
+    private FillPatternType fillPattern;
+
+    /**
+     * 填充颜色
+     */
+    private short fillForegroundColor;
+
+    /**
      * 水平位置
      */
     private HorizontalAlignment horizontalAlignment;
@@ -52,6 +59,11 @@ public class ExtraCellData {
      * 上下位置
      */
     private VerticalAlignment verticalAlignment;
+
+    /**
+     * 是否加粗
+     */
+    private Boolean isBold;
 
     /**
      * 是否是钱类型
@@ -137,8 +149,11 @@ public class ExtraCellData {
                 .setColspan(1)
                 .setDecimalAfterDigit(3)
                 .setDateType(DateType.Year_Month_Day_Hour_Minute_Second)
+                .setFillPattern(FillPatternType.NO_FILL)
+                .setFillForegroundColor((short) -1)
                 .setHorizontalAlignment(HorizontalAlignment.LEFT)
                 .setVerticalAlignment(VerticalAlignment.CENTER)
+                .setIsBold(false)
                 .setIsMoney(false)
                 .setChinaIsMoney(false)
                 .setColumnWidth(-1)
@@ -263,6 +278,62 @@ public class ExtraCellData {
     }
 
     /**
+     * 填充颜色类型
+     */
+    public FillPatternType getFillPattern() {
+        return fillPattern;
+    }
+
+    /**
+     * 填充颜色类型
+     */
+    public ExtraCellData setFillPattern(FillPatternType fillPattern) {
+        this.fillPattern = fillPattern;
+        return this;
+    }
+
+    /**
+     * 填充颜色
+     */
+    public short getFillForegroundColor() {
+        return fillForegroundColor;
+    }
+
+    /**
+     * 填充颜色
+     */
+    public ExtraCellData setFillForegroundColor(IndexedColors fillForegroundColor) {
+        this.fillForegroundColor = fillForegroundColor.getIndex();
+        return this;
+    }
+
+    /**
+     * 填充颜色
+     */
+    public ExtraCellData setFillForegroundColor(short fillForegroundColor) {
+        this.fillForegroundColor = fillForegroundColor;
+        return this;
+    }
+
+    /**
+     * 填充颜色
+     */
+    public ExtraCellData setFillColor(IndexedColors fillForegroundColor) {
+        this.fillPattern = FillPatternType.SOLID_FOREGROUND;
+        this.fillForegroundColor = fillForegroundColor.getIndex();
+        return this;
+    }
+
+    /**
+     * 填充颜色
+     */
+    public ExtraCellData setFillColor(short fillForegroundColor) {
+        this.fillPattern = FillPatternType.SOLID_FOREGROUND;
+        this.fillForegroundColor = fillForegroundColor;
+        return this;
+    }
+
+    /**
      * 水平位置
      */
     public HorizontalAlignment getHorizontalAlignment() {
@@ -289,6 +360,21 @@ public class ExtraCellData {
      */
     public ExtraCellData setVerticalAlignment(VerticalAlignment verticalAlignment) {
         this.verticalAlignment = verticalAlignment;
+        return this;
+    }
+
+    /**
+     * 是否加粗
+     */
+    public Boolean getIsBold() {
+        return isBold;
+    }
+
+    /**
+     * 是否加粗
+     */
+    public ExtraCellData setIsBold(Boolean bold) {
+        isBold = bold;
         return this;
     }
 

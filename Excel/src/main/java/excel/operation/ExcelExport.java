@@ -415,6 +415,17 @@ public class ExcelExport {
             }
             cellStyle.setDataFormat(format.getFormat(sb.toString()));
         }
+        if (ecd.getFillPattern() != FillPatternType.NO_FILL) {
+            cellStyle.setFillPattern(ecd.getFillPattern());
+            if (ecd.getFillForegroundColor() != ((short) -1)) {
+                cellStyle.setFillForegroundColor(ecd.getFillForegroundColor());
+            }
+        }
+        if (ecd.getIsBold()) {
+            Font font = this.workbook.createFont();
+            font.setBold(true);
+            cellStyle.setFont(font);
+        }
         //水平位置
         cellStyle.setAlignment(ecd.getHorizontalAlignment());
         //垂直位置

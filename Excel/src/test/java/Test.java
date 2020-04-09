@@ -53,7 +53,7 @@ public class Test {
                             , ExtraRowData.create().setRowNumber(3).setExtraCellData(
 //                                    ExtraCellData.create().setCellNumber(2).setCellValue("ceshi").setCellType(String.class).build(),
 //                                    ExtraCellData.create().setCellNumber(3).setCellValue(1).setCellType(Integer.class).build(),
-                                    ExtraCellData.create().setCellNumber(2).setColspan(4).setCellValue(new Date()).setCellType(Date.class).setColumnWidth(100).setBorder(BorderStyle.THIN).setBorderColor(IndexedColors.BLACK).setHorizontalAlignment(HorizontalAlignment.CENTER).setVerticalAlignment(VerticalAlignment.CENTER).build()
+                                    ExtraCellData.create().setCellNumber(2).setColspan(4).setCellValue(new Date()).setCellType(Date.class).setColumnWidth(100).setBorder(BorderStyle.THIN).setBorderColor(IndexedColors.BLACK).setHorizontalAlignment(HorizontalAlignment.CENTER).setVerticalAlignment(VerticalAlignment.CENTER).setFillColor(IndexedColors.LIGHT_ORANGE).setIsBold(true).build()
                             ).setIsNewRow(true).build()
                             , ExtraRowData.create().setRowNumber(4).setExtraCellData(
                                     ExtraCellData.create().setCellNumber(1).setCellValue("测试ce").setCellType(String.class).build(),
