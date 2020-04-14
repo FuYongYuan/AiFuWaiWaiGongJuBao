@@ -363,17 +363,19 @@ public class ExcelExport {
     private void setCellValue(Sheet sheetModel, Cell cell, ExtraCellData ecd, Style globalStyle, CellRangeAddress cellAddresses) {
         //结果转换
         if (ecd != null) {
-            //结果转换
-            if (ecd.getCellType() == Double.class || ecd.getCellType() == double.class) {
-                cell.setCellValue(Double.parseDouble(ecd.getCellValue().toString()));
-            } else if (ecd.getCellType() == Integer.class || ecd.getCellType() == int.class) {
-                cell.setCellValue(Integer.parseInt(ecd.getCellValue().toString()));
-            } else if (ecd.getCellType() == BigDecimal.class) {
-                cell.setCellValue(new BigDecimal(ecd.getCellValue().toString()).doubleValue());
-            } else if (ecd.getCellType() == Date.class) {
-                cell.setCellValue(DateDispose.formatting_Date((Date) ecd.getCellValue(), ecd.getDateType()));
-            } else {
-                cell.setCellValue(ecd.getCellValue().toString());
+            if (ecd.getCellValue() != null) {
+                //结果转换
+                if (ecd.getCellType() == Double.class || ecd.getCellType() == double.class) {
+                    cell.setCellValue(Double.parseDouble(ecd.getCellValue().toString()));
+                } else if (ecd.getCellType() == Integer.class || ecd.getCellType() == int.class) {
+                    cell.setCellValue(Integer.parseInt(ecd.getCellValue().toString()));
+                } else if (ecd.getCellType() == BigDecimal.class) {
+                    cell.setCellValue(new BigDecimal(ecd.getCellValue().toString()).doubleValue());
+                } else if (ecd.getCellType() == Date.class) {
+                    cell.setCellValue(DateDispose.formatting_Date((Date) ecd.getCellValue(), ecd.getDateType()));
+                } else {
+                    cell.setCellValue(ecd.getCellValue().toString());
+                }
             }
             cell.setCellStyle(this.getCellStyle(sheetModel, ecd, globalStyle, cellAddresses));
         } else {

@@ -59,7 +59,7 @@ public class Test {
                                     ExtraCellData.create().setCellNumber(1).setCellValue("测试ce").setCellType(String.class).build(),
                                     ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
                                     ExtraCellData.create().setCellNumber(3).setCellValue(new Date()).setCellType(Date.class).build(),
-                                    ExtraCellData.create().setCellNumber(4).setCellValue(new BigDecimal(12311)).setCellType(BigDecimal.class).setIsMoney(true).build()
+                                    ExtraCellData.create().setCellNumber(4).setCellType(BigDecimal.class).setBorder(BorderStyle.THIN).setBorderColor(IndexedColors.BLACK).setFillColor(IndexedColors.LIGHT_ORANGE).setIsMoney(true).build()
                             ).setIsNewRow(true).build()
                             , ExtraRowData.create().setRowNumber(1).setExtraCellData(
                                     ExtraCellData.create().setCellNumber(3).setCellValue("测试shi").setCellType(String.class).setHorizontalAlignment(HorizontalAlignment.CENTER).build(),

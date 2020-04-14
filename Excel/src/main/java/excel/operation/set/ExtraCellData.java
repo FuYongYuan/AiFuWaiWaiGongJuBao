@@ -178,12 +178,6 @@ public class ExtraCellData {
         if (cellNumber == null) {
             throw new ExcelOperateException("诊断：缺少额外列数据列号！", new NullPointerException());
         }
-        if (cellValue == null) {
-            throw new ExcelOperateException("诊断：缺少额外列数据值！", new NullPointerException());
-        }
-        if (cellType == null) {
-            throw new ExcelOperateException("诊断：缺少额外列数据类型！", new NullPointerException());
-        }
         return this;
     }
 
