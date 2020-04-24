@@ -71,7 +71,7 @@ public class ExcelOperate {
         int result = 0;
         if (TextDispose.isNotEmpty(sheetName)) {
             List<Field> fieldList = ExcelDisposeUtil.getFieldList(obj.getClass());
-            if (fieldList.size() > 0) {
+            if (!fieldList.isEmpty()) {
                 Sheet sheet = workbook.getSheet(sheetName);
                 result = sheet.getLastRowNum() + 1;
                 Row row = sheet.createRow(result);
@@ -105,7 +105,7 @@ public class ExcelOperate {
         boolean result;
         if (TextDispose.isNotEmpty(sheetName)) {
             List<Field> fieldList = ExcelDisposeUtil.getFieldList(obj.getClass());
-            if (fieldList != null && fieldList.size() > 0) {
+            if (!fieldList.isEmpty()) {
                 Sheet sheet = workbook.getSheet(sheetName);
                 if (rowNumber >= 0 && rowNumber <= sheet.getLastRowNum()) {
                     Row row = sheet.getRow(rowNumber);

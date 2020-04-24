@@ -1,10 +1,4 @@
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
-import com.alibaba.druid.sql.parser.SQLStatementParser;
+
 import dispose.DateDispose;
 import dispose.SQLInjectDefense;
 import dispose.TextDispose;
@@ -28,104 +22,130 @@ public class Test {
         i = i + 1;
     }
 
-    private static void sql(String s) {
-        SQLStatementParser sqlStatementParser = new OracleStatementParser(s);
-        SQLSelectStatement sqlSelectStatement = (SQLSelectStatement) sqlStatementParser.parseSelect();
-
-        SQLSelect sqlSelect = sqlSelectStatement.getSelect();
-        SQLSelectQuery sqlSelectQuery = sqlSelect.getQuery();
-        List<String> bs = new ArrayList<>();
-        if (sqlSelectQuery instanceof OracleSelectQueryBlock) {
-            OracleSelectQueryBlock sqlSelectQueryBlock = (OracleSelectQueryBlock) sqlSelectQuery;
-            OracleOutputVisitor where = new OracleOutputVisitor(new StringBuilder());
-            // 获取where 条件
-            if (sqlSelectQueryBlock.getWhere() != null) {
-                sqlSelectQueryBlock.getWhere().accept(where);
-                System.out.println("##########where###############");
-                System.out.println(where.getAppender());
-            }
-            // 获取表名
-            if (sqlSelectQueryBlock.getFrom() != null) {
-                System.out.println("############table_name##############");
-                OracleOutputVisitor tableName = new OracleOutputVisitor(new StringBuilder());
-                sqlSelectQueryBlock.getFrom().accept(tableName);
-                System.out.println(tableName.getAppender());
-                if (tableName.getTables() != null) {
-                    tableName.getTables().forEach(System.out::println);
-                }
-                if (tableName.getAppender().toString().contains("SELECT")) {
-                    String b = tableName.getAppender().toString();
-                    b = b.substring(1, b.length() - 1);
-                    b = b.replaceAll("\n", "");
-                    b = b.replaceAll("\t", " ");
-
-                    String[] bss = b.split("UNION ALL");
-
-                    for (String bsss : bss) {
-                        bs.add(bsss);
-                    }
-                }
-            }
-            //   获取查询字段
-            System.out.println("############查询字段##############");
-            System.out.println(sqlSelectQueryBlock.getSelectList());
-        }
-        System.out.println("--------------------------------------------------");
-        if (!bs.isEmpty()) {
-            for (String b : bs) {
-                sql(b);
-            }
-        }
-    }
+//    private static void sql(String s) {
+//        SQLStatementParser sqlStatementParser = new OracleStatementParser(s);
+//        SQLSelectStatement sqlSelectStatement = (SQLSelectStatement) sqlStatementParser.parseSelect();
+//
+//        SQLSelect sqlSelect = sqlSelectStatement.getSelect();
+//        SQLSelectQuery sqlSelectQuery = sqlSelect.getQuery();
+//        List<String> bs = new ArrayList<>();
+//        if (sqlSelectQuery instanceof OracleSelectQueryBlock) {
+//            OracleSelectQueryBlock sqlSelectQueryBlock = (OracleSelectQueryBlock) sqlSelectQuery;
+//            OracleOutputVisitor where = new OracleOutputVisitor(new StringBuilder());
+//            // 获取where 条件
+//            if (sqlSelectQueryBlock.getWhere() != null) {
+//                sqlSelectQueryBlock.getWhere().accept(where);
+//                System.out.println("##########where###############");
+//                System.out.println(where.getAppender());
+//            }
+//            // 获取表名
+//            if (sqlSelectQueryBlock.getFrom() != null) {
+//                System.out.println("############table_name##############");
+//                OracleOutputVisitor tableName = new OracleOutputVisitor(new StringBuilder());
+//                sqlSelectQueryBlock.getFrom().accept(tableName);
+//                System.out.println(tableName.getAppender());
+////                if (tableName.getTables() != null) {
+////                    tableName.getTables().forEach(System.out::println);
+////                }
+//                if (tableName.getAppender().toString().contains("SELECT")) {
+//                    String b = tableName.getAppender().toString();
+//                    b = b.substring(1, b.length() - 1);
+//                    b = b.replaceAll("\n", "");
+//                    b = b.replaceAll("\t", " ");
+//
+//                    String[] bss = b.split("UNION ALL");
+//
+//                    for (String bsss : bss) {
+//                        bs.add(bsss);
+//                    }
+//                }
+//            }
+//            //   获取查询字段
+//            System.out.println("############查询字段##############");
+//            System.out.println(sqlSelectQueryBlock.getSelectList());
+//        }
+//        System.out.println("--------------------------------------------------");
+//        if (!bs.isEmpty()) {
+//            for (String b : bs) {
+//                sql(b);
+//            }
+//        }
+//    }
 
     public static void main(String[] args) {
-        String s = "SELECT acc_type ,acc_ac ,MIN(pmt_desc) pmt_desc ,acc_ic ,acc_ac_desc ,SUM(acc_dr) acc_dr ,SUM(acc_cr) acc_cr ,ord_seq FROM (SELECT substr(flvv.meaning, 2, instr(flvv.meaning, '】') - 2) acc_type ,flvv.description acc_ac ,flvv.attribute9 pmt_desc ,flvv.attribute8 acc_ic ,substr(flvv.meaning, instr(flvv.meaning, '】') + 1) acc_ac_desc ,nvl(gjl.accounted_dr, 0) acc_dr ,nvl(gjl.accounted_cr, 0) acc_cr ,flvv.lookup_code ord_seq FROM gl_je_headers gjh ,gl_je_lines gjl ,gl_code_combinations gcc ,fnd_lookup_values_vl flvv WHERE gjh.je_header_id = gjl.je_header_id AND gjh.currency_code <> 'STAT' AND gjh.actual_flag = 'A' AND gcc.code_combination_id = gjl.code_combination_id AND flvv.lookup_type = 'XY_STAMPTAX_CHECK_ACCOUNT' AND flvv.enabled_flag = 'Y' AND trunc(SYSDATE) BETWEEN nvl(flvv.start_date_active, trunc(SYSDATE)) AND nvl(flvv.end_date_active, trunc(SYSDATE)) AND gcc.segment3 LIKE flvv.description || '%' AND (flvv.attribute8 IS NULL OR (flvv.attribute8 IS NOT NULL AND gcc.segment8 = flvv.attribute8)) AND gjh.default_effective_date BETWEEN to_date('${p_start_date}', 'YYYY-MM-DD') AND to_date('${p_end_date}', 'YYYY-MM-DD') ${if(len(p_org_code) == 0, \"\", \" AND gcc.segment1 IN ('\" + REPLACE(p_org_code, \",\", \"','\") + \"')\") } ${if(len(p_dept_code) == 0, \"\", \" AND gcc.segment2 IN ('\" + REPLACE(p_dept_code, \",\", \"','\") + \"')\") } UNION ALL SELECT substr(flvv.meaning, 2, instr(flvv.meaning, '】') - 2) acc_type ,flvv.description acc_ac ,flvv.attribute9 pmt_desc ,flvv.attribute8 acc_ic ,substr(flvv.meaning, instr(flvv.meaning, '】') + 1) acc_ac_desc ,0 acc_dr ,0 acc_cr ,flvv.lookup_code ord_seq FROM fnd_lookup_values_vl flvv WHERE flvv.lookup_type = 'XY_STAMPTAX_CHECK_ACCOUNT' AND flvv.enabled_flag = 'Y' AND trunc(SYSDATE) BETWEEN nvl(flvv.start_date_active, trunc(SYSDATE)) AND nvl(flvv.end_date_active, trunc(SYSDATE))) GROUP BY acc_type ,acc_ac ,acc_ac_desc ,acc_ic ,ord_seq ORDER BY to_number(ord_seq)";
 
-        s = s.replaceAll("\\$\\{.*?}", "");
+        //集合
+        List<String> list = new ArrayList<>();
+        //数组
+        String[] s = new String[]{"", ""};
+        //Map
+        Map<String,String> map = new HashMap<>();
 
-        String s2 = "SELECT substr(flvv.meaning, 2, instr(flvv.meaning, '】') - 2) AS acc_type\n" +
-                "\t\t, flvv.description AS acc_ac, flvv.attribute9 AS pmt_desc, flvv.attribute8 AS acc_ic\n" +
-                "\t\t, substr(flvv.meaning, instr(flvv.meaning, '】') + 1) AS acc_ac_desc\n" +
-                "\t\t, nvl(gjl.accounted_dr, 0) AS acc_dr\n" +
-                "\t\t, nvl(gjl.accounted_cr, 0) AS acc_cr, flvv.lookup_code AS ord_seq\n" +
-                "\tFROM gl_je_headers gjh, gl_je_lines gjl, gl_code_combinations gcc, fnd_lookup_values_vl flvv\n" +
-                "\tWHERE gjh.je_header_id = gjl.je_header_id\n" +
-                "\t\tAND gjh.currency_code <> 'STAT'\n" +
-                "\t\tAND gjh.actual_flag = 'A'\n" +
-                "\t\tAND gcc.code_combination_id = gjl.code_combination_id\n" +
-                "\t\tAND flvv.lookup_type = 'XY_STAMPTAX_CHECK_ACCOUNT'\n" +
-                "\t\tAND flvv.enabled_flag = 'Y'\n" +
-                "\t\tAND trunc(SYSDATE) BETWEEN nvl(flvv.start_date_active, trunc(SYSDATE)) AND nvl(flvv.end_date_active, trunc(SYSDATE))\n" +
-                "\t\tAND gcc.segment3 LIKE (flvv.description || '%')\n" +
-                "\t\tAND (flvv.attribute8 IS NULL\n" +
-                "\t\t\tOR (flvv.attribute8 IS NOT NULL\n" +
-                "\t\t\t\tAND gcc.segment8 = flvv.attribute8))\n" +
-                "\t\tAND gjh.default_effective_date BETWEEN to_date(NULL, 'YYYY-MM-DD') AND to_date(NULL, 'YYYY-MM-DD')\n";
-        s2 = s2.replaceAll("\n", "");
-        s2 = s2.replaceAll("\t", " ");
 
-        System.out.print(s2.charAt(700));
-        System.out.print(s2.charAt(701));
-        System.out.print(s2.charAt(702));
-        System.out.print(s2.charAt(703));
-        System.out.print(s2.charAt(704));
-        System.out.print(s2.charAt(705));
-        System.out.print(s2.charAt(706));
-        System.out.print(s2.charAt(707));
-        System.out.print(s2.charAt(708));
-        System.out.print(s2.charAt(709));
+        do{
+        }while(true);
 
-        System.out.println();
+
+//        String s = "SELECT acc_type ,acc_ac ,MIN(pmt_desc) pmt_desc ,acc_ic ,acc_ac_desc ,SUM(acc_dr) acc_dr ,SUM(acc_cr) acc_cr ,ord_seq FROM (SELECT substr(flvv.meaning, 2, instr(flvv.meaning, '】') - 2) acc_type ,flvv.description acc_ac ,flvv.attribute9 pmt_desc ,flvv.attribute8 acc_ic ,substr(flvv.meaning, instr(flvv.meaning, '】') + 1) acc_ac_desc ,nvl(gjl.accounted_dr, 0) acc_dr ,nvl(gjl.accounted_cr, 0) acc_cr ,flvv.lookup_code ord_seq FROM gl_je_headers gjh ,gl_je_lines gjl ,gl_code_combinations gcc ,fnd_lookup_values_vl flvv WHERE gjh.je_header_id = gjl.je_header_id AND gjh.currency_code <> 'STAT' AND gjh.actual_flag = 'A' AND gcc.code_combination_id = gjl.code_combination_id AND flvv.lookup_type = 'XY_STAMPTAX_CHECK_ACCOUNT' AND flvv.enabled_flag = 'Y' AND trunc(SYSDATE) BETWEEN nvl(flvv.start_date_active, trunc(SYSDATE)) AND nvl(flvv.end_date_active, trunc(SYSDATE)) AND gcc.segment3 LIKE flvv.description || '%' AND (flvv.attribute8 IS NULL OR (flvv.attribute8 IS NOT NULL AND gcc.segment8 = flvv.attribute8)) AND gjh.default_effective_date BETWEEN to_date('${p_start_date}', 'YYYY-MM-DD') AND to_date('${p_end_date}', 'YYYY-MM-DD') ${if(len(p_org_code) == 0, \"\", \" AND gcc.segment1 IN ('\" + REPLACE(p_org_code, \",\", \"','\") + \"')\") } ${if(len(p_dept_code) == 0, \"\", \" AND gcc.segment2 IN ('\" + REPLACE(p_dept_code, \",\", \"','\") + \"')\") } UNION ALL SELECT substr(flvv.meaning, 2, instr(flvv.meaning, '】') - 2) acc_type ,flvv.description acc_ac ,flvv.attribute9 pmt_desc ,flvv.attribute8 acc_ic ,substr(flvv.meaning, instr(flvv.meaning, '】') + 1) acc_ac_desc ,0 acc_dr ,0 acc_cr ,flvv.lookup_code ord_seq FROM fnd_lookup_values_vl flvv WHERE flvv.lookup_type = 'XY_STAMPTAX_CHECK_ACCOUNT' AND flvv.enabled_flag = 'Y' AND trunc(SYSDATE) BETWEEN nvl(flvv.start_date_active, trunc(SYSDATE)) AND nvl(flvv.end_date_active, trunc(SYSDATE))) GROUP BY acc_type ,acc_ac ,acc_ac_desc ,acc_ic ,ord_seq ORDER BY to_number(ord_seq)";
+//
+//        s = s.replaceAll("\\$\\{.*?}", "");
+//
+//        String s2 = "SELECT substr(flvv.meaning, 2, instr(flvv.meaning, '】') - 2) AS acc_type\n" +
+//                "\t\t, flvv.description AS acc_ac, flvv.attribute9 AS pmt_desc, flvv.attribute8 AS acc_ic\n" +
+//                "\t\t, substr(flvv.meaning, instr(flvv.meaning, '】') + 1) AS acc_ac_desc\n" +
+//                "\t\t, nvl(gjl.accounted_dr, 0) AS acc_dr\n" +
+//                "\t\t, nvl(gjl.accounted_cr, 0) AS acc_cr, flvv.lookup_code AS ord_seq\n" +
+//                "\tFROM gl_je_headers gjh, gl_je_lines gjl, gl_code_combinations gcc, fnd_lookup_values_vl flvv\n" +
+//                "\tWHERE gjh.je_header_id = gjl.je_header_id\n" +
+//                "\t\tAND gjh.currency_code <> 'STAT'\n" +
+//                "\t\tAND gjh.actual_flag = 'A'\n" +
+//                "\t\tAND gcc.code_combination_id = gjl.code_combination_id\n" +
+//                "\t\tAND flvv.lookup_type = 'XY_STAMPTAX_CHECK_ACCOUNT'\n" +
+//                "\t\tAND flvv.enabled_flag = 'Y'\n" +
+//                "\t\tAND trunc(SYSDATE) BETWEEN nvl(flvv.start_date_active, trunc(SYSDATE)) AND nvl(flvv.end_date_active, trunc(SYSDATE))\n" +
+//                "\t\tAND gcc.segment3 LIKE (flvv.description || '%')\n" +
+//                "\t\tAND (flvv.attribute8 IS NULL\n" +
+//                "\t\t\tOR (flvv.attribute8 IS NOT NULL\n" +
+//                "\t\t\t\tAND gcc.segment8 = flvv.attribute8))\n" +
+//                "\t\tAND gjh.default_effective_date BETWEEN to_date(NULL, 'YYYY-MM-DD') AND to_date(NULL, 'YYYY-MM-DD')\n";
+//        s2 = s2.replaceAll("\n", "");
+//        s2 = s2.replaceAll("\t", " ");
+//
+//        String s3 ="SELECT org_id, ORG_FULL_NAME,taxid_num,account_id,account_bank FROM (\n" +
+//                "SELECT DISTINCT agtl.org_id --公司编码\n" +
+//                "      ,org.attribute2 AS ORG_FULL_NAME --公司全称\n" +
+//                "      ,org.attribute4--板块\n" +
+//                "      ,agtl.fp_tax_registration_number  AS taxid_num --公司纳税登记号\n" +
+//                "      ,flv.meaning AS account_id---账号\n" +
+//                "      ,flv.description AS account_bank  ----开户银行\n" +
+//                "  FROM ar_gta_tax_limits_all agtl --金税传送规则 金额及行数限制表\n" +
+//                "      ,ar_gta_type_mappings  agtm --金税传送规则 关联事务处理表\n" +
+//                "      ,hr_organization_units org\n" +
+//                "      ,fnd_lookup_values          flv\n" +
+//                " WHERE /*agtl.org_id = 95\n" +
+//                "   AND*/ agtl.org_id = org.organization_id\n" +
+//                "   AND agtl.limitation_id = agtm.limitation_id\n" +
+//                "   AND flv.lookup_type = 'XY_GTA_BANK_PERSONALIZED'\n" +
+//                "   AND flv.language = 'ZHS'\n" +
+//                "   AND flv.tag = agtl.org_id\n" +
+//                "   )\n" +
+//                "  WHERE ORG_FULL_NAME ='${B5}'";
+//
+//        s3 = s3.replaceAll("--.*?\n", "");
+//        s3 = s3.replaceAll("\n", "");
+//        s3 = s3.replaceAll("\\s+", " ");
+//        s3 = s3.replaceAll("\\/\\*.*?\\*\\/", "");
+//        System.out.println(s3);
 
 //        System.out.println(s);
 //        System.out.println(s.charAt(1127));
 
 
-        String s1 = "SELECT t.org_code ,t.parent_code ,t.org_name FROM TABLE(nfnd_frfavpd_util_pkg.get_orgs('${p_user_name}', '${p_role_name}')) t";
-
-//        SQLInjectDefense.get_in_table(s).forEach(System.out::println);
-
-        sql(s);
+//        String s1 = "SELECT t.org_code ,t.parent_code ,t.org_name FROM TABLE(nfnd_frfavpd_util_pkg.get_orgs('${p_user_name}', '${p_role_name}')) t";
+//
+////        SQLInjectDefense.get_in_table(s).forEach(System.out::println);
+//
+//        sql(s);
 
 
 //        String i ="dasda";
