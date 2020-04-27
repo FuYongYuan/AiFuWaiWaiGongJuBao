@@ -1,4 +1,4 @@
-package path;
+package path.mvc;
 
 import java.io.File;
 import java.util.Objects;
