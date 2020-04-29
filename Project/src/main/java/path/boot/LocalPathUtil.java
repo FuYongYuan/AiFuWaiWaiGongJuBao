@@ -1,6 +1,7 @@
 package path.boot;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Objects;
 
 public class LocalPathUtil {
@@ -10,8 +11,12 @@ public class LocalPathUtil {
     public static String getClassPath() {
         String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath();
         path = path.replace('/', File.separatorChar); // 将/换成\
-        path = path.substring(1); //去掉第一个\,如 \D:\JavaWeb...
-        path = path.substring(0, path.length() - 1);//去掉最后一个斜杆
+        if (path.startsWith("\"")) {
+            path = path.substring(1); //去掉第一个\,如 \D:\JavaWeb...
+        }
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);//去掉最后一个斜杆
+        }
         path = path.replaceAll("%20", " ");
         return path;
     }
@@ -20,14 +25,45 @@ public class LocalPathUtil {
      * 项目调用文件目录
      */
     public static String getFilePath() {
-        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).toString();
+        String classpath = "classpath:";
+        ClassLoader cl = getDefaultClassLoader();
+        URL url = cl != null ? cl.getResource(classpath) : ClassLoader.getSystemResource(classpath);
+        String path = "";
+        if (url != null) {
+            path = new File(url.getPath()).getAbsolutePath();
+        }
         path = path.replace('/', File.separatorChar); // 将/换成\
         path = path.replace("file:", ""); //去掉file:
         path = path.replace("classes\\", ""); //去掉classes\
         path = path.replace("target\\", ""); //去掉target\
-        path = path.substring(1); //去掉第一个\,如 \D:\JavaWeb...
-        path = path.substring(0, path.length() - 1);//去掉最后一个斜杆
+        if (path.startsWith("\"")) {
+            path = path.substring(1); //去掉第一个\,如 \D:\JavaWeb...
+        }
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);//去掉最后一个斜杆
+        }
         path = path.replaceAll("%20", " ");
         return path;
+    }
+
+    /**
+     * 获取默认类位置
+     */
+    private static ClassLoader getDefaultClassLoader() {
+        ClassLoader cl = null;
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+        } catch (Throwable ignored) {
+        }
+        if (cl == null) {
+            cl = LocalPathUtil.class.getClassLoader();
+            if (cl == null) {
+                try {
+                    cl = ClassLoader.getSystemClassLoader();
+                } catch (Throwable ignored) {
+                }
+            }
+        }
+        return cl;
     }
 }
