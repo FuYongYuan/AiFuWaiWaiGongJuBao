@@ -10,10 +10,10 @@ public class LocalPathUtil {
     public static String getClassPath() {
         String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath();
         path = path.replace('/', File.separatorChar); // 将/换成\
-        if (path.startsWith("\"")) {
+        if (path.startsWith("\"") || path.startsWith(String.valueOf(File.separatorChar))) {
             path = path.substring(1); //去掉第一个\,如 \D:\JavaWeb...
         }
-        if (path.endsWith("/")) {
+        if (path.endsWith("/") || path.endsWith(String.valueOf(File.separatorChar))) {
             path = path.substring(0, path.length() - 1);//去掉最后一个斜杆
         }
         path = path.replaceAll("%20", " ");
@@ -29,10 +29,10 @@ public class LocalPathUtil {
         path = path.replace("file:", ""); //去掉file:
         path = path.replace("classes\\", ""); //去掉classes\
         path = path.replace("target\\", ""); //去掉target\
-        if (path.startsWith("\"")) {
+        if (path.startsWith("\"") || path.startsWith(String.valueOf(File.separatorChar))) {
             path = path.substring(1); //去掉第一个\,如 \D:\JavaWeb...
         }
-        if (path.endsWith("/")) {
+        if (path.endsWith("/") || path.endsWith(String.valueOf(File.separatorChar))) {
             path = path.substring(0, path.length() - 1);//去掉最后一个斜杆
         }
         path = path.replaceAll("%20", " ");
