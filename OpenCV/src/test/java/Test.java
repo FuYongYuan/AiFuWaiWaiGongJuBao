@@ -14,6 +14,18 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+
+//E:\JetBrains\IntelliJ IDEA\plugins\maven\lib\maven3\bin> mvn install:install-file -DgroupId=com.opencv -DartifactId=opencv -Dversion=4.2.0 -Dpackaging=jar -Dfile=E:\OpenCV\opencv\build\java\opencv-420.jar
+
+//-ea -Djava.library.path=E:\OpenCV\opencv\build\java\x64 -Djava.awt.headless=false
+
+//<!-- OpenCV -->
+//<dependency>
+//<groupId>com.opencv</groupId>
+//<artifactId>opencv</artifactId>
+//<version>4.2.0</version>
+//</dependency>
+
 public class Test {
     private static String basePicPath = "D:\\Project\\FYY\\AiFuWaiWaiGongJuBao\\OpenCV\\src\\main\\resources\\image\\";
 
