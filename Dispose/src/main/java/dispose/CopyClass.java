@@ -47,7 +47,7 @@ public class CopyClass {
      * @param clazz   取值对象类型
      * @param getNull 是否取空值
      */
-    public static void copyClass(Object object1, Object object2, Class clazz, boolean getNull) throws IllegalAccessException {
+    public static <T> void copyClass(Object object1, Object object2, Class<T> clazz, boolean getNull) throws IllegalAccessException {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             Object value = field.get(object1);

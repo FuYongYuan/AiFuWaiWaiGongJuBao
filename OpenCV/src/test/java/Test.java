@@ -23,31 +23,31 @@ public class Test {
 
         System.out.println(DateDispose.formatting_Date(sd, DateType.Year_Month_Day_Hour_Minute_Second_MS));
 
-//        CalcHistCompare calcHistCompare = CalcHistCompare.create()
-//                .setCalcHistSize(10)
-//                .setThreshold(0.993)
-//                .build();
-//
-//        LinkedHashMap<String, Double> map = calcHistCompare.compare(basePicPath + "24158.jpg", basePicPath);
-//
-//        for (Map.Entry<String, Double> entry : map.entrySet()) {
-//            System.out.println("图片：" + entry.getKey() + " 对比值：" + entry.getValue());
-//        }
-
-//        orb();
-
-        ORBSearch orbSearch = ORBSearch.create()
+        CalcHistCompare calcHistCompare = CalcHistCompare.create()
+                .setCalcHistSize(10)
+                .setThreshold(0.993)
                 .build();
 
-        LinkedHashMap<String, Double> map = orbSearch.search(basePicPath + "24158.jpg", basePicPath);
+        LinkedHashMap<String, Double> map = calcHistCompare.compare(basePicPath + "24158.jpg", basePicPath);
 
         for (Map.Entry<String, Double> entry : map.entrySet()) {
             System.out.println("图片：" + entry.getKey() + " 对比值：" + entry.getValue());
         }
 
-        Date ed = new Date();
-        System.out.println(DateDispose.formatting_Date(ed, DateType.Year_Month_Day_Hour_Minute_Second_MS));
-        System.out.println("执行时间为：" + (sd.getTime() - ed.getTime()) + "毫秒");
+//        orb();
+
+//        ORBSearch orbSearch = ORBSearch.create()
+//                .build();
+//
+//        LinkedHashMap<String, Double> map = orbSearch.search(basePicPath + "24158.jpg", basePicPath);
+//
+//        for (Map.Entry<String, Double> entry : map.entrySet()) {
+//            System.out.println("图片：" + entry.getKey() + " 对比值：" + entry.getValue());
+//        }
+//
+//        Date ed = new Date();
+//        System.out.println(DateDispose.formatting_Date(ed, DateType.Year_Month_Day_Hour_Minute_Second_MS));
+//        System.out.println("执行时间为：" + (sd.getTime() - ed.getTime()) + "毫秒");
 
 //        double compareHist = compare_image(basePicPath + "1.jpg", basePicPath + "3.jpg");
 //        System.out.println(compareHist);
