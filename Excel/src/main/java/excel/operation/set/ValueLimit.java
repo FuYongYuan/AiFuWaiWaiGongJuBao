@@ -69,6 +69,10 @@ public class ValueLimit {
             throw new ExcelOperateException("诊断：值集 " + this.valueListName + " 无提供替换值字段名称，无法进行转换！", new NullPointerException());
         }
 
+        if (this.isMap == null) {
+            this.isMap = false;
+        }
+
         if (this.isGetMethodFieldValue == null) {
             this.isGetMethodFieldValue = true;
         }
