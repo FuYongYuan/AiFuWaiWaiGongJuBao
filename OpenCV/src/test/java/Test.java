@@ -1,17 +1,14 @@
 import dispose.DateDispose;
 import enumerate.DateType;
 import opencv.CalcHistCompare;
-import opencv.ORBSearch;
 import org.opencv.core.*;
 import org.opencv.features2d.DescriptorMatcher;
-import org.opencv.features2d.FastFeatureDetector;
 import org.opencv.features2d.ORB;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 
@@ -33,7 +30,7 @@ public class Test {
     public static void main(String[] args) {
         Date sd = new Date();
 
-        System.out.println(DateDispose.formatting_Date(sd, DateType.Year_Month_Day_Hour_Minute_Second_MS));
+        System.out.println(DateDispose.formattingDate(sd, DateType.Year_Month_Day_Hour_Minute_Second_MS));
 
         CalcHistCompare calcHistCompare = CalcHistCompare.create()
                 .setCalcHistSize(10)
@@ -48,7 +45,7 @@ public class Test {
 
 //        orb();
 
-//        ORBSearch orbSearch = ORBSearch.create()
+//        OrbSearch orbSearch = OrbSearch.create()
 //                .build();
 //
 //        LinkedHashMap<String, Double> map = orbSearch.search(basePicPath + "24158.jpg", basePicPath);
@@ -58,7 +55,7 @@ public class Test {
 //        }
 //
 //        Date ed = new Date();
-//        System.out.println(DateDispose.formatting_Date(ed, DateType.Year_Month_Day_Hour_Minute_Second_MS));
+//        System.out.println(DateDispose.formattingDate(ed, DateType.Year_Month_Day_Hour_Minute_Second_MS));
 //        System.out.println("执行时间为：" + (sd.getTime() - ed.getTime()) + "毫秒");
 
 //        double compareHist = compare_image(basePicPath + "1.jpg", basePicPath + "3.jpg");

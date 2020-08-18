@@ -2,6 +2,8 @@ package robot.model;
 
 /**
  * 音频信息
+ *
+ * @author fyy
  */
 public class InputMedia {
     /**

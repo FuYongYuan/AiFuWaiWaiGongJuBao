@@ -4,6 +4,8 @@ import java.util.Map;
 
 /**
  * 请求意图
+ *
+ * @author fyy
  */
 public class Intent {
     /**

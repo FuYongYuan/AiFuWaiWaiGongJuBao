@@ -2,6 +2,8 @@ package robot.model;
 
 /**
  * 机器人入参
+ *
+ * @author fyy
  */
 public class RobotIn {
     /**

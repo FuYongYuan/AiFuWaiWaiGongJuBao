@@ -2,6 +2,8 @@ package robot.model;
 
 /**
  * 地理位置信息
+ *
+ * @author fyy
  */
 public class Location {
     /**

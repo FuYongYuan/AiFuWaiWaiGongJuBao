@@ -1,44 +1,36 @@
 package schedule.service;
 
+/**
+ * 公历
+ *
+ * @author fyy
+ */
 class GregorianCalendar {
-
+    /**
+     * 获取月份多少天
+     *
+     * @param month 月份
+     * @param year  年
+     */
     public static int getDaysOfMonth(int month, int year) {
-
         switch (month) {
             case 1:
-                return 31;
-            case 2:
-
-                boolean isLeapYear;
-                if ((year % 400) == 0) {
-                    isLeapYear = true;
-                } else {
-                    isLeapYear = (year % 100) == 0 ? false : (year % 4) == 0;
-                }
-
-                return isLeapYear ? 29 : 28;
             case 3:
-                return 31;
-            case 4:
-                return 30;
             case 5:
-                return 31;
-            case 6:
-                return 30;
             case 7:
-                return 31;
             case 8:
-                return 31;
-            case 9:
-                return 30;
             case 10:
-                return 31;
-            case 11:
-                return 30;
             case 12:
                 return 31;
+            case 2:
+                return (year % 400) == 0 || (year % 100) != 0 && (year % 4) == 0 ? 29 : 28;
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                return 30;
+            default:
+                return 0;
         }
-
-        return 0;
     }
 }

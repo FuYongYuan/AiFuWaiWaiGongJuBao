@@ -9,70 +9,72 @@ import java.util.Date;
 
 /**
  * 时间处理类
+ *
+ * @author fyy
  */
 public class DateDispose {
 
     /**
      * 当前时间-----------------------------------------------------------------------------------------------------------
      */
-    public static String Year() {
-        return formatting_Date(new Date(), DateType.Year);
+    public static String getYear() {
+        return formattingDate(new Date(), DateType.Year);
     }
 
-    public static String Month() {
-        return formatting_Date(new Date(), DateType.Month);
+    public static String getMonth() {
+        return formattingDate(new Date(), DateType.Month);
     }
 
-    public static String Day() {
-        return formatting_Date(new Date(), DateType.Day);
+    public static String getDay() {
+        return formattingDate(new Date(), DateType.Day);
     }
 
-    public static String Hour() {
-        return formatting_Date(new Date(), DateType.Hour);
+    public static String getHour() {
+        return formattingDate(new Date(), DateType.Hour);
     }
 
-    public static String Minute() {
-        return formatting_Date(new Date(), DateType.Minute);
+    public static String getMinute() {
+        return formattingDate(new Date(), DateType.Minute);
     }
 
-    public static String Second() {
-        return formatting_Date(new Date(), DateType.Second);
+    public static String getSecond() {
+        return formattingDate(new Date(), DateType.Second);
     }
 
-    public static String Year_Month_Day() {
-        return formatting_Date(new Date(), DateType.Year_Month_Day);
+    public static String getYearMonthDay() {
+        return formattingDate(new Date(), DateType.Year_Month_Day);
     }
 
-    public static String Year_Month() {
-        return formatting_Date(new Date(), DateType.Year_Month);
+    public static String getYearMonth() {
+        return formattingDate(new Date(), DateType.Year_Month);
     }
 
-    public static String Month_Day() {
-        return formatting_Date(new Date(), DateType.Month_Day);
+    public static String getMonthDay() {
+        return formattingDate(new Date(), DateType.Month_Day);
     }
 
-    public static String Year_Month_Day_Hour_Minute_Second() {
-        return formatting_Date(new Date(), DateType.Year_Month_Day_Hour_Minute_Second);
+    public static String getYearMonthDayHourMinuteSecond() {
+        return formattingDate(new Date(), DateType.Year_Month_Day_Hour_Minute_Second);
     }
 
-    public static String Year_Month_Day_Hour_Minute_Second_MS() {
-        return formatting_Date(new Date(), DateType.Year_Month_Day_Hour_Minute_Second_MS);
+    public static String getYearMonthDayHourMinuteSecondMillisecond() {
+        return formattingDate(new Date(), DateType.Year_Month_Day_Hour_Minute_Second_MS);
     }
 
-    public static String Hour_Minute_Second() {
-        return formatting_Date(new Date(), DateType.Hour_Minute_Second);
+    public static String getHourMinuteSecond() {
+        return formattingDate(new Date(), DateType.Hour_Minute_Second);
     }
 
-    public static String Month_Day_Hour_Minute_Second() {
-        return formatting_Date(new Date(), DateType.Month_Day_Hour_Minute_Second);
+    public static String getMonthDayHourMinuteSecond() {
+        return formattingDate(new Date(), DateType.Month_Day_Hour_Minute_Second);
     }
 
-    public static String Month_Day_Hour_Minute() {
-        return formatting_Date(new Date(), DateType.Month_Day_Hour_Minute);
+    public static String getMonthDayHourMinute() {
+        return formattingDate(new Date(), DateType.Month_Day_Hour_Minute);
     }
 
-    public static String Day_Hour_Minute() {
-        return formatting_Date(new Date(), DateType.Day_Hour_Minute);
+    public static String getDayHourMinute() {
+        return formattingDate(new Date(), DateType.Day_Hour_Minute);
     }
 
     //------------------------------------------------------------------------------------------------------------------获取时间戳
@@ -97,7 +99,7 @@ public class DateDispose {
     /**
      * date转String
      */
-    public static String formatting_Date(Date date, DateType dateType) {
+    public static String formattingDate(Date date, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         return sdf.format(date);
     }
@@ -105,7 +107,7 @@ public class DateDispose {
     /**
      * String转date
      */
-    public static Date formatting_Date(String date, DateType dateType) {
+    public static Date formattingDate(String date, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Date str = null;
         try {
@@ -117,12 +119,12 @@ public class DateDispose {
         return str;
     }
 
-    public static String formatting_DateToString(Date date) {
-        return formatting_Date(date, DateType.Year_Month_Day_Hour_Minute_Second);
+    public static String formattingDateToString(Date date) {
+        return formattingDate(date, DateType.Year_Month_Day_Hour_Minute_Second);
     }
 
-    public static Date formatting_StringToDate(String date) {
-        return formatting_Date(date, DateType.Year_Month_Day_Hour_Minute_Second);
+    public static Date formattingStringToDate(String date) {
+        return formattingDate(date, DateType.Year_Month_Day_Hour_Minute_Second);
     }
 
 
@@ -135,7 +137,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String year_calculate_String(Date date, int i, DateType dateType) {
+    public static String yearCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.YEAR, i);
@@ -151,7 +153,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String year_calculate_String(String date, int i, DateType dateType) {
+    public static String yearCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -169,7 +171,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date year_calculate_Date(Date date, int i) {
+    public static Date yearCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.YEAR, i);
@@ -183,7 +185,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date year_calculate_Date(String date, int i, DateType dateType) {
+    public static Date yearCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -202,7 +204,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String month_calculate_String(Date date, int i, DateType dateType) {
+    public static String monthCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.MONTH, i);
@@ -218,7 +220,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String month_calculate_String(String date, int i, DateType dateType) {
+    public static String monthCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -236,7 +238,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date month_calculate_Date(Date date, int i) {
+    public static Date monthCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.MONTH, i);
@@ -250,7 +252,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date month_calculate_Date(String date, int i, DateType dateType) {
+    public static Date monthCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -269,7 +271,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String day_calculate_String(Date date, int i, DateType dateType) {
+    public static String dayCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.DAY_OF_YEAR, i);
@@ -285,7 +287,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String day_calculate_String(String date, int i, DateType dateType) {
+    public static String dayCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -303,7 +305,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date day_calculate_Date(Date date, int i) {
+    public static Date dayCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.DAY_OF_YEAR, i);
@@ -317,7 +319,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date day_calculate_Date(String date, int i, DateType dateType) {
+    public static Date dayCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -336,7 +338,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String hours_calculate_String(Date date, int i, DateType dateType) {
+    public static String hoursCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.HOUR_OF_DAY, i);
@@ -352,7 +354,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String hours_calculate_String(String date, int i, DateType dateType) {
+    public static String hoursCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -370,7 +372,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date hours_calculate_Date(Date date, int i) {
+    public static Date hoursCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.HOUR_OF_DAY, i);
@@ -384,7 +386,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date hours_calculate_Date(String date, int i, DateType dateType) {
+    public static Date hoursCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -403,7 +405,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String minutes_calculate_String(Date date, int i, DateType dateType) {
+    public static String minutesCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.MINUTE, i);
@@ -419,7 +421,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String minutes_calculate_String(String date, int i, DateType dateType) {
+    public static String minutesCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -437,7 +439,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date minutes_calculate_Date(Date date, int i) {
+    public static Date minutesCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.MINUTE, i);
@@ -451,7 +453,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date minutes_calculate_Date(String date, int i, DateType dateType) {
+    public static Date minutesCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -470,7 +472,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String seconds_calculate_String(Date date, int i, DateType dateType) {
+    public static String secondsCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.SECOND, i);
@@ -486,7 +488,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String seconds_calculate_String(String date, int i, DateType dateType) {
+    public static String secondsCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -504,7 +506,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date seconds_calculate_Date(Date date, int i) {
+    public static Date secondsCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.SECOND, i);
@@ -518,7 +520,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date seconds_calculate_Date(String date, int i, DateType dateType) {
+    public static Date secondsCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -617,10 +619,14 @@ public class DateDispose {
      */
     public static Long dateDiff(Date startTime, Date endTime, DateType returnType) {
         // 按照传入的格式生成一个simpledateformate对象
-        long nd = 1000 * 24 * 60 * 60;// 一天的毫秒数
-        long nh = 1000 * 60 * 60;// 一小时的毫秒数
-        long nm = 1000 * 60;// 一分钟的毫秒数
-        long ns = 1000;// 一秒钟的毫秒数
+        // 一天的毫秒数
+        long nd = 1000 * 24 * 60 * 60;
+        // 一小时的毫秒数
+        long nh = 1000 * 60 * 60;
+        // 一分钟的毫秒数
+        long nm = 1000 * 60;
+        // 一秒钟的毫秒数
+        long ns = 1000;
         long diff;
         long day;
         long hour;
@@ -628,10 +634,14 @@ public class DateDispose {
         long sec;
         // 获得两个时间的毫秒时间差异
         diff = endTime.getTime() - startTime.getTime();
-        day = diff / nd;// 计算差多少天
-        hour = diff % nd / nh + day * 24;// 计算差多少小时
-        min = diff % nd % nh / nm + (diff % nd / nh * 60) + day * 24 * 60;// 计算差多少分钟
-        sec = diff % nd % nh % nm / ns + (diff % nd / nh * 60 * 60) + (diff % nd % nh / nm * 60) + day * 24 * 60 * 60;// 计算差多少秒
+        // 计算差多少天
+        day = diff / nd;
+        // 计算差多少小时
+        hour = diff % nd / nh + day * 24;
+        // 计算差多少分钟
+        min = diff % nd % nh / nm + (diff % nd / nh * 60) + day * 24 * 60;
+        // 计算差多少秒
+        sec = diff % nd % nh % nm / ns + (diff % nd / nh * 60 * 60) + (diff % nd % nh / nm * 60) + day * 24 * 60 * 60;
         // 输出结果
         if (DateType.Hour.equals(returnType)) {
             return hour;
@@ -657,10 +667,14 @@ public class DateDispose {
     public static Long dateDiff(String startTime, String endTime, DateType formatType, DateType returnType) {
         // 按照传入的格式生成一个simpledateformate对象
         SimpleDateFormat sd = new SimpleDateFormat(formatType.getValue());
-        long nd = 1000 * 24 * 60 * 60;// 一天的毫秒数
-        long nh = 1000 * 60 * 60;// 一小时的毫秒数
-        long nm = 1000 * 60;// 一分钟的毫秒数
-        long ns = 1000;// 一秒钟的毫秒数
+        // 一天的毫秒数
+        long nd = 1000 * 24 * 60 * 60;
+        // 一小时的毫秒数
+        long nh = 1000 * 60 * 60;
+        // 一分钟的毫秒数
+        long nm = 1000 * 60;
+        // 一秒钟的毫秒数
+        long ns = 1000;
         long diff;
         long day;
         long hour;
@@ -669,10 +683,14 @@ public class DateDispose {
         // 获得两个时间的毫秒时间差异
         try {
             diff = sd.parse(endTime).getTime() - sd.parse(startTime).getTime();
-            day = diff / nd;// 计算差多少天
-            hour = diff % nd / nh + day * 24;// 计算差多少小时
-            min = diff % nd % nh / nm + (diff % nd / nh * 60) + day * 24 * 60;// 计算差多少分钟
-            sec = diff % nd % nh % nm / ns + (diff % nd / nh * 60 * 60) + (diff % nd % nh / nm * 60) + day * 24 * 60 * 60;// 计算差多少秒
+            // 计算差多少天
+            day = diff / nd;
+            // 计算差多少小时
+            hour = diff % nd / nh + day * 24;
+            // 计算差多少分钟
+            min = diff % nd % nh / nm + (diff % nd / nh * 60) + day * 24 * 60;
+            // 计算差多少秒
+            sec = diff % nd % nh % nm / ns + (diff % nd / nh * 60 * 60) + (diff % nd % nh / nm * 60) + day * 24 * 60 * 60;
             // 输出结果
             if (DateType.Hour.equals(returnType)) {
                 return hour;
@@ -747,32 +765,25 @@ public class DateDispose {
 
         switch (month) {
             case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
                 return 31;
             case 2:
                 return (year % 400) == 0 || (year % 100) != 0 && (year % 4) == 0 ? 29 : 28;
-            case 3:
-                return 31;
             case 4:
-                return 30;
-            case 5:
-                return 31;
             case 6:
-                return 30;
-            case 7:
-                return 31;
-            case 8:
-                return 31;
             case 9:
-                return 30;
-            case 10:
-                return 31;
             case 11:
                 return 30;
-            case 12:
-                return 31;
+            default:
+                return 0;
         }
 
-        return 0;
+
     }
 
     //------------------------------------------------------------------------------------------------------------------随机时间
@@ -788,23 +799,21 @@ public class DateDispose {
         Calendar calendar = Calendar.getInstance();
         //注意月份要减去1
         calendar.set(
-                Integer.parseInt(formatting_Date(startDate, DateType.Year)),
-                Integer.parseInt(formatting_Date(startDate, DateType.Month)) - 1,
-                Integer.parseInt(formatting_Date(startDate, DateType.Day)));
-        calendar.getTime().getTime();
+                Integer.parseInt(formattingDate(startDate, DateType.Year)),
+                Integer.parseInt(formattingDate(startDate, DateType.Month)) - 1,
+                Integer.parseInt(formattingDate(startDate, DateType.Day)));
         //根据需求，这里要将时分秒设置为0
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(formatting_Date(startDate, DateType.Hour)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(formatting_Date(startDate, DateType.Minute)));
-        calendar.set(Calendar.SECOND, Integer.parseInt(formatting_Date(startDate, DateType.Second)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(formattingDate(startDate, DateType.Hour)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(formattingDate(startDate, DateType.Minute)));
+        calendar.set(Calendar.SECOND, Integer.parseInt(formattingDate(startDate, DateType.Second)));
         long min = calendar.getTime().getTime();
         calendar.set(
-                Integer.parseInt(formatting_Date(endDate, DateType.Year)),
-                Integer.parseInt(formatting_Date(endDate, DateType.Month)) - 1,
-                Integer.parseInt(formatting_Date(endDate, DateType.Day)));
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(formatting_Date(endDate, DateType.Hour)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(formatting_Date(endDate, DateType.Minute)));
-        calendar.set(Calendar.SECOND, Integer.parseInt(formatting_Date(endDate, DateType.Second)));
-        calendar.getTime().getTime();
+                Integer.parseInt(formattingDate(endDate, DateType.Year)),
+                Integer.parseInt(formattingDate(endDate, DateType.Month)) - 1,
+                Integer.parseInt(formattingDate(endDate, DateType.Day)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(formattingDate(endDate, DateType.Hour)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(formattingDate(endDate, DateType.Minute)));
+        calendar.set(Calendar.SECOND, Integer.parseInt(formattingDate(endDate, DateType.Second)));
         long max = calendar.getTime().getTime();
         //得到大于等于min小于max的double值
         double randomDate = Math.random() * (max - min) + min;
@@ -824,23 +833,21 @@ public class DateDispose {
         Calendar calendar = Calendar.getInstance();
         //注意月份要减去1
         calendar.set(
-                Integer.parseInt(formatting_Date(formatting_StringToDate(startDate), DateType.Year)),
-                Integer.parseInt(formatting_Date(formatting_StringToDate(startDate), DateType.Month)) - 1,
-                Integer.parseInt(formatting_Date(formatting_StringToDate(startDate), DateType.Day)));
-        calendar.getTime().getTime();
+                Integer.parseInt(formattingDate(formattingStringToDate(startDate), DateType.Year)),
+                Integer.parseInt(formattingDate(formattingStringToDate(startDate), DateType.Month)) - 1,
+                Integer.parseInt(formattingDate(formattingStringToDate(startDate), DateType.Day)));
         //根据需求，这里要将时分秒设置为0
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(formatting_Date(formatting_StringToDate(startDate), DateType.Hour)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(formatting_Date(formatting_StringToDate(startDate), DateType.Minute)));
-        calendar.set(Calendar.SECOND, Integer.parseInt(formatting_Date(formatting_StringToDate(startDate), DateType.Second)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(formattingDate(formattingStringToDate(startDate), DateType.Hour)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(formattingDate(formattingStringToDate(startDate), DateType.Minute)));
+        calendar.set(Calendar.SECOND, Integer.parseInt(formattingDate(formattingStringToDate(startDate), DateType.Second)));
         long min = calendar.getTime().getTime();
         calendar.set(
-                Integer.parseInt(formatting_Date(formatting_StringToDate(endDate), DateType.Year)),
-                Integer.parseInt(formatting_Date(formatting_StringToDate(endDate), DateType.Month)) - 1,
-                Integer.parseInt(formatting_Date(formatting_StringToDate(endDate), DateType.Day)));
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(formatting_Date(formatting_StringToDate(endDate), DateType.Hour)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(formatting_Date(formatting_StringToDate(endDate), DateType.Minute)));
-        calendar.set(Calendar.SECOND, Integer.parseInt(formatting_Date(formatting_StringToDate(endDate), DateType.Second)));
-        calendar.getTime().getTime();
+                Integer.parseInt(formattingDate(formattingStringToDate(endDate), DateType.Year)),
+                Integer.parseInt(formattingDate(formattingStringToDate(endDate), DateType.Month)) - 1,
+                Integer.parseInt(formattingDate(formattingStringToDate(endDate), DateType.Day)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(formattingDate(formattingStringToDate(endDate), DateType.Hour)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(formattingDate(formattingStringToDate(endDate), DateType.Minute)));
+        calendar.set(Calendar.SECOND, Integer.parseInt(formattingDate(formattingStringToDate(endDate), DateType.Second)));
         long max = calendar.getTime().getTime();
         //得到大于等于min小于max的double值
         double randomDate = Math.random() * (max - min) + min;

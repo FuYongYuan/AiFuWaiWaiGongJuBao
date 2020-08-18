@@ -2,6 +2,8 @@ package robot.model;
 
 /**
  * 文本信息
+ *
+ * @author fyy
  */
 public class InputText {
     /**

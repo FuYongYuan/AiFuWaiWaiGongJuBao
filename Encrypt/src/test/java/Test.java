@@ -1,10 +1,4 @@
-import encrypt.AESUtil;
-import encrypt.MD5Util;
-import encrypt.RSAUtil;
-import encrypt.RandomUtil;
-
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import encrypt.RsaUtil;
 
 public class Test {
     public static void main(String[] args) throws Exception {
@@ -19,17 +13,17 @@ public class Test {
                 "Eo3rJXeQzf8Um1VcoLhbfxhWYC/JAiEAua3Mh0yZc68+13W57IN7v8e2/kBwmsml" +
                 "0xrkRRwcJ84=" ;
 
-        System.out.println(RSAUtil.decrypt(publicKeyStr,privateKeyStr));
+        System.out.println(RsaUtil.decrypt(publicKeyStr,privateKeyStr));
 
 //        System.out.println(RandomUtil.randomNumberByLength(6));
 
 
-//        System.out.println(MD5Util.encode("1"));
+//        System.out.println(Md5Util.encode("1"));
 
-//        System.out.println(AESUtil.encryptString("appsetr","EBS"));
-//        System.out.println(AESUtil.decryptString("10C615A9E5E6125181F01B6D6F1AD340","EBS"));
+//        System.out.println(AesUtil.encryptString("appsetr","EBS"));
+//        System.out.println(AesUtil.decryptString("10C615A9E5E6125181F01B6D6F1AD340","EBS"));
 //
-//        System.out.println(AESUtil.encryptString("weblogic123","EBS"));
-//        System.out.println(AESUtil.decryptString("A8C709E60599D0610492B079C724674B","EBS"));
+//        System.out.println(AesUtil.encryptString("weblogic123","EBS"));
+//        System.out.println(AesUtil.decryptString("A8C709E60599D0610492B079C724674B","EBS"));
     }
 }

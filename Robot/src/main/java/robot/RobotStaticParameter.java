@@ -2,6 +2,8 @@ package robot;
 
 /**
  * 机器人静态参数类
+ *
+ * @author fyy
  */
 public class RobotStaticParameter {
 
@@ -13,5 +15,5 @@ public class RobotStaticParameter {
     /**
      * 请求接口
      */
-    public static final String RobotUrl = "http://openapi.tuling123.com/openapi/api/v2";
+    public static final String ROBOT_URL = "http://openapi.tuling123.com/openapi/api/v2";
 }

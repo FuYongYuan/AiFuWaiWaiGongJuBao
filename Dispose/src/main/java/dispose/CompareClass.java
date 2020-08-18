@@ -11,10 +11,14 @@ import java.util.Map;
 
 /**
  * 用于比较两个类是否完全相等
+ *
+ * @author fyy
  */
 public class CompareClass {
+    /**
+     * 格式化时间
+     */
     public static DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    // 根据对象获得所有字段的值
 
     /**
      * 比对两个对象的值
@@ -24,15 +28,19 @@ public class CompareClass {
      * @param obj2 要比对的第二个对象
      * @return true两个对象完全相等   false两个对象有不等的地方
      */
-    public static boolean compareBackBoolean(Class obj, Object obj1, Object obj2) {
+    public static <T> boolean compareBackBoolean(Class<T> obj, T obj1, T obj2) {
         try {
             if (obj1 != null && obj2 != null) {
-                Field[] fields = obj.getDeclaredFields();// 获得属性
+                // 获得属性
+                Field[] fields = obj.getDeclaredFields();
                 for (Field field : fields) {
                     PropertyDescriptor pd = new PropertyDescriptor(field.getName(), obj);
-                    Method getMethod = pd.getReadMethod();// 获得get方法
-                    Object o1 = getMethod.invoke(obj1);// 执行get方法返回一个Object
-                    Object o2 = getMethod.invoke(obj2);// 执行get方法返回一个Object
+                    // 获得get方法
+                    Method getMethod = pd.getReadMethod();
+                    // 执行get方法返回一个Object
+                    Object o1 = getMethod.invoke(obj1);
+                    // 执行get方法返回一个Object
+                    Object o2 = getMethod.invoke(obj2);
                     if (o1 != null && o2 != null) {
                         if (o1 instanceof String && o2 instanceof String) {
                             String oV1 = o1.toString();
@@ -51,14 +59,14 @@ public class CompareClass {
                         if (o1 instanceof Integer && o2 instanceof Integer) {
                             Integer oV1 = Integer.parseInt(o1.toString());
                             Integer oV2 = Integer.parseInt(o2.toString());
-                            if (oV1 != oV2) {
+                            if (!oV1.equals(oV2)) {
                                 return false;
                             }
                         }
                         if (o1 instanceof Double && o2 instanceof Double) {
                             Double oV1 = Double.parseDouble(o1.toString());
                             Double oV2 = Double.parseDouble(o2.toString());
-                            if (oV1 != oV2) {
+                            if (!oV1.equals(oV2)) {
                                 return false;
                             }
                         }
@@ -85,16 +93,20 @@ public class CompareClass {
      * @param obj2 要比对的第二个对象
      * @return Map  key:不一样的属性名     value:obj2值
      */
-    public static Map<String, Object> compareBackMap(Class obj, Object obj1, Object obj2) {
-        Map<String, Object> map = new HashMap<>();
-        Field[] fields = obj.getDeclaredFields();// 获得属性
+    public static <T> Map<String, Object> compareBackMap(Class<T> obj, T obj1, T obj2) {
+        Map<String, Object> map = new HashMap<>(16);
+        // 获得属性
+        Field[] fields = obj.getDeclaredFields();
         try {
             if (obj1 != null && obj2 != null) {
                 for (Field field : fields) {
                     PropertyDescriptor pd = new PropertyDescriptor(field.getName(), obj);
-                    Method getMethod = pd.getReadMethod();// 获得get方法
-                    Object o1 = getMethod.invoke(obj1);// 执行get方法返回一个Object
-                    Object o2 = getMethod.invoke(obj2);// 执行get方法返回一个Object
+                    // 获得get方法
+                    Method getMethod = pd.getReadMethod();
+                    // 执行get方法返回一个Object
+                    Object o1 = getMethod.invoke(obj1);
+                    // 执行get方法返回一个Object
+                    Object o2 = getMethod.invoke(obj2);
                     if (o1 != null && o2 != null) {
                         if (o1 instanceof String && o2 instanceof String) {
                             String oV1 = o1.toString();
@@ -113,14 +125,14 @@ public class CompareClass {
                         if (o1 instanceof Integer && o2 instanceof Integer) {
                             Integer oV1 = Integer.parseInt(o1.toString());
                             Integer oV2 = Integer.parseInt(o2.toString());
-                            if (oV1 != oV2) {
+                            if (!oV1.equals(oV2)) {
                                 map.put(field.getName(), o2);
                             }
                         }
                         if (o1 instanceof Double && o2 instanceof Double) {
                             Double oV1 = Double.parseDouble(o1.toString());
                             Double oV2 = Double.parseDouble(o2.toString());
-                            if (oV1 != oV2) {
+                            if (!oV1.equals(oV2)) {
                                 map.put(field.getName(), o2);
                             }
                         }

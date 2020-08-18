@@ -2,6 +2,8 @@ package robot.model;
 
 /**
  * 输出结果集
+ *
+ * @author fyy
  */
 public class Results {
     /**

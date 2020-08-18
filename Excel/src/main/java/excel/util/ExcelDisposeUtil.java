@@ -21,6 +21,8 @@ import java.util.Map;
 
 /**
  * Excel属性处理帮助工具类
+ *
+ * @author fyy
  */
 public class ExcelDisposeUtil {
     /**
@@ -43,46 +45,52 @@ public class ExcelDisposeUtil {
                         sheetSet.getSheetCache().useField.add(field);
 
                         ExcelField excelField = field.getAnnotation(ExcelField.class);
-
-                        if ((sheetSet.getFunction().getSubTotal() != null && sheetSet.getFunction().getSubTotal().getReferenceFieldName() != null) &&
+                        boolean exist = (sheetSet.getFunction().getSubTotal() != null && sheetSet.getFunction().getSubTotal().getReferenceFieldName() != null) &&
                                 (sheetSet.getFunction().getSubTotal().getReferenceFieldName().equals(field.getName()) ||
-                                        sheetSet.getFunction().getSubTotal().getReferenceFieldName().equals(excelField.columnName()))) {
+                                        sheetSet.getFunction().getSubTotal().getReferenceFieldName().equals(excelField.columnName()));
+                        if (exist) {
                             sheetSet.getSheetCache().subTotalReferenceField = field;
                         }
 
-                        if ((sheetSet.getFunction().getTotal() != null && sheetSet.getFunction().getTotal().getReferenceFieldName() != null) &&
+                        exist = (sheetSet.getFunction().getTotal() != null && sheetSet.getFunction().getTotal().getReferenceFieldName() != null) &&
                                 (sheetSet.getFunction().getTotal().getReferenceFieldName().equals(field.getName()) ||
-                                        sheetSet.getFunction().getTotal().getReferenceFieldName().equals(excelField.columnName()))) {
+                                        sheetSet.getFunction().getTotal().getReferenceFieldName().equals(excelField.columnName()));
+                        if (exist) {
                             sheetSet.getSheetCache().totalReferenceField = field;
                         }
 
-                        if ((sheetSet.getFunction().getSubTotal() != null && sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder() != null) &&
+                        exist = (sheetSet.getFunction().getSubTotal() != null && sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder() != null) &&
                                 (sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null ||
-                                        sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null)) {
+                                        sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null);
+                        if (exist) {
                             sheetSet.getSheetCache().subTotalColumnIndex.add(excelField.order());
                         }
 
-                        if ((sheetSet.getFunction().getTotal() != null && sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder() != null) &&
+                        exist = (sheetSet.getFunction().getTotal() != null && sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder() != null) &&
                                 (sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null ||
-                                        sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null)) {
+                                        sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null);
+                        if (exist) {
                             sheetSet.getSheetCache().totalColumnIndex.add(excelField.order());
                         }
 
-                        if ((sheetSet.getFunction().getTotalAll() != null) &&
+                        exist = (sheetSet.getFunction().getTotalAll() != null) &&
                                 (sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(field.getName()) != null ||
-                                        sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null)) {
+                                        sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null);
+                        if (exist) {
                             sheetSet.getSheetCache().totalAllColumnIndex.add(excelField.order());
                         }
 
-                        if ((sheetSet.getFunction().getSubTotal() != null && sheetSet.getFunction().getSubTotal().getSpanFieldNames() != null) &&
+                        exist = (sheetSet.getFunction().getSubTotal() != null && sheetSet.getFunction().getSubTotal().getSpanFieldNames() != null) &&
                                 (sheetSet.getFunction().getSubTotal().getSpanFieldNames().contains(field.getName()) ||
-                                        sheetSet.getFunction().getSubTotal().getSpanFieldNames().contains(excelField.columnName()))) {
+                                        sheetSet.getFunction().getSubTotal().getSpanFieldNames().contains(excelField.columnName()));
+                        if (exist) {
                             sheetSet.getSheetCache().subTotalSpanField.add(field);
                         }
 
-                        if ((sheetSet.getFunction().getTotal() != null && sheetSet.getFunction().getTotal().getSpanFieldNames() != null) &&
+                        exist = (sheetSet.getFunction().getTotal() != null && sheetSet.getFunction().getTotal().getSpanFieldNames() != null) &&
                                 (sheetSet.getFunction().getTotal().getSpanFieldNames().contains(field.getName()) ||
-                                        sheetSet.getFunction().getTotal().getSpanFieldNames().contains(excelField.columnName()))) {
+                                        sheetSet.getFunction().getTotal().getSpanFieldNames().contains(excelField.columnName()));
+                        if (exist) {
                             sheetSet.getSheetCache().totalSpanField.add(field);
                         }
                     }
@@ -120,7 +128,7 @@ public class ExcelDisposeUtil {
             if (objectValue == null) {
                 value = null;
             } else if (objectValue instanceof Date && !field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
-                value = DateDispose.formatting_Date((Date) objectValue, dateType);
+                value = DateDispose.formattingDate((Date) objectValue, dateType);
             } else if (TextDispose.isDouble(objectValue.toString())) {
                 StringBuilder sb = new StringBuilder("#0.");
                 if (decimalAfterDigit > 0) {
@@ -148,7 +156,7 @@ public class ExcelDisposeUtil {
      * @param tClass 类型
      * @return 对象和Excel有关的属性List
      */
-    public static List<Field> getFieldList(Class tClass) {
+    public static <T> List<Field> getFieldList(Class<T> tClass) {
         List<Field> fieldList = new ArrayList<>();
         try {
             //获取正确的要赋值的字段
@@ -183,7 +191,7 @@ public class ExcelDisposeUtil {
     public static String getValueLimit(SheetSet sheetSet, String cellValue, ExcelField excelField) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         //获取转换值集中对应值
         if (!excelField.valueLimit().isEmpty()) {
-            if (excelField.valueLimit().contains("=")) {
+            if (excelField.valueLimit().contains(ExcelDisposeConstant.EQUAL)) {
                 String[] valueLimits = excelField.valueLimit().split(";");
                 for (String valueLimit : valueLimits) {
                     String[] vl = valueLimit.split("=");

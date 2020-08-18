@@ -55,7 +55,7 @@ public class ExcelEntity {
         return "ExcelEntity{" +
                 "sT='" + sT + '\'' +
                 ", iT=" + iT +
-                ", DT=" + DateDispose.formatting_DateToString(DT) +
+                ", DT=" + DateDispose.formattingDateToString(DT) +
                 ", dT=" + dT +
                 ", bDT=" + bDT +
                 ", bT=" + bT +

@@ -9,12 +9,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>Couchbase</module>
         <module>Dispose</module>
         <module>Encrypt</module>
         <module>Excel</module>
         <module>Http</module>
-        <module>Log</module>
         <module>Mail</module>
         <module>Project</module>
         <module>Robot</module>

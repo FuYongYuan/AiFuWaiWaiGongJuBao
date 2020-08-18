@@ -2,6 +2,8 @@ package robot.model;
 
 /**
  * 客户端属性
+ *
+ * @author fyy
  */
 public class SelfInfo {
     /**

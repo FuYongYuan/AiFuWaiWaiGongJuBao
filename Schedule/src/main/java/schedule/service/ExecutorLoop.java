@@ -5,18 +5,20 @@ import schedule.Job;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
+/**
+ * 核心执行类
+ *
+ * @author fyy
+ */
 class ExecutorLoop {
-
-    private static int POLL_TIME = 10 * 60 * 1000;
 
 
     private ExecutorService loopExecutor;
     private ExecutorService workersExecutor;
 
-    private Object locker = new Object();
+    private final Object locker = new Object();
 
 
     public ExecutorLoop(ScheduleContext scheduleContext) {
@@ -24,15 +26,29 @@ class ExecutorLoop {
     }
 
 
-    private ScheduleContext scheduleContext;
+    private final ScheduleContext scheduleContext;
 
 
     public void start() {
 
         setStarted(true);
 
-        loopExecutor = Executors.newSingleThreadExecutor();
-        workersExecutor = Executors.newCachedThreadPool();
+        loopExecutor = new ThreadPoolExecutor(
+                1,
+                1,
+                0L,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
+        workersExecutor = new ThreadPoolExecutor(
+                0,
+                Integer.MAX_VALUE,
+                60L,
+                TimeUnit.SECONDS,
+                new SynchronousQueue<>(),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
 
         loopExecutor.execute(() -> {
             performExecutorLoop();
@@ -59,7 +75,7 @@ class ExecutorLoop {
 
     private LocalDateTime wakeupTime;
 
-    private ArrayList<ScheduleState<?>> schedules;
+    private ArrayList<AbstractScheduleState<?>> schedules;
 
 
     private boolean isWaitingInvalidated;
@@ -69,11 +85,11 @@ class ExecutorLoop {
 
         while (isStarted()) {
 
-            ArrayList<ScheduleState<?>> schedules;
+            ArrayList<AbstractScheduleState<?>> schedules;
 
             synchronized (locker) {
 
-                while (true) {
+                do {
 
                     while (isWaitingInvalidated) {
 
@@ -82,12 +98,13 @@ class ExecutorLoop {
 
                         long sleepTime;
 
+                        int pollTime = 10 * 60 * 1000;
                         if (wakeupTime == null) {
-                            sleepTime = POLL_TIME;
+                            sleepTime = pollTime;
                         } else {
                             LocalDateTime now = LocalDateTime.now();
                             if (now.isBefore(wakeupTime)) {
-                                sleepTime = Math.min(Helper.getMilliseconds(Duration.between(now, wakeupTime)), POLL_TIME);
+                                sleepTime = Math.min(Helper.getMilliseconds(Duration.between(now, wakeupTime)), pollTime);
                             } else {
                                 sleepTime = 0;
                             }
@@ -106,10 +123,7 @@ class ExecutorLoop {
                         }
                     }
 
-                    if (!LocalDateTime.now().isBefore(wakeupTime)) {
-                        break;
-                    }
-                }
+                } while (LocalDateTime.now().isBefore(wakeupTime));
 
                 schedules = this.schedules;
             }
@@ -125,11 +139,11 @@ class ExecutorLoop {
         }
     }
 
-    private void runActions(ArrayList<ScheduleState<?>> schedules) {
+    private void runActions(ArrayList<AbstractScheduleState<?>> schedules) {
 
         LocalDateTime now = LocalDateTime.now();
 
-        for (ScheduleState<?> schedule : schedules) {
+        for (AbstractScheduleState<?> schedule : schedules) {
             schedule.notifyRun(now);
             workersExecutor.execute(getAction(schedule.job));
         }
@@ -154,7 +168,7 @@ class ExecutorLoop {
     }
 
 
-    public void scheduleNextTime(LocalDateTime time, ArrayList<ScheduleState<?>> schedules) {
+    public void scheduleNextTime(LocalDateTime time, ArrayList<AbstractScheduleState<?>> schedules) {
 
         synchronized (locker) {
 

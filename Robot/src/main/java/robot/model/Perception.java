@@ -2,6 +2,8 @@ package robot.model;
 
 /**
  * 输入信息
+ *
+ * @author fyy
  */
 public class Perception {
     /**

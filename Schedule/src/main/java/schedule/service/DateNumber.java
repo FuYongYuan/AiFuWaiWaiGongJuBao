@@ -3,6 +3,11 @@ package schedule.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * 时间处理
+ *
+ * @author fyy
+ */
 class DateNumber {
 
     public DateNumberDef def;
@@ -22,6 +27,20 @@ class DateNumber {
     public int second;
 
     public int nano;
+
+    private static final int YEAR = 0;
+
+    private static final int MONTH = 1;
+
+    private static final int DAY = 2;
+
+    private static final int HOUR = 3;
+
+    private static final int MINUTE = 4;
+
+    private static final int SECOND = 5;
+
+    private static final int NANO = 6;
 
 
     public LocalDateTime toLocalDateTime() {
@@ -157,121 +176,98 @@ class DateNumber {
 
 
     public DateNumber plusNanos(int nanos) {
-        return add(nanos, 6);
+        return add(nanos, NANO);
     }
 
     public DateNumber plusSeconds(int seconds) {
-        return add(seconds, 5);
+        return add(seconds, SECOND);
     }
 
     public DateNumber plusMinutes(int minutes) {
-        return add(minutes, 4);
+        return add(minutes, MINUTE);
     }
 
     public DateNumber plusHours(int hours) {
-        return add(hours, 3);
+        return add(hours, HOUR);
     }
 
     public DateNumber plusDays(int days) {
-        return add(days, 2);
+        return add(days, DAY);
     }
 
     public DateNumber plusMonths(int months) {
-        return add(months, 1);
+        return add(months, MONTH);
     }
 
     public DateNumber plusYears(int years) {
-        return add(years, 0);
+        return add(years, YEAR);
     }
 
 
     private DateNumber add(int n, int field) {
-
         DateNumber d = new DateNumber();
         d.def = def;
-
         AddResult result = new AddResult();
         result.overflow = n;
-
-        if (field >= 6) {
+        if (field >= NANO) {
             result = def.nano.add(nano, result.overflow);
             d.nano = result.value;
         } else {
             d.nano = nano;
         }
-
-        if (field >= 5) {
+        if (field >= SECOND) {
             result = def.second.add(second, result.overflow);
             d.second = result.value;
         } else {
             d.second = second;
         }
-
-        if (field >= 4) {
+        if (field >= MINUTE) {
             result = def.minute.add(minute, result.overflow);
             d.minute = result.value;
         } else {
             d.minute = minute;
         }
-
-        if (field >= 3) {
+        if (field >= HOUR) {
             result = def.hour.add(hour, result.overflow);
             d.hour = result.value;
         } else {
             d.hour = hour;
         }
-
-        if (field >= 2) {
+        if (field >= DAY) {
             result = def.day.add(day, result.overflow);
             d.day = result.value;
         } else {
             d.day = day;
         }
-
-        if (field >= 1) {
+        if (field >= MONTH) {
             result = def.month.add(month, result.overflow);
             d.month = result.value;
         } else {
             d.month = month;
         }
-
         d.year = year + result.overflow;
-
-
         while (true) {
-
             int dayCount = GregorianCalendar.getDaysOfMonth(d.month, d.year);
             if (d.day > dayCount) {
                 d.month++;
                 d.day -= dayCount;
             }
-
-
             int weekDay = LocalDate.of(d.year, d.month, d.day).getDayOfWeek().getValue();
             int adjustDays = 0;
-
             if (weekDay < def.week.getLower()) {
                 adjustDays = def.week.getLower() - weekDay;
             } else if (weekDay > def.week.getUpper()) {
                 adjustDays = def.week.getLower() - weekDay + 7;
             }
-
-
             if (adjustDays == 0) {
                 break;
             }
-
-
             result = def.day.add(d.day, adjustDays);
             d.day = result.value;
-
             result = def.month.add(d.month, result.overflow);
             d.month = result.value;
-
             d.year += result.overflow;
         }
-
-
         d.weekDay = LocalDate.of(d.year, d.month, d.day).getDayOfWeek().getValue();
         return d;
     }

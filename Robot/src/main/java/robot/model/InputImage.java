@@ -2,6 +2,8 @@ package robot.model;
 
 /**
  * 图片信息
+ *
+ * @author fyy
  */
 public class InputImage {
     /**

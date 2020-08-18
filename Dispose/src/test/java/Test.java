@@ -1,14 +1,7 @@
-
-import dispose.DateDispose;
-import dispose.SQLInjectDefense;
 import dispose.TextDispose;
-import enumerate.DateType;
+import enumerate.Format;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Test {
 //    private static void test(Map<String,Object> map) {
@@ -72,18 +65,68 @@ public class Test {
 //        }
 //    }
 
+    private static String replaceText(String context, String text, Integer wb) {
+        String ct = context;
+        if (context.contains(text)) {
+            int jw = context.indexOf(text) + text.length();
+            ct = context.substring(0, jw);
+            ct = ct.replaceAll("(?i)" + text, "<span style='color: red'>" + text + "</span>");
+            ct += replaceText(context.substring(jw), text, wb);
+        }
+        return ct;
+    }
+
     public static void main(String[] args) {
+//        String ceshi = "abbaabbaaabbaaaabbaaaaabbaaaaaa";
+//
+//
+//        System.out.println(replaceText(ceshi, "bb", 0));
 
-        //集合
-        List<String> list = new ArrayList<>();
-        //数组
-        String[] s = new String[]{"", ""};
-        //Map
-        Map<String,String> map = new HashMap<>();
+        System.out.println(TextDispose.toRemoverCamelCase("T_User_Action_X_X",Format.Upper, Format.NoFormat));
+
+//        //集合
+//        List<String> list = new ArrayList<>();
+//        //数组
+//        String[] s = new String[]{"", ""};
+//        //Map
+//        Map<String,String> map = new HashMap<>();
+//
+//        map.put("1","1");
+//
+//        System.out.println(map.get("1"));
+//
+//        System.out.println("结束");
+//
+//
+//
+//        for(String s1:list){
+//            方法()
+//            System.gc();
+//        }
+//
+//
+//
+//
+//        System.out.println(map.get("1"));
+//
 
 
-        do{
-        }while(true);
+//        boolean i = false;
+//        if(i = true){
+//            System.out.println(1);
+//        }
+//
+
+
+//        System.gc();
+//        System.runFinalization();
+//        System.gc();
+//
+//        System.out.println(map.get("1"));
+//        System.out.println(s==null);
+//        System.out.println(list==null);
+//        do{
+//        }while(true);
 
 
 //        String s = "SELECT acc_type ,acc_ac ,MIN(pmt_desc) pmt_desc ,acc_ic ,acc_ac_desc ,SUM(acc_dr) acc_dr ,SUM(acc_cr) acc_cr ,ord_seq FROM (SELECT substr(flvv.meaning, 2, instr(flvv.meaning, '】') - 2) acc_type ,flvv.description acc_ac ,flvv.attribute9 pmt_desc ,flvv.attribute8 acc_ic ,substr(flvv.meaning, instr(flvv.meaning, '】') + 1) acc_ac_desc ,nvl(gjl.accounted_dr, 0) acc_dr ,nvl(gjl.accounted_cr, 0) acc_cr ,flvv.lookup_code ord_seq FROM gl_je_headers gjh ,gl_je_lines gjl ,gl_code_combinations gcc ,fnd_lookup_values_vl flvv WHERE gjh.je_header_id = gjl.je_header_id AND gjh.currency_code <> 'STAT' AND gjh.actual_flag = 'A' AND gcc.code_combination_id = gjl.code_combination_id AND flvv.lookup_type = 'XY_STAMPTAX_CHECK_ACCOUNT' AND flvv.enabled_flag = 'Y' AND trunc(SYSDATE) BETWEEN nvl(flvv.start_date_active, trunc(SYSDATE)) AND nvl(flvv.end_date_active, trunc(SYSDATE)) AND gcc.segment3 LIKE flvv.description || '%' AND (flvv.attribute8 IS NULL OR (flvv.attribute8 IS NOT NULL AND gcc.segment8 = flvv.attribute8)) AND gjh.default_effective_date BETWEEN to_date('${p_start_date}', 'YYYY-MM-DD') AND to_date('${p_end_date}', 'YYYY-MM-DD') ${if(len(p_org_code) == 0, \"\", \" AND gcc.segment1 IN ('\" + REPLACE(p_org_code, \",\", \"','\") + \"')\") } ${if(len(p_dept_code) == 0, \"\", \" AND gcc.segment2 IN ('\" + REPLACE(p_dept_code, \",\", \"','\") + \"')\") } UNION ALL SELECT substr(flvv.meaning, 2, instr(flvv.meaning, '】') - 2) acc_type ,flvv.description acc_ac ,flvv.attribute9 pmt_desc ,flvv.attribute8 acc_ic ,substr(flvv.meaning, instr(flvv.meaning, '】') + 1) acc_ac_desc ,0 acc_dr ,0 acc_cr ,flvv.lookup_code ord_seq FROM fnd_lookup_values_vl flvv WHERE flvv.lookup_type = 'XY_STAMPTAX_CHECK_ACCOUNT' AND flvv.enabled_flag = 'Y' AND trunc(SYSDATE) BETWEEN nvl(flvv.start_date_active, trunc(SYSDATE)) AND nvl(flvv.end_date_active, trunc(SYSDATE))) GROUP BY acc_type ,acc_ac ,acc_ac_desc ,acc_ic ,ord_seq ORDER BY to_number(ord_seq)";
@@ -143,7 +186,7 @@ public class Test {
 
 //        String s1 = "SELECT t.org_code ,t.parent_code ,t.org_name FROM TABLE(nfnd_frfavpd_util_pkg.get_orgs('${p_user_name}', '${p_role_name}')) t";
 //
-////        SQLInjectDefense.get_in_table(s).forEach(System.out::println);
+////        SqlInjectDefense.get_in_table(s).forEach(System.out::println);
 //
 //        sql(s);
 
@@ -250,7 +293,7 @@ public class Test {
 
 //        String ds = "2019-10-31";
 //
-//        System.out.println(DateDispose.formatting_Date(DateDispose.formatting_Date(ds, DateType.Hour_Minute_Second),DateType.Hour_Minute_Second));
+//        System.out.println(DateDispose.formattingDate(DateDispose.formattingDate(ds, DateType.Hour_Minute_Second),DateType.Hour_Minute_Second));
 
 
 //        Map<String,Object> map = new HashMap<>();
@@ -266,7 +309,7 @@ public class Test {
 //        System.out.println(map.get("B"));
 
 
-//        System.out.println(DateDispose.formatting_DateToString(DateDispose.formatting_StringToDate("2013-12-12 23:23:23.112324233")));
+//        System.out.println(DateDispose.formattingDateToString(DateDispose.formattingStringToDate("2013-12-12 23:23:23.112324233")));
 
 //        String s = "UPDATE BP3_BANK_ACCOUNT_TX_CONTROL A SET A.POLLING_SCHEDULE='{[0900,2330],900}',A.POLLING_SCHEDULE='{[0900,2330],900}',A.POLLING_SCHEDULE='{[0900,2330],900}' WHERE a.ACCOUNT_ID IN (1571,1572) AND A.BTX_CODE IN ('QBA','QRC')";
 //
@@ -352,8 +395,8 @@ public class Test {
 //
 //        System.out.println(s.contains("Y"));
 
-//        Date totalStartDate = DateDispose.formatting_Date("2019-07-03", DateType.Year_Month_Day);
-//        Date totalEndDate = DateDispose.formatting_Date("2019-07-01", DateType.Year_Month_Day);
+//        Date totalStartDate = DateDispose.formattingDate("2019-07-03", DateType.Year_Month_Day);
+//        Date totalEndDate = DateDispose.formattingDate("2019-07-01", DateType.Year_Month_Day);
 //        if(DateDispose.compareDateSize(totalEndDate, totalStartDate) || DateDispose.compareDate(totalEndDate, totalStartDate)) {
 //            System.out.println("1");
 //        }else{
@@ -368,21 +411,21 @@ public class Test {
 //        BigDecimal balance = new BigDecimal(0);
 //        BigDecimal total = new BigDecimal(0);
 //
-//        Date start_Date = DateDispose.formatting_Date("2019-04-30 00:00:00", DateType.Year_Month_Day_Hour_Minute_Second);
-//        Date end_Date = DateDispose.formatting_Date("2019-07-02 23:59:59", DateType.Year_Month_Day_Hour_Minute_Second);
+//        Date start_Date = DateDispose.formattingDate("2019-04-30 00:00:00", DateType.Year_Month_Day_Hour_Minute_Second);
+//        Date end_Date = DateDispose.formattingDate("2019-07-02 23:59:59", DateType.Year_Month_Day_Hour_Minute_Second);
 //        Date totalStartDate;
-//        totalStartDate = DateDispose.day_calculate_Date(start_Date, 1);
+//        totalStartDate = DateDispose.dayCalculateDate(start_Date, 1);
 //
-//        System.out.println(DateDispose.formatting_Date(start_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(end_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(start_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(end_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //        System.out.println(total);
 //        map.put("2019-05-01", new BigDecimal(2000));
 //        System.out.println("---------------------------------------------------------------------");
 //
 //        for (Map.Entry<String, BigDecimal> set : m.entrySet()) {
-//            if (DateDispose.compareDateSize(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)||
-//                    DateDispose.compareDate(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)) {
+//            if (DateDispose.compareDateSize(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)||
+//                    DateDispose.compareDate(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)) {
 //                balance = balance.add(set.getValue());
 //            }
 //        }
@@ -390,21 +433,21 @@ public class Test {
 //        total = total.add(balance);
 //
 //
-//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.day_calculate_Date(start_Date, i)) {
-//            System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.dayCalculateDate(start_Date, i)) {
+//            System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //            BigDecimal b = new BigDecimal(0);
 //
 //            for (Map.Entry<String, BigDecimal> set : map.entrySet()) {
 //
-//                if (DateDispose.compareDateSize(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
-//                        || DateDispose.compareDate(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                if (DateDispose.compareDateSize(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                        || DateDispose.compareDate(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
 //                ) {
 //                    BigDecimal amount = set.getValue().multiply(new BigDecimal(-1));
 //                    b = b.add(amount);
 //                }
 //
-//                if(DateDispose.compareDate(DateDispose.formatting_Date("2019-07-01", DateType.Year_Month_Day), totalStartDate) ||
-//                        DateDispose.compareDate(DateDispose.formatting_Date("2019-07-02", DateType.Year_Month_Day), totalStartDate)){
+//                if(DateDispose.compareDate(DateDispose.formattingDate("2019-07-01", DateType.Year_Month_Day), totalStartDate) ||
+//                        DateDispose.compareDate(DateDispose.formattingDate("2019-07-02", DateType.Year_Month_Day), totalStartDate)){
 //                    b = balance.multiply(new BigDecimal(-1));
 //                }
 //            }
@@ -426,49 +469,49 @@ public class Test {
 //        BigDecimal balance = new BigDecimal(0);
 //        BigDecimal total = new BigDecimal(0);
 //
-//        Date start_Date = DateDispose.formatting_Date("2019-04-30", DateType.Year_Month_Day);
-//        Date end_Date = DateDispose.formatting_Date("2019-07-02", DateType.Year_Month_Day);
+//        Date start_Date = DateDispose.formattingDate("2019-04-30", DateType.Year_Month_Day);
+//        Date end_Date = DateDispose.formattingDate("2019-07-02", DateType.Year_Month_Day);
 //        Date totalStartDate = start_Date;
 //
-//        System.out.println(DateDispose.formatting_Date(start_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(end_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(start_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(end_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //        System.out.println(total);
 //
 //        map.put("2019-05-01", new BigDecimal(2000));
 //        System.out.println("---------------------------------------------------------------------");
 //
 //        for (Map.Entry<String, BigDecimal> set : m.entrySet()) {
-//            if (DateDispose.compareDateSize(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)||
-//                    DateDispose.compareDate(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)) {
+//            if (DateDispose.compareDateSize(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)||
+//                    DateDispose.compareDate(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)) {
 //                balance = balance.add(set.getValue());
 //            }
 //        }
 //
 //        total = total.add(balance);
-//        totalStartDate = DateDispose.day_calculate_Date(start_Date, 1);
+//        totalStartDate = DateDispose.dayCalculateDate(start_Date, 1);
 //
-//        System.out.println(DateDispose.formatting_Date(start_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(end_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(start_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(end_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //        System.out.println(total);
 //        System.out.println("---------------------------------------------------------------------");
 //
-//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.day_calculate_Date(start_Date, i)) {
-//            System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.dayCalculateDate(start_Date, i)) {
+//            System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //            BigDecimal b = new BigDecimal(0);
 //
 //            for (Map.Entry<String, BigDecimal> set : map.entrySet()) {
 //
-//                if (DateDispose.compareDateSize(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
-//                        || DateDispose.compareDate(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                if (DateDispose.compareDateSize(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                        || DateDispose.compareDate(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
 //                ) {
 //                    BigDecimal amount = set.getValue().multiply(new BigDecimal(-1));
 //                    b = b.add(amount);
 //                }
 //
-//                if(DateDispose.compareDate(DateDispose.formatting_Date("2019-07-01", DateType.Year_Month_Day), totalStartDate) ||
-//                        DateDispose.compareDate(DateDispose.formatting_Date("2019-07-02", DateType.Year_Month_Day), totalStartDate)){
+//                if(DateDispose.compareDate(DateDispose.formattingDate("2019-07-01", DateType.Year_Month_Day), totalStartDate) ||
+//                        DateDispose.compareDate(DateDispose.formattingDate("2019-07-02", DateType.Year_Month_Day), totalStartDate)){
 //                    b = balance.multiply(new BigDecimal(-1));
 //                }
 //            }
@@ -489,13 +532,13 @@ public class Test {
 //        BigDecimal balance = new BigDecimal(0);
 //        BigDecimal total = new BigDecimal(0);
 //
-//        Date start_Date = DateDispose.formatting_Date("2019-02-01", DateType.Year_Month_Day);
-//        Date end_Date = DateDispose.formatting_Date("2019-07-01", DateType.Year_Month_Day);
+//        Date start_Date = DateDispose.formattingDate("2019-02-01", DateType.Year_Month_Day);
+//        Date end_Date = DateDispose.formattingDate("2019-07-01", DateType.Year_Month_Day);
 //        Date totalStartDate = start_Date;
 //
-//        System.out.println(DateDispose.formatting_Date(start_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(end_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(start_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(end_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //        System.out.println(total);
 //
 //        map.put("2019-03-01", new BigDecimal(2432));
@@ -503,29 +546,29 @@ public class Test {
 //        System.out.println("---------------------------------------------------------------------");
 //
 //        for (Map.Entry<String, BigDecimal> set : m.entrySet()) {
-//            if (DateDispose.compareDateSize(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)||
-//            DateDispose.compareDate(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)) {
+//            if (DateDispose.compareDateSize(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)||
+//            DateDispose.compareDate(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)) {
 //                balance = balance.add(set.getValue());
 //            }
 //        }
 //
 //        total = total.add(balance);
-//        totalStartDate = DateDispose.day_calculate_Date(start_Date, 1);
+//        totalStartDate = DateDispose.dayCalculateDate(start_Date, 1);
 //
-//        System.out.println(DateDispose.formatting_Date(start_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(end_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(start_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(end_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //        System.out.println(total);
 //        System.out.println("---------------------------------------------------------------------");
 //
-//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.day_calculate_Date(start_Date, i)) {
-//            System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.dayCalculateDate(start_Date, i)) {
+//            System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //            BigDecimal b = new BigDecimal(0);
 //
 //            for (Map.Entry<String, BigDecimal> set : map.entrySet()) {
 //
-//                if (DateDispose.compareDateSize(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
-//                        || DateDispose.compareDate(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                if (DateDispose.compareDateSize(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                        || DateDispose.compareDate(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
 //                ) {
 //                    BigDecimal amount = set.getValue().multiply(new BigDecimal(-1));
 //                    b = b.add(amount);
@@ -546,23 +589,23 @@ public class Test {
 //
 //        total = total.add(balance);
 //
-//        Date start_Date = DateDispose.formatting_Date("2018-06-11", DateType.Year_Month_Day);
-//        Date end_Date = DateDispose.formatting_Date("2018-12-11", DateType.Year_Month_Day);
+//        Date start_Date = DateDispose.formattingDate("2018-06-11", DateType.Year_Month_Day);
+//        Date end_Date = DateDispose.formattingDate("2018-12-11", DateType.Year_Month_Day);
 //        Date totalStartDate = start_Date;
-//        totalStartDate = DateDispose.day_calculate_Date(start_Date, 1);
+//        totalStartDate = DateDispose.dayCalculateDate(start_Date, 1);
 //
-//        System.out.println(DateDispose.formatting_Date(start_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(end_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(start_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(end_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //        System.out.println(total);
 //        map.put("2018-12-11", new BigDecimal(2106000));
 //        System.out.println("---------------------------------------------------------------------");
-//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.day_calculate_Date(start_Date, i)) {
-//            System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.dayCalculateDate(start_Date, i)) {
+//            System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //            BigDecimal b = new BigDecimal(0);
 //            for (Map.Entry<String, BigDecimal> set : map.entrySet()) {
-//                if (DateDispose.compareDateSize(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
-//                        || DateDispose.compareDate(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                if (DateDispose.compareDateSize(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                        || DateDispose.compareDate(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
 //                ) {
 //                    BigDecimal amount = set.getValue().multiply(new BigDecimal(-1));
 //                    b = b.add(amount);
@@ -583,22 +626,22 @@ public class Test {
 //
 //        total = total.add(balance);
 //
-//        Date start_Date = DateDispose.formatting_Date("2019-01-01", DateType.Year_Month_Day);
-//        Date end_Date = DateDispose.formatting_Date("2019-01-02", DateType.Year_Month_Day);
+//        Date start_Date = DateDispose.formattingDate("2019-01-01", DateType.Year_Month_Day);
+//        Date end_Date = DateDispose.formattingDate("2019-01-02", DateType.Year_Month_Day);
 //        Date totalStartDate = start_Date;
-//        totalStartDate = DateDispose.day_calculate_Date(start_Date, 1);
+//        totalStartDate = DateDispose.dayCalculateDate(start_Date, 1);
 //
-//        System.out.println(DateDispose.formatting_Date(start_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(end_Date, DateType.Year_Month_Day));
-//        System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(start_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(end_Date, DateType.Year_Month_Day));
+//        System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //        System.out.println(total);
 //        System.out.println("---------------------------------------------------------------------");
-//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.day_calculate_Date(start_Date, i)) {
-//            System.out.println(DateDispose.formatting_Date(totalStartDate, DateType.Year_Month_Day));
+//        for (int i = 1; DateDispose.compareDateSize(totalStartDate, end_Date) || DateDispose.compareDate(totalStartDate, end_Date); i++, totalStartDate = DateDispose.dayCalculateDate(start_Date, i)) {
+//            System.out.println(DateDispose.formattingDate(totalStartDate, DateType.Year_Month_Day));
 //            BigDecimal b = new BigDecimal(0);
 //            for (Map.Entry<String, BigDecimal> set : map.entrySet()) {
-//                if (DateDispose.compareDateSize(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
-//                        || DateDispose.compareDate(DateDispose.formatting_Date(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                if (DateDispose.compareDateSize(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
+//                        || DateDispose.compareDate(DateDispose.formattingDate(set.getKey(), DateType.Year_Month_Day), totalStartDate)
 //                ) {
 //                    BigDecimal amount = set.getValue().multiply(new BigDecimal(-1));
 //                    b = b.add(amount);

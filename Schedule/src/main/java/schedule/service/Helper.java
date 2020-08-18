@@ -2,6 +2,11 @@ package schedule.service;
 
 import java.time.Duration;
 
+/**
+ * 获取毫秒
+ *
+ * @author fyy
+ */
 class Helper {
 
     public static int getMilliseconds(Duration d) {

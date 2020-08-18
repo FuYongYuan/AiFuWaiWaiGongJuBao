@@ -8,23 +8,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 计算方法
+ *
+ * @author fyy
+ */
 public class Function {
     /**
      * 小计
      */
-    private Function.Calculation subTotal;
+    private final Function.Calculation subTotal;
 
     /**
      * 总计
      */
-    private Function.Calculation total;
+    private final Function.Calculation total;
 
     /**
      * 总计所有
      */
-    private Function.Builder totalAll;
+    private final Function.Builder totalAll;
 
     //------------------------------------------------------------------------------------------------------------------构造
+
+    /**
+     * 构造
+     *
+     * @param workbook 导出工作簿对象
+     */
     public Function(Workbook workbook) {
         this.subTotal = new Function.Calculation(workbook);
         this.total = new Function.Calculation(workbook);
@@ -63,7 +74,7 @@ public class Function {
         /**
          * 需要计算字段名,排序
          */
-        private Map<String, Integer> calculationFieldNameAndOrder;
+        private final Map<String, Integer> calculationFieldNameAndOrder;
 
         /**
          * 样式
@@ -79,12 +90,12 @@ public class Function {
         /**
          * 字体
          */
-        private Font font;
+        private final Font font;
 
         /**
          * 格式
          */
-        private DataFormat format;
+        private final DataFormat format;
 
         //--------------------------------------------------------------------------------------------------------------内部类
 

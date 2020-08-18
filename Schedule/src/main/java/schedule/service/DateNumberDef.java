@@ -1,5 +1,10 @@
 package schedule.service;
 
+/**
+ * 默认时间类
+ *
+ * @author fyy
+ */
 class DateNumberDef {
 
     public FiniteNumberSet month;

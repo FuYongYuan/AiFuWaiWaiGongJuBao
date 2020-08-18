@@ -13,13 +13,15 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * 机器人服务
+ *
+ * @author fyy
  */
 public class RobotService {
 
     /**
      * 用户信息
      */
-    private UserInfo userInfo;
+    private final UserInfo userInfo;
 
     /**
      * 创建服务 需要初始化用户信息
@@ -64,12 +66,15 @@ public class RobotService {
     public RobotOut robot(int reqType, String inContent) throws IOException {
         Perception perception = new Perception();
         switch (reqType) {
-            case 0:
-                perception.setInputText(new InputText(inContent));
             case 1:
                 perception.setInputImage(new InputImage(inContent));
+                break;
             case 2:
                 perception.setInputMedia(new InputMedia(inContent));
+                break;
+            default:
+                perception.setInputText(new InputText(inContent));
+                break;
         }
         RobotIn in = new RobotIn(0, perception, this.userInfo);
         return this.robot(in);
@@ -131,7 +136,7 @@ public class RobotService {
      */
     public RobotOut robot(RobotIn in) throws IOException {
         String inJsonString = JSON.toJSONString(in);
-        HttpPost httpPost = new HttpPost(RobotStaticParameter.RobotUrl);
+        HttpPost httpPost = new HttpPost(RobotStaticParameter.ROBOT_URL);
         StringEntity se = new StringEntity(inJsonString, StandardCharsets.UTF_8);
         httpPost.setEntity(se);
         httpPost.setHeader(HTTP.CONTENT_TYPE, RobotStaticParameter.CONTENT_TYPE);
@@ -170,13 +175,11 @@ public class RobotService {
                 System.out.println("加密方式错误");
                 return false;
             case 4002:
+            case 4005:
                 System.out.println("无功能权限");
                 return false;
             case 4003:
                 System.out.println("该apikey没有可用请求次数");
-                return false;
-            case 4005:
-                System.out.println("无功能权限");
                 return false;
             case 4007:
                 System.out.println("apikey不合法");

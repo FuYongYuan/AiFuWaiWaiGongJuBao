@@ -5,7 +5,10 @@ import dispose.TextDispose;
 import enumerate.CommonlyUsedType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
+import excel.operation.cache.ReferenceFieldCache;
+import excel.operation.cache.TotalRowIndex;
 import excel.operation.set.*;
+import excel.util.ExcelDisposeConstant;
 import excel.util.ExcelDisposeUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -17,17 +20,20 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 
 /**
  * Excel文件导出
+ *
+ * @author fyy
  */
 public class ExcelExport {
     /**
      * 工作簿对象
      */
-    private Workbook workbook;
+    private final Workbook workbook;
 
     /**
      * 构造
@@ -48,7 +54,9 @@ public class ExcelExport {
      *
      * @param sheetSets 需要产生的数据对象
      */
-    public Workbook setExcel(List<SheetSet> sheetSets) {
+    public Workbook setExcel(
+            List<SheetSet> sheetSets
+    ) {
         try {
             if (sheetSets != null && !sheetSets.isEmpty()) {
                 //循环页签数组对象
@@ -59,9 +67,11 @@ public class ExcelExport {
                     ExcelDisposeUtil.initialization(sheetSet);
                     if (sheetSet.getSheetCache().useField != null && !sheetSet.getSheetCache().useField.isEmpty()) {
                         //初始化行数
-                        int initRow = 0;
                         if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
-                            initRow = this.getInitRow(sheetModel, sheetSet.getExtraRowData(), initRow, sheetSet.getStyle());
+                            sheetSet.getSheetCache().sheetModelCache.initRow = this.getInitRow(
+                                    sheetModel,
+                                    sheetSet
+                            );
                         }
                         //初始化样式
                         if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
@@ -70,175 +80,19 @@ public class ExcelExport {
                         if (sheetSet.getStyle().getContextBorderColor() != null) {
                             sheetSet.getStyle().setTitleBorderColor(sheetSet.getStyle().getContextBorderColor());
                         }
-                        //设置当前页签的第一行
-                        Row row = sheetModel.createRow(initRow);
-                        //循环标题（列名）
-                        int titleCellSize = sheetSet.getSheetCache().useField.size();
-                        for (int i = 0; i < titleCellSize; i++) {
-                            //获取字段
-                            Field field = sheetSet.getSheetCache().useField.get(i);
-                            //获取字段注解
-                            ExcelField excelField = field.getAnnotation(ExcelField.class);
-                            //创建列
-                            Cell cell = row.createCell(i);
-                            //设置样式
-                            cell.setCellStyle(sheetSet.getStyle().getTitle());
-                            //对应单元格的标题名
-                            cell.setCellValue(excelField.columnName());
-                            //列样式记录
-                            sheetSet.getSheetCache().cellStyleMap.put(field.getName(), this.getCellStyle(field, excelField, sheetSet.getStyle()));
 
+                        //设置标题
+                        this.setTitle(sheetModel, sheetSet);
 
-                            if (excelField.columnWidth() > 0) {
-                                //设置列宽
-                                sheetModel.setColumnWidth(i, excelField.columnWidth() * 256);
-                            } else if (excelField.columnWidth() == 0) {
-                                //是否隐藏当前列
-                                sheetModel.setColumnHidden(i, true);
-                            } else {
-                                if (excelField.isHidden()) {
-                                    //是否隐藏当前列
-                                    sheetModel.setColumnHidden(i, true);
-                                }
-                                if (excelField.isAutoSize()) {
-                                    //自动适应时要先跟踪
-                                    if (this.workbook instanceof SXSSFWorkbook) {
-                                        ((SXSSFSheet) sheetModel).trackAllColumnsForAutoSizing();
-                                    }
-                                    //是否自动适应列宽
-                                    sheetModel.autoSizeColumn(i, true);
-                                }
-                            }
-                        }
-
-                        //共参
-                        Map<String, TotalRowIndex> totalRowIndexMap = new HashMap<>();
-                        List<Integer> occupyRows = new ArrayList<>();
-                        //额外行
-                        int extrai = 0;
                         //循环对象（值）
-                        int rowSize = sheetSet.getSheetData().size();
-                        for (int i = initRow; i < (rowSize + initRow + extrai); i++) {
-                            //创建行    （标题的下一行）
-                            Row nextrow = sheetModel.createRow(i + 1);
-
-                            if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
-                                for (ExtraRowData erd : sheetSet.getExtraRowData()) {
-                                    if (erd != null) {
-                                        if (!erd.getIsMaxRowNumber() && erd.getRowNumber() == nextrow.getRowNum()) {
-                                            //抛错处理
-                                            throw new ExcelOperateException("诊断：请勿在数据行中添加额外数据！错误行数：" + (erd.getRowNumber() + 1) + " 行", new RuntimeException());
-                                        }
-                                    }
-                                }
-                            }
-
-                            //处理列
-                            int rowCellSize = sheetSet.getSheetCache().useField.size();
-                            for (int j = 0; j < rowCellSize; j++) {
-                                //获取字段
-                                Field field = sheetSet.getSheetCache().useField.get(j);
-                                //获取字段注解
-                                ExcelField excelField = field.getAnnotation(ExcelField.class);
-                                //创建列
-                                Cell cell = nextrow.createCell(j);
-                                //获取值和计算夸列
-                                String cellValue = this.cellValueRowSpan(i, j, initRow, extrai, sheetModel, sheetSet, totalRowIndexMap, field, excelField);
-                                //设置单元格格式
-                                cell.setCellStyle(sheetSet.getSheetCache().cellStyleMap.get(field.getName()));
-                                //判断是否需要赋值
-                                boolean isSetValue = true;
-                                if (!totalRowIndexMap.isEmpty()) {
-                                    TotalRowIndex totalRowIndex = totalRowIndexMap.get(field.getName());
-                                    if (totalRowIndex != null) {
-                                        if (totalRowIndex.rowspanStart != (i + 1) && totalRowIndex.rowspanEnd != 0 && totalRowIndex.rowspanStart < (i + 1) && (i + 1) <= totalRowIndex.rowspanEnd) {
-                                            isSetValue = false;
-                                        }
-                                    }
-                                }
-                                if (isSetValue) {
-                                    //赋值
-                                    this.setCellValue(field, cell, cellValue);
-                                }
-                            }
-
-                            //计算功能处理
-                            //小计
-                            if (sheetSet.getSheetCache().subTotalReferenceField != null && totalRowIndexMap.get(sheetSet.getSheetCache().subTotalReferenceField.getName()) != null) {
-                                if (this.calculation(
-                                        i,
-                                        initRow,
-                                        extrai,
-                                        sheetModel,
-                                        sheetSet,
-                                        sheetSet.getFunction().getSubTotal(),
-                                        sheetSet.getSheetCache().subTotalReferenceField,
-                                        sheetSet.getSheetCache().subTotalSpanField,
-                                        totalRowIndexMap,
-                                        sheetSet.getSheetCache().subTotalColumnIndex,
-                                        occupyRows
-                                )) {
-                                    //校准变更的数据
-                                    extrai = extrai + 1;
-                                    i = i + 1;
-                                }
-                            }
-
-                            //总计
-                            if (sheetSet.getSheetCache().totalReferenceField != null && totalRowIndexMap.get(sheetSet.getSheetCache().totalReferenceField.getName()) != null) {
-                                if (this.calculation(
-                                        i,
-                                        initRow,
-                                        extrai,
-                                        sheetModel,
-                                        sheetSet,
-                                        sheetSet.getFunction().getTotal(),
-                                        sheetSet.getSheetCache().totalReferenceField,
-                                        sheetSet.getSheetCache().totalSpanField,
-                                        totalRowIndexMap,
-                                        sheetSet.getSheetCache().totalColumnIndex,
-                                        occupyRows
-                                )) {
-                                    //校准变更的数据
-                                    extrai = extrai + 1;
-                                    i = i + 1;
-                                }
-                            }
-
-                        }
+                        this.setContent(sheetModel, sheetSet);
 
                         //全部总计
-                        if (
-                                sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder() != null &&
-                                        sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().size() > 0
-                        ) {
-                            occupyRows.add(sheetSet.getSheetData().size() + initRow + extrai + 1);
-                            this.calculationDispose(
-                                    sheetSet.getSheetData().size() + initRow + extrai - 1,
-                                    initRow + 1,
-                                    sheetModel.getLastRowNum(),
-                                    sheetModel,
-                                    sheetSet,
-                                    sheetSet.getFunction().getTotalAll(),
-                                    sheetSet.getSheetCache().totalAllColumnIndex,
-                                    occupyRows
-                            );
-                        }
+                        this.setTotalCalculation(sheetModel, sheetSet);
                     }
 
                     //额外数据
-                    if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
-                        for (ExtraRowData erd : sheetSet.getExtraRowData()) {
-                            if (erd != null) {
-                                if (erd.getIsMaxRowNumber()) {
-                                    erd.setRowNumber(sheetModel.getLastRowNum() + 2);
-                                    this.setExtraData(sheetModel, erd, sheetSet.getStyle());
-                                } else if (erd.getRowNumber() > sheetModel.getLastRowNum()) {
-                                    this.setExtraData(sheetModel, erd, sheetSet.getStyle());
-                                }
-                            }
-                        }
-                    }
+                    this.setExtraRowData(sheetModel, sheetSet);
                 }
             }
         } catch (Exception e) {
@@ -248,9 +102,275 @@ public class ExcelExport {
     }
 
     /**
+     * 额外数据新增开始行数
+     */
+    private int getInitRow(
+            Sheet sheetModel,
+            SheetSet sheetSet
+    ) {
+        ExtraRowData erd = null;
+        for (ExtraRowData e : sheetSet.getExtraRowData()) {
+            if (e != null && e.getRowNumber() != null && e.getRowNumber().equals(sheetSet.getSheetCache().sheetModelCache.initRow) && e.getIsNewRow()) {
+                erd = e;
+                break;
+            }
+        }
+        if (erd != null) {
+            Row row = sheetModel.getRow(sheetSet.getSheetCache().sheetModelCache.initRow);
+            if (row == null) {
+                row = sheetModel.createRow(sheetSet.getSheetCache().sheetModelCache.initRow);
+            }
+            for (ExtraCellData ecd : erd.getExtraCellData()) {
+                Cell cell = row.getCell(ecd.getCellNumber());
+                if (cell == null) {
+                    cell = row.createCell(ecd.getCellNumber());
+                }
+                CellRangeAddress cellAddresses = null;
+                if (ecd.getColspan() != null && ecd.getColspan() > 1) {
+                    cellAddresses = new CellRangeAddress(sheetSet.getSheetCache().sheetModelCache.initRow, sheetSet.getSheetCache().sheetModelCache.initRow, ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
+                    sheetModel.addMergedRegion(cellAddresses);
+                }
+                this.setCellValue(sheetModel, cell, ecd, sheetSet.getStyle(), cellAddresses);
+            }
+            sheetSet.getSheetCache().sheetModelCache.initRow = sheetSet.getSheetCache().sheetModelCache.initRow + 1;
+            return this.getInitRow(sheetModel, sheetSet);
+        }
+        return sheetSet.getSheetCache().sheetModelCache.initRow;
+    }
+
+    /**
+     * 设置标题
+     */
+    private void setTitle(
+            Sheet sheetModel,
+            SheetSet sheetSet
+    ) {
+        //设置当前页签的第一行
+        Row row = sheetModel.createRow(sheetSet.getSheetCache().sheetModelCache.initRow);
+        //循环标题（列名）
+        int titleCellSize = sheetSet.getSheetCache().useField.size();
+        for (int i = 0; i < titleCellSize; i++) {
+            //获取字段
+            Field field = sheetSet.getSheetCache().useField.get(i);
+            //获取字段注解
+            ExcelField excelField = field.getAnnotation(ExcelField.class);
+            //创建列
+            Cell cell = row.createCell(i);
+            //设置样式
+            cell.setCellStyle(sheetSet.getStyle().getTitle());
+            //对应单元格的标题名
+            cell.setCellValue(excelField.columnName());
+            //列样式记录
+            sheetSet.getSheetCache().cellStyleMap.put(field.getName(), this.getCellStyle(field, excelField, sheetSet.getStyle()));
+
+
+            if (excelField.columnWidth() > 0) {
+                //设置列宽
+                sheetModel.setColumnWidth(i, excelField.columnWidth() * 256);
+            } else if (excelField.columnWidth() == 0) {
+                //是否隐藏当前列
+                sheetModel.setColumnHidden(i, true);
+            } else {
+                if (excelField.isHidden()) {
+                    //是否隐藏当前列
+                    sheetModel.setColumnHidden(i, true);
+                }
+                if (excelField.isAutoSize()) {
+                    //自动适应时要先跟踪
+                    if (this.workbook instanceof SXSSFWorkbook) {
+                        ((SXSSFSheet) sheetModel).trackAllColumnsForAutoSizing();
+                    }
+                    //是否自动适应列宽
+                    sheetModel.autoSizeColumn(i, true);
+                }
+            }
+        }
+    }
+
+    /**
+     * 设置内容
+     */
+    private void setContent(
+            Sheet sheetModel,
+            SheetSet sheetSet
+    ) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+        int rowSize = sheetSet.getSheetData().size();
+        for (sheetSet.getSheetCache().sheetModelCache.i = sheetSet.getSheetCache().sheetModelCache.initRow;
+             sheetSet.getSheetCache().sheetModelCache.i < (rowSize + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extrai);
+             sheetSet.getSheetCache().sheetModelCache.i++) {
+            //创建行    （标题的下一行）
+            Row nextRow = sheetModel.createRow(sheetSet.getSheetCache().sheetModelCache.i + 1);
+
+            if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
+                for (ExtraRowData erd : sheetSet.getExtraRowData()) {
+                    if (erd != null) {
+                        if (!erd.getIsMaxRowNumber() && erd.getRowNumber() == nextRow.getRowNum()) {
+                            //抛错处理
+                            throw new ExcelOperateException("诊断：请勿在数据行中添加额外数据！错误行数：" + (erd.getRowNumber() + 1) + " 行", new RuntimeException());
+                        }
+                    }
+                }
+            }
+
+            //处理列
+            int rowCellSize = sheetSet.getSheetCache().useField.size();
+            for (sheetSet.getSheetCache().sheetModelCache.j = 0; sheetSet.getSheetCache().sheetModelCache.j < rowCellSize; sheetSet.getSheetCache().sheetModelCache.j++) {
+                //获取字段
+                Field field = sheetSet.getSheetCache().useField.get(sheetSet.getSheetCache().sheetModelCache.j);
+                //获取字段注解
+                ExcelField excelField = field.getAnnotation(ExcelField.class);
+                //创建列
+                Cell cell = nextRow.createCell(sheetSet.getSheetCache().sheetModelCache.j);
+                //获取值和计算夸列
+                String cellValue = this.cellValueRowSpan(
+                        sheetModel,
+                        sheetSet,
+                        field,
+                        excelField
+                );
+                //设置单元格格式
+                cell.setCellStyle(sheetSet.getSheetCache().cellStyleMap.get(field.getName()));
+                //判断是否需要赋值
+                boolean isSetValue = true;
+                if (!sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.isEmpty()) {
+                    TotalRowIndex totalRowIndex = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName());
+                    if (totalRowIndex != null) {
+                        if (totalRowIndex.rowspanStart != (sheetSet.getSheetCache().sheetModelCache.i + 1) && totalRowIndex.rowspanEnd != 0 && totalRowIndex.rowspanStart < (sheetSet.getSheetCache().sheetModelCache.i + 1) && (sheetSet.getSheetCache().sheetModelCache.i + 1) <= totalRowIndex.rowspanEnd) {
+                            isSetValue = false;
+                        }
+                    }
+                }
+                if (isSetValue) {
+                    //赋值
+                    this.setCellValue(field, cell, cellValue);
+                }
+            }
+
+            //计算功能处理
+            this.setRowCalculation(sheetModel, sheetSet);
+
+        }
+    }
+
+    /**
+     * 执行行计算
+     */
+    private void setRowCalculation(
+            Sheet sheetModel,
+            SheetSet sheetSet
+    ) throws IllegalAccessException {
+        //小计
+        if (sheetSet.getSheetCache().subTotalReferenceField != null && sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(sheetSet.getSheetCache().subTotalReferenceField.getName()) != null) {
+            if (this.calculation(
+                    sheetModel,
+                    sheetSet,
+                    sheetSet.getFunction().getSubTotal(),
+                    sheetSet.getSheetCache().subTotalReferenceField,
+                    sheetSet.getSheetCache().subTotalSpanField,
+                    sheetSet.getSheetCache().subTotalColumnIndex
+            )) {
+                //校准变更的数据
+                sheetSet.getSheetCache().sheetModelCache.extrai = sheetSet.getSheetCache().sheetModelCache.extrai + 1;
+                sheetSet.getSheetCache().sheetModelCache.i = sheetSet.getSheetCache().sheetModelCache.i + 1;
+            }
+        }
+
+        //总计
+        if (sheetSet.getSheetCache().totalReferenceField != null && sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(sheetSet.getSheetCache().totalReferenceField.getName()) != null) {
+            if (this.calculation(
+                    sheetModel,
+                    sheetSet,
+                    sheetSet.getFunction().getTotal(),
+                    sheetSet.getSheetCache().totalReferenceField,
+                    sheetSet.getSheetCache().totalSpanField,
+                    sheetSet.getSheetCache().totalColumnIndex
+            )) {
+                //校准变更的数据
+                sheetSet.getSheetCache().sheetModelCache.extrai = sheetSet.getSheetCache().sheetModelCache.extrai + 1;
+                sheetSet.getSheetCache().sheetModelCache.i = sheetSet.getSheetCache().sheetModelCache.i + 1;
+            }
+        }
+    }
+
+    /**
+     * 执行计算
+     */
+    private void setTotalCalculation(
+            Sheet sheetModel,
+            SheetSet sheetSet
+    ) {
+        if (
+                sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder() != null &&
+                        sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().size() > 0
+        ) {
+            sheetSet.getSheetCache().sheetModelCache.occupyRows.add(sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extrai + 1);
+            this.calculationDispose(
+                    sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extrai - 1,
+                    sheetSet.getSheetCache().sheetModelCache.initRow + 1,
+                    sheetModel.getLastRowNum(),
+                    sheetModel,
+                    sheetSet,
+                    sheetSet.getFunction().getTotalAll(),
+                    sheetSet.getSheetCache().totalAllColumnIndex
+            );
+        }
+    }
+
+    /**
+     * 设置额外数据行
+     */
+    private void setExtraRowData(
+            Sheet sheetModel,
+            SheetSet sheetSet
+    ) {
+        if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
+            for (ExtraRowData erd : sheetSet.getExtraRowData()) {
+                if (erd != null) {
+                    if (erd.getIsMaxRowNumber()) {
+                        erd.setRowNumber(sheetModel.getLastRowNum() + 2);
+                        this.setExtraData(sheetModel, erd, sheetSet.getStyle());
+                    } else if (erd.getRowNumber() > sheetModel.getLastRowNum()) {
+                        this.setExtraData(sheetModel, erd, sheetSet.getStyle());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 赋值额外数据
+     */
+    private void setExtraData(
+            Sheet sheetModel,
+            ExtraRowData erd,
+            Style globalStyle
+    ) {
+        Row row = sheetModel.getRow(erd.getRowNumber());
+        if (row == null) {
+            row = sheetModel.createRow(erd.getRowNumber());
+        }
+        for (ExtraCellData ecd : erd.getExtraCellData()) {
+            Cell cell = row.getCell(ecd.getCellNumber());
+            if (cell == null) {
+                cell = row.createCell(ecd.getCellNumber());
+            }
+            CellRangeAddress cellAddresses = null;
+            if (ecd.getColspan() != null && ecd.getColspan() > 1) {
+                cellAddresses = new CellRangeAddress(erd.getRowNumber(), erd.getRowNumber(), ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
+                sheetModel.addMergedRegion(cellAddresses);
+            }
+            this.setCellValue(sheetModel, cell, ecd, globalStyle, cellAddresses);
+        }
+    }
+
+    /**
      * 赋值
      */
-    private void setCellValue(Field field, Cell cell, String cellValue) {
+    private void setCellValue(
+            Field field,
+            Cell cell,
+            String cellValue
+    ) {
         //结果转换
         if (cellValue != null) {
             if (TextDispose.isNumber(cellValue)) {
@@ -275,17 +395,40 @@ public class ExcelExport {
     /**
      * 获取单元格样式
      */
-    private CellStyle getCellStyle(Field field, ExcelField excelField, Style globalStyle) {
+    private CellStyle getCellStyle(
+            Field field,
+            ExcelField excelField,
+            Style globalStyle
+    ) {
         CellStyle cellStyle = this.workbook.createCellStyle();
+        //设置内容格式
+        this.setCellContentStyle(field, excelField, cellStyle);
+        //设置位置
+        this.setCellPositionStyle(excelField, cellStyle);
+        //设置边框
+        this.setCellBorderStyle(excelField, cellStyle, globalStyle);
+
+        return cellStyle;
+    }
+
+    /**
+     * getCellStyle设置内容格式
+     */
+    private void setCellContentStyle(
+            Field field,
+            ExcelField excelField,
+            CellStyle cellStyle
+    ) {
+        boolean exist = (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())
+                || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())
+                || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue()))
+                && excelField.decimalAfterDigit() > 0;
 
         if (excelField.isMoney()) {
             DataFormat format = this.workbook.createDataFormat();
             StringBuilder moneyFormat = new StringBuilder("#,##0");
-            if ((field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())
-                    || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())
-                    || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue()))
-                    && excelField.decimalAfterDigit() > 0
-            ) {
+
+            if (exist) {
                 moneyFormat.append(".");
                 int decimalAfterDigit = excelField.decimalAfterDigit();
                 for (int i = 0; i < decimalAfterDigit; i++) {
@@ -293,11 +436,7 @@ public class ExcelExport {
                 }
             }
             cellStyle.setDataFormat(format.getFormat(moneyFormat.toString()));
-        } else if ((field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue()))
-                && excelField.decimalAfterDigit() > 0
-        ) {
+        } else if (exist) {
             DataFormat format = this.workbook.createDataFormat();
             StringBuilder sb = new StringBuilder("#0.");
             int decimalAfterDigit = excelField.decimalAfterDigit();
@@ -306,11 +445,29 @@ public class ExcelExport {
             }
             cellStyle.setDataFormat(format.getFormat(sb.toString()));
         }
+    }
+
+    /**
+     * getCellStyle设置位置
+     */
+    private void setCellPositionStyle(
+            ExcelField excelField,
+            CellStyle cellStyle
+    ) {
         //水平位置
         cellStyle.setAlignment(excelField.horizontalAlignment());
         //垂直位置
         cellStyle.setVerticalAlignment(excelField.verticalAlignment());
-        //边框
+    }
+
+    /**
+     * getCellStyle设置边框
+     */
+    private void setCellBorderStyle(
+            ExcelField excelField,
+            CellStyle cellStyle,
+            Style globalStyle
+    ) {
         if (globalStyle.getContextBorder() != null && globalStyle.getContextBorder() != BorderStyle.NONE) {
             cellStyle.setBorderTop(globalStyle.getContextBorder());
             cellStyle.setBorderBottom(globalStyle.getContextBorder());
@@ -353,14 +510,18 @@ public class ExcelExport {
                 }
             }
         }
-
-        return cellStyle;
     }
 
     /**
      * 赋值
      */
-    private void setCellValue(Sheet sheetModel, Cell cell, ExtraCellData ecd, Style globalStyle, CellRangeAddress cellAddresses) {
+    private void setCellValue(
+            Sheet sheetModel,
+            Cell cell,
+            ExtraCellData ecd,
+            Style globalStyle,
+            CellRangeAddress cellAddresses
+    ) {
         //结果转换
         if (ecd != null) {
             if (ecd.getCellValue() != null) {
@@ -372,7 +533,7 @@ public class ExcelExport {
                 } else if (ecd.getCellType() == BigDecimal.class) {
                     cell.setCellValue(new BigDecimal(ecd.getCellValue().toString()).doubleValue());
                 } else if (ecd.getCellType() == Date.class) {
-                    cell.setCellValue(DateDispose.formatting_Date((Date) ecd.getCellValue(), ecd.getDateType()));
+                    cell.setCellValue(DateDispose.formattingDate((Date) ecd.getCellValue(), ecd.getDateType()));
                 } else {
                     cell.setCellValue(ecd.getCellValue().toString());
                 }
@@ -386,17 +547,39 @@ public class ExcelExport {
     /**
      * 获取单元格样式
      */
-    private CellStyle getCellStyle(Sheet sheetModel, ExtraCellData ecd, Style globalStyle, CellRangeAddress cellAddresses) {
+    private CellStyle getCellStyle(
+            Sheet sheetModel,
+            ExtraCellData ecd,
+            Style globalStyle,
+            CellRangeAddress cellAddresses
+    ) {
         CellStyle cellStyle = this.workbook.createCellStyle();
 
+        //设置内容格式
+        this.setCellContentStyle(ecd, cellStyle);
+        //设置位置
+        this.setCellPositionStyle(ecd, cellStyle);
+        //设置边框
+        this.setCellBorderStyle(sheetModel, ecd, cellStyle, globalStyle, cellAddresses);
+
+        return cellStyle;
+    }
+
+    /**
+     * getCellStyle设置内容格式
+     */
+    private void setCellContentStyle(
+            ExtraCellData ecd,
+            CellStyle cellStyle
+    ) {
+        boolean exist = (ecd.getCellType() == BigDecimal.class
+                || ecd.getCellType() == Double.class
+                || ecd.getCellType() == double.class)
+                && ecd.getDecimalAfterDigit() > 0;
         if (ecd.getIsMoney()) {
             DataFormat format = this.workbook.createDataFormat();
             StringBuilder moneyFormat = new StringBuilder("#,##0");
-            if ((ecd.getCellType() == BigDecimal.class
-                    || ecd.getCellType() == Double.class
-                    || ecd.getCellType() == double.class)
-                    && ecd.getDecimalAfterDigit() > 0
-            ) {
+            if (exist) {
                 moneyFormat.append(".");
                 int decimalAfterDigit = ecd.getDecimalAfterDigit();
                 for (int i = 0; i < decimalAfterDigit; i++) {
@@ -404,11 +587,7 @@ public class ExcelExport {
                 }
             }
             cellStyle.setDataFormat(format.getFormat(moneyFormat.toString()));
-        } else if ((ecd.getCellType() == BigDecimal.class
-                || ecd.getCellType() == Double.class
-                || ecd.getCellType() == double.class)
-                && ecd.getDecimalAfterDigit() > 0
-        ) {
+        } else if (exist) {
             DataFormat format = this.workbook.createDataFormat();
             StringBuilder sb = new StringBuilder("#0.");
             int decimalAfterDigit = ecd.getDecimalAfterDigit();
@@ -428,129 +607,163 @@ public class ExcelExport {
             font.setBold(true);
             cellStyle.setFont(font);
         }
+    }
+
+    /**
+     * getCellStyle设置位置
+     */
+    private void setCellPositionStyle(
+            ExtraCellData ecd,
+            CellStyle cellStyle
+    ) {
         //水平位置
         cellStyle.setAlignment(ecd.getHorizontalAlignment());
         //垂直位置
         cellStyle.setVerticalAlignment(ecd.getVerticalAlignment());
-        //边框
+    }
+
+    /**
+     * getCellStyle设置边框
+     */
+    private void setCellBorderStyle(
+            Sheet sheetModel,
+            ExtraCellData ecd,
+            CellStyle cellStyle,
+            Style globalStyle,
+            CellRangeAddress cellAddresses
+    ) {
         if (globalStyle.getContextBorder() != null && globalStyle.getContextBorder() != BorderStyle.NONE) {
-            //处理原单元格
-            cellStyle.setBorderTop(globalStyle.getContextBorder());
-            cellStyle.setBorderBottom(globalStyle.getContextBorder());
-            cellStyle.setBorderLeft(globalStyle.getContextBorder());
-            cellStyle.setBorderRight(globalStyle.getContextBorder());
+            //全局
+            this.setCellAllBorderStyle(sheetModel, cellStyle, globalStyle, cellAddresses);
+        } else {
+            //局部
+            this.setCellLocalBorderStyle(sheetModel, ecd, cellStyle, cellAddresses);
+        }
+    }
+
+    /**
+     * 全局样式
+     */
+    private void setCellAllBorderStyle(
+            Sheet sheetModel,
+            CellStyle cellStyle,
+            Style globalStyle,
+            CellRangeAddress cellAddresses
+    ) {
+        //处理原单元格
+        cellStyle.setBorderTop(globalStyle.getContextBorder());
+        cellStyle.setBorderBottom(globalStyle.getContextBorder());
+        cellStyle.setBorderLeft(globalStyle.getContextBorder());
+        cellStyle.setBorderRight(globalStyle.getContextBorder());
+
+        if (globalStyle.getContextBorderColor() != null) {
+            cellStyle.setTopBorderColor(globalStyle.getContextBorderColor().getIndex());
+            cellStyle.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex());
+            cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
+            cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
+        }
+        //处理合并单元格
+        if (cellAddresses != null) {
+            RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+            RegionUtil.setBorderBottom(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+            RegionUtil.setBorderLeft(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+            RegionUtil.setBorderRight(globalStyle.getContextBorder(), cellAddresses, sheetModel);
 
             if (globalStyle.getContextBorderColor() != null) {
-                cellStyle.setTopBorderColor(globalStyle.getContextBorderColor().getIndex());
-                cellStyle.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex());
-                cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
-                cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
+                RegionUtil.setTopBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
+                RegionUtil.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
+                RegionUtil.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
+                RegionUtil.setRightBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
             }
-            //处理合并单元格
-            if (cellAddresses != null) {
-                RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                RegionUtil.setBorderBottom(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                RegionUtil.setBorderLeft(globalStyle.getContextBorder(), cellAddresses, sheetModel);
-                RegionUtil.setBorderRight(globalStyle.getContextBorder(), cellAddresses, sheetModel);
+        }
+    }
 
-                if (globalStyle.getContextBorderColor() != null) {
-                    RegionUtil.setTopBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
-                    RegionUtil.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
-                    RegionUtil.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
-                    RegionUtil.setRightBorderColor(globalStyle.getContextBorderColor().getIndex(), cellAddresses, sheetModel);
-                }
-            }
+    /**
+     * 局部样式
+     */
+    private void setCellLocalBorderStyle(
+            Sheet sheetModel,
+            ExtraCellData ecd,
+            CellStyle cellStyle,
+            CellRangeAddress cellAddresses
+    ) {
+        //处理原单元格
+        if (ecd.getBorder() != BorderStyle.NONE) {
+            cellStyle.setBorderTop(ecd.getBorder());
+            cellStyle.setBorderBottom(ecd.getBorder());
+            cellStyle.setBorderLeft(ecd.getBorder());
+            cellStyle.setBorderRight(ecd.getBorder());
+
+            cellStyle.setTopBorderColor(ecd.getBorderColor().getIndex());
+            cellStyle.setBottomBorderColor(ecd.getBorderColor().getIndex());
+            cellStyle.setLeftBorderColor(ecd.getBorderColor().getIndex());
+            cellStyle.setRightBorderColor(ecd.getBorderColor().getIndex());
         } else {
-            //处理原单元格
+            if (ecd.getBorderTop() != BorderStyle.NONE) {
+                cellStyle.setBorderTop(ecd.getBorderTop());
+                cellStyle.setTopBorderColor(ecd.getBorderTopColor().getIndex());
+            }
+            if (ecd.getBorderBottom() != BorderStyle.NONE) {
+                cellStyle.setBorderBottom(ecd.getBorderBottom());
+                cellStyle.setBottomBorderColor(ecd.getBorderBottomColor().getIndex());
+            }
+            if (ecd.getBorderLeft() != BorderStyle.NONE) {
+                cellStyle.setBorderLeft(ecd.getBorderLeft());
+                cellStyle.setLeftBorderColor(ecd.getBorderLeftColor().getIndex());
+            }
+            if (ecd.getBorderRight() != BorderStyle.NONE) {
+                cellStyle.setBorderRight(ecd.getBorderRight());
+                cellStyle.setRightBorderColor(ecd.getBorderRightColor().getIndex());
+            }
+        }
+        //处理合并单元格
+        if (cellAddresses != null) {
             if (ecd.getBorder() != BorderStyle.NONE) {
-                cellStyle.setBorderTop(ecd.getBorder());
-                cellStyle.setBorderBottom(ecd.getBorder());
-                cellStyle.setBorderLeft(ecd.getBorder());
-                cellStyle.setBorderRight(ecd.getBorder());
+                RegionUtil.setBorderTop(ecd.getBorder(), cellAddresses, sheetModel);
+                RegionUtil.setBorderBottom(ecd.getBorder(), cellAddresses, sheetModel);
+                RegionUtil.setBorderLeft(ecd.getBorder(), cellAddresses, sheetModel);
+                RegionUtil.setBorderRight(ecd.getBorder(), cellAddresses, sheetModel);
 
-                cellStyle.setTopBorderColor(ecd.getBorderColor().getIndex());
-                cellStyle.setBottomBorderColor(ecd.getBorderColor().getIndex());
-                cellStyle.setLeftBorderColor(ecd.getBorderColor().getIndex());
-                cellStyle.setRightBorderColor(ecd.getBorderColor().getIndex());
+                RegionUtil.setTopBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
+                RegionUtil.setBottomBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
+                RegionUtil.setLeftBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
+                RegionUtil.setRightBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
             } else {
                 if (ecd.getBorderTop() != BorderStyle.NONE) {
-                    cellStyle.setBorderTop(ecd.getBorderTop());
-                    cellStyle.setTopBorderColor(ecd.getBorderTopColor().getIndex());
+                    RegionUtil.setBorderTop(ecd.getBorderTop(), cellAddresses, sheetModel);
+                    RegionUtil.setTopBorderColor(ecd.getBorderTopColor().getIndex(), cellAddresses, sheetModel);
                 }
                 if (ecd.getBorderBottom() != BorderStyle.NONE) {
-                    cellStyle.setBorderBottom(ecd.getBorderBottom());
-                    cellStyle.setBottomBorderColor(ecd.getBorderBottomColor().getIndex());
+                    RegionUtil.setBorderBottom(ecd.getBorderBottom(), cellAddresses, sheetModel);
+                    RegionUtil.setBottomBorderColor(ecd.getBorderBottomColor().getIndex(), cellAddresses, sheetModel);
                 }
                 if (ecd.getBorderLeft() != BorderStyle.NONE) {
-                    cellStyle.setBorderLeft(ecd.getBorderLeft());
-                    cellStyle.setLeftBorderColor(ecd.getBorderLeftColor().getIndex());
+                    RegionUtil.setBorderLeft(ecd.getBorderLeft(), cellAddresses, sheetModel);
+                    RegionUtil.setLeftBorderColor(ecd.getBorderLeftColor().getIndex(), cellAddresses, sheetModel);
                 }
                 if (ecd.getBorderRight() != BorderStyle.NONE) {
-                    cellStyle.setBorderRight(ecd.getBorderRight());
-                    cellStyle.setRightBorderColor(ecd.getBorderRightColor().getIndex());
-                }
-            }
-            //处理合并单元格
-            if (cellAddresses != null) {
-                if (ecd.getBorder() != BorderStyle.NONE) {
-                    RegionUtil.setBorderTop(ecd.getBorder(), cellAddresses, sheetModel);
-                    RegionUtil.setBorderBottom(ecd.getBorder(), cellAddresses, sheetModel);
-                    RegionUtil.setBorderLeft(ecd.getBorder(), cellAddresses, sheetModel);
-                    RegionUtil.setBorderRight(ecd.getBorder(), cellAddresses, sheetModel);
-
-                    RegionUtil.setTopBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
-                    RegionUtil.setBottomBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
-                    RegionUtil.setLeftBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
-                    RegionUtil.setRightBorderColor(ecd.getBorderColor().getIndex(), cellAddresses, sheetModel);
-                } else {
-                    if (ecd.getBorderTop() != BorderStyle.NONE) {
-                        RegionUtil.setBorderTop(ecd.getBorderTop(), cellAddresses, sheetModel);
-                        RegionUtil.setTopBorderColor(ecd.getBorderTopColor().getIndex(), cellAddresses, sheetModel);
-                    }
-                    if (ecd.getBorderBottom() != BorderStyle.NONE) {
-                        RegionUtil.setBorderBottom(ecd.getBorderBottom(), cellAddresses, sheetModel);
-                        RegionUtil.setBottomBorderColor(ecd.getBorderBottomColor().getIndex(), cellAddresses, sheetModel);
-                    }
-                    if (ecd.getBorderLeft() != BorderStyle.NONE) {
-                        RegionUtil.setBorderLeft(ecd.getBorderLeft(), cellAddresses, sheetModel);
-                        RegionUtil.setLeftBorderColor(ecd.getBorderLeftColor().getIndex(), cellAddresses, sheetModel);
-                    }
-                    if (ecd.getBorderRight() != BorderStyle.NONE) {
-                        RegionUtil.setBorderRight(ecd.getBorderRight(), cellAddresses, sheetModel);
-                        RegionUtil.setRightBorderColor(ecd.getBorderRightColor().getIndex(), cellAddresses, sheetModel);
-                    }
+                    RegionUtil.setBorderRight(ecd.getBorderRight(), cellAddresses, sheetModel);
+                    RegionUtil.setRightBorderColor(ecd.getBorderRightColor().getIndex(), cellAddresses, sheetModel);
                 }
             }
         }
-
-        return cellStyle;
     }
 
     /**
      * 获取值和计算夸列
      */
     private String cellValueRowSpan(
-            int i,
-            int j,
-            int initRow,
-            int extrai,
             Sheet sheetModel,
             SheetSet sheetSet,
-            Map<String, TotalRowIndex> totalRowIndexMap,
             Field field,
             ExcelField excelField
     ) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         //当前数据行
-        int current = i - initRow - extrai;
+        int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extrai;
         //当前的字段值
-        String cellValue = ExcelDisposeUtil.correspondingValue(
-                field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
-                excelField.dateType(),
-                excelField.decimalAfterDigit());
-
+        String cellValue = ExcelDisposeUtil.correspondingValue(field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(), excelField.dateType(), excelField.decimalAfterDigit());
         //获取转换值集中对应值
         cellValue = ExcelDisposeUtil.getValueLimit(sheetSet, cellValue, excelField);
-
         //跨行处理
         if (excelField.rowspan()) {
             //上一数据行
@@ -558,137 +771,178 @@ public class ExcelExport {
             //下一数据行
             int next = current + 1;
             //是否是最后一行
-            boolean isLast = (i == sheetSet.getSheetData().size() + initRow + extrai - 1);
+            boolean isLast = (sheetSet.getSheetCache().sheetModelCache.i == sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extrai - 1);
             //获取参考字段
-            Field referenceField = null;
-            //获取字段注解
-            ExcelField referenceExcelField = null;
-            if (excelField.rowspanAlignOrder() > 0) {
-                //参考数据行
-                int reference = excelField.rowspanAlignOrder() - 1;
-                referenceField = sheetSet.getSheetCache().useField.get(reference);
-                referenceExcelField = referenceField.getAnnotation(ExcelField.class);
-            }
+            ReferenceFieldCache referenceFieldCache = new ReferenceFieldCache();
             //参考列值
-            String rowspanAlignCellValue = cellValue;
-            if (referenceField != null && referenceExcelField != null) {
-                rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
-                        referenceField, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
-                        referenceExcelField.dateType(),
-                        referenceExcelField.decimalAfterDigit());
-            }
+            referenceFieldCache.rowspanAlignCellValue = cellValue;
+            //计算参考字段
+            this.getReferenceField(current, sheetSet, excelField, cellValue, referenceFieldCache);
             //对比列下一行值
-            String cv = null;
-
-            if (next < sheetSet.getSheetData().size()) {
-                if (excelField.rowspanAlignOrder() == 0) {
-                    cv = ExcelDisposeUtil.correspondingValue(
-                            field, sheetSet.getSheetData().get(next), sheetSet.getIsGetMethodFieldValue(),
-                            excelField.dateType(),
-                            excelField.decimalAfterDigit());
-                } else if (referenceField != null && referenceExcelField != null) {
-                    cv = ExcelDisposeUtil.correspondingValue(
-                            referenceField, sheetSet.getSheetData().get(next), sheetSet.getIsGetMethodFieldValue(),
-                            referenceExcelField.dateType(),
-                            referenceExcelField.decimalAfterDigit());
-                }
-            } else if (isLast && sheetSet.getSheetData().size() > 1) {
-                if (excelField.rowspanAlignOrder() == 0) {
-                    cv = ExcelDisposeUtil.correspondingValue(
-                            field, sheetSet.getSheetData().get(previous), sheetSet.getIsGetMethodFieldValue(),
-                            excelField.dateType(),
-                            excelField.decimalAfterDigit());
-                } else if (referenceField != null && referenceExcelField != null) {
-                    cv = ExcelDisposeUtil.correspondingValue(
-                            referenceField, sheetSet.getSheetData().get(previous), sheetSet.getIsGetMethodFieldValue(),
-                            referenceExcelField.dateType(),
-                            referenceExcelField.decimalAfterDigit());
-                }
-            }
+            this.getNextCellValue(previous, next, isLast, sheetSet, field, excelField, referenceFieldCache);
             //开始计算合并
-            TotalRowIndex totalRowIndex = totalRowIndexMap.get(field.getName());
+            TotalRowIndex totalRowIndex = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName());
             if (totalRowIndex == null) {
                 totalRowIndex = new TotalRowIndex();
                 totalRowIndex.field = field;
-                totalRowIndex.columnNo = j;
+                totalRowIndex.columnNo = sheetSet.getSheetCache().sheetModelCache.j;
             }
-            if (totalRowIndex.rowspanStart == 0) {
-                totalRowIndex.rowspanStart = i + 1;
-                totalRowIndex.oldCellValue = rowspanAlignCellValue;
-            } else {
-                if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(rowspanAlignCellValue)) {
-                    totalRowIndex.rowspanEnd = i + 1;
-                } else {
-                    if (totalRowIndex.rowspanEnd > 0 && totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) {
-                        totalRowIndex.nextRowspan = false;
-                        CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, j, j);
-                        totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
-                    }
-
-                    totalRowIndex.rowspanStart = i + 1;
-                    totalRowIndex.rowspanEnd = i + 1;
-                    totalRowIndex.oldCellValue = rowspanAlignCellValue;
-                }
-
-                if (isLast) {
-                    if (totalRowIndex.rowspanStart != totalRowIndex.rowspanEnd) {
-                        totalRowIndex.nextRowspan = false;
-                        CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, j, j);
-                        totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
-                    }
-                }
-            }
-
-            boolean existTotal =
-                    sheetSet.getFunction().getSubTotal()
-                            .getCalculationFieldNameAndOrder().get(field.getName()) != null
-                            || sheetSet.getFunction().getSubTotal().
-                            getCalculationFieldNameAndOrder().get(excelField.columnName()) != null
-                            || sheetSet.getFunction().getTotal()
-                            .getCalculationFieldNameAndOrder().get(field.getName()) != null
-                            || sheetSet.getFunction().getTotal().
-                            getCalculationFieldNameAndOrder().get(excelField.columnName()) != null
-                            || sheetSet.getFunction().getTotalAll()
-                            .getCalculationFieldNameAndOrder().get(field.getName()) != null
-                            || sheetSet.getFunction().getTotalAll().
-                            getCalculationFieldNameAndOrder().get(excelField.columnName()) != null;
-
-            if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(cv) && existTotal && totalRowIndex.nextRowspan) {
+            this.addMergedRegion(isLast, sheetModel, sheetSet, field, totalRowIndex, referenceFieldCache);
+            //小计、总计、全部总计
+            boolean existTotal = sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null
+                    || sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null
+                    || sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null
+                    || sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null
+                    || sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(field.getName()) != null
+                    || sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null;
+            //判断当前的内容和下一行内容不一致 并且是最后一行
+            boolean exist = (totalRowIndex.oldCellValue != null
+                    && !totalRowIndex.oldCellValue.equals(referenceFieldCache.nextCellValue)
+                    && existTotal && totalRowIndex.nextRowspan)
+                    || (totalRowIndex.oldCellValue != null
+                    && totalRowIndex.oldCellValue.equals(referenceFieldCache.nextCellValue)
+                    && existTotal && isLast);
+            //判断当前的内容和下一行内容是一致 接下来是否会合并
+            if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(referenceFieldCache.nextCellValue) && existTotal && totalRowIndex.nextRowspan) {
                 cellValue = null;
-            } else if (
-                    (totalRowIndex.oldCellValue != null && !totalRowIndex.oldCellValue.equals(cv) && existTotal && totalRowIndex.nextRowspan)
-                            || (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(cv) && existTotal && isLast)
-            ) {
+            } else if (exist) {
                 cellValue = null;
-            } else if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(cv) && existTotal) {
+            } else if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(referenceFieldCache.nextCellValue) && existTotal) {
                 totalRowIndex.nextRowspan = true;
             }
-            totalRowIndexMap.put(field.getName(), totalRowIndex);
+            sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.put(field.getName(), totalRowIndex);
+        }
+        return cellValue;
+    }
+
+    /**
+     * 获取参考列
+     */
+    private void getReferenceField(
+            int current,
+            SheetSet sheetSet,
+            ExcelField excelField,
+            String cellValue,
+            ReferenceFieldCache referenceFieldCache
+    ) {
+        if (excelField.rowspanAlignOrder() > 0) {
+            //参考数据行
+            int reference = excelField.rowspanAlignOrder() - 1;
+            referenceFieldCache.referenceField = sheetSet.getSheetCache().useField.get(reference);
+            referenceFieldCache.referenceExcelField = referenceFieldCache.referenceField.getAnnotation(ExcelField.class);
         }
 
-        return cellValue;
+        if (referenceFieldCache.referenceField != null && referenceFieldCache.referenceExcelField != null) {
+            referenceFieldCache.rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
+                    referenceFieldCache.referenceField, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
+                    referenceFieldCache.referenceExcelField.dateType(),
+                    referenceFieldCache.referenceExcelField.decimalAfterDigit());
+        }
+    }
+
+    /**
+     * 获取对比值
+     */
+    private void getNextCellValue(
+            int previous,
+            int next,
+            boolean isLast,
+            SheetSet sheetSet,
+            Field field,
+            ExcelField excelField,
+            ReferenceFieldCache referenceFieldCache
+    ) {
+        if (next < sheetSet.getSheetData().size()) {
+            if (excelField.rowspanAlignOrder() == 0) {
+                referenceFieldCache.nextCellValue = ExcelDisposeUtil.correspondingValue(
+                        field,
+                        sheetSet.getSheetData().get(next),
+                        sheetSet.getIsGetMethodFieldValue(),
+                        excelField.dateType(),
+                        excelField.decimalAfterDigit()
+                );
+            } else if (referenceFieldCache.referenceField != null && referenceFieldCache.referenceExcelField != null) {
+                referenceFieldCache.nextCellValue = ExcelDisposeUtil.correspondingValue(
+                        referenceFieldCache.referenceField,
+                        sheetSet.getSheetData().get(next),
+                        sheetSet.getIsGetMethodFieldValue(),
+                        referenceFieldCache.referenceExcelField.dateType(),
+                        referenceFieldCache.referenceExcelField.decimalAfterDigit()
+                );
+            }
+        } else if (isLast && sheetSet.getSheetData().size() > 1) {
+            if (excelField.rowspanAlignOrder() == 0) {
+                referenceFieldCache.nextCellValue = ExcelDisposeUtil.correspondingValue(
+                        field,
+                        sheetSet.getSheetData().get(previous),
+                        sheetSet.getIsGetMethodFieldValue(),
+                        excelField.dateType(),
+                        excelField.decimalAfterDigit()
+                );
+            } else if (referenceFieldCache.referenceField != null && referenceFieldCache.referenceExcelField != null) {
+                referenceFieldCache.nextCellValue = ExcelDisposeUtil.correspondingValue(
+                        referenceFieldCache.referenceField,
+                        sheetSet.getSheetData().get(previous),
+                        sheetSet.getIsGetMethodFieldValue(),
+                        referenceFieldCache.referenceExcelField.dateType(),
+                        referenceFieldCache.referenceExcelField.decimalAfterDigit()
+                );
+            }
+        }
+    }
+
+    /**
+     * 开始计算合并
+     */
+    private void addMergedRegion(
+            boolean isLast,
+            Sheet sheetModel,
+            SheetSet sheetSet,
+            Field field,
+            TotalRowIndex totalRowIndex,
+            ReferenceFieldCache referenceFieldCache
+    ) {
+        if (totalRowIndex.rowspanStart == 0) {
+            totalRowIndex.rowspanStart = sheetSet.getSheetCache().sheetModelCache.i + 1;
+            totalRowIndex.oldCellValue = referenceFieldCache.rowspanAlignCellValue;
+        } else {
+            if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(referenceFieldCache.rowspanAlignCellValue)) {
+                totalRowIndex.rowspanEnd = sheetSet.getSheetCache().sheetModelCache.i + 1;
+            } else {
+                if (totalRowIndex.rowspanEnd > 0 && !totalRowIndex.rowspanStart.equals(totalRowIndex.rowspanEnd)) {
+                    totalRowIndex.nextRowspan = false;
+                    CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, sheetSet.getSheetCache().sheetModelCache.j, sheetSet.getSheetCache().sheetModelCache.j);
+                    totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
+                }
+                totalRowIndex.rowspanStart = sheetSet.getSheetCache().sheetModelCache.i + 1;
+                totalRowIndex.rowspanEnd = sheetSet.getSheetCache().sheetModelCache.i + 1;
+                totalRowIndex.oldCellValue = referenceFieldCache.rowspanAlignCellValue;
+            }
+            if (isLast) {
+                if (!totalRowIndex.rowspanStart.equals(totalRowIndex.rowspanEnd)) {
+                    totalRowIndex.nextRowspan = false;
+                    CellRangeAddress region = new CellRangeAddress(totalRowIndex.rowspanStart, totalRowIndex.rowspanEnd, sheetSet.getSheetCache().sheetModelCache.j, sheetSet.getSheetCache().sheetModelCache.j);
+                    totalRowIndex.regionIndex = sheetModel.addMergedRegion(region);
+                }
+            }
+        }
     }
 
     /**
      * 计算功能
      */
     private boolean calculation(
-            int i,
-            int initRow,
-            int extrai,
             Sheet sheetModel,
             SheetSet sheetSet,
             Function.Calculation calculation,
             Field referenceField,
             List<Field> spanFieldNames,
-            Map<String, TotalRowIndex> totalRowIndexMap,
-            List<Integer> totalColumnIndexs,
-            List<Integer> occupyRows
+            List<Integer> totalColumnIndexs
     ) throws IllegalAccessException {
         if (referenceField != null) {
-            TotalRowIndex totalRowIndex = totalRowIndexMap.get(referenceField.getName());
+            TotalRowIndex totalRowIndex = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(referenceField.getName());
             //当前数据行
-            int current = i - initRow - extrai;
+            int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extrai;
             //下一数据行
             int next = current + 1;
             //判断下一行不是数据最后一行
@@ -697,53 +951,43 @@ public class ExcelExport {
                 Object cv = referenceField.get(sheetSet.getSheetData().get(next));
                 if (oldcv != null && !oldcv.equals(cv)) {
                     if (this.calculationDispose(
-                            i,
+                            sheetSet.getSheetCache().sheetModelCache.i,
                             totalRowIndex.rowspanStart,
                             totalRowIndex.rowspanEnd,
                             sheetModel,
                             sheetSet,
                             calculation,
-                            totalColumnIndexs,
-                            occupyRows
+                            totalColumnIndexs
                     )) {
-                        occupyRows.add(i + 2);
+                        sheetSet.getSheetCache().sheetModelCache.occupyRows.add(sheetSet.getSheetCache().sheetModelCache.i + 2);
                         //重新合并
                         if (calculation.getSpanFieldNames() != null && !calculation.getSpanFieldNames().isEmpty()) {
                             this.againSpan(
-                                    i,
-                                    initRow,
-                                    extrai,
                                     sheetModel,
                                     sheetSet,
-                                    spanFieldNames,
-                                    totalRowIndexMap
+                                    spanFieldNames
                             );
                         }
                         return true;
                     }
                 }
             } else {
-                occupyRows.add(i + 2);
+                sheetSet.getSheetCache().sheetModelCache.occupyRows.add(sheetSet.getSheetCache().sheetModelCache.i + 2);
                 if (this.calculationDispose(
-                        i,
+                        sheetSet.getSheetCache().sheetModelCache.i,
                         totalRowIndex.rowspanStart,
                         totalRowIndex.rowspanEnd,
                         sheetModel,
                         sheetSet,
                         calculation,
-                        totalColumnIndexs,
-                        occupyRows
+                        totalColumnIndexs
                 )) {
                     //重新合并
                     if (calculation.getSpanFieldNames() != null && !calculation.getSpanFieldNames().isEmpty()) {
                         this.againSpan(
-                                i,
-                                initRow,
-                                extrai,
                                 sheetModel,
                                 sheetSet,
-                                spanFieldNames,
-                                totalRowIndexMap
+                                spanFieldNames
                         );
                     }
                     return true;
@@ -763,8 +1007,7 @@ public class ExcelExport {
             Sheet sheetModel,
             SheetSet sheetSet,
             Function.Builder calculation,
-            List<Integer> totalColumnIndexs,
-            List<Integer> occupyRows
+            List<Integer> totalColumnIndexs
     ) {
         if (totalColumnIndexs != null) {
             //创建行    （标题的下一行）
@@ -780,7 +1023,6 @@ public class ExcelExport {
                 Field field = sheetSet.getSheetCache().useField.get(j);
                 //获取字段注解
                 ExcelField excelField = field.getAnnotation(ExcelField.class);
-
                 Integer nameValue = calculation.getCalculationFieldNameAndOrder().get(field.getName());
                 Integer annotationValue = calculation.getCalculationFieldNameAndOrder().get(excelField.columnName());
                 if (annotationValue != null && annotationValue > 0) {
@@ -798,75 +1040,20 @@ public class ExcelExport {
                         cell = nextRow.createCell(j);
                     }
                 }
-
                 //需要计算的列
                 if (totalColumnIndexs.contains(j + 1)) {
-                    //长度转成ABC列
-                    String colString = CellReference.convertNumToColString(j);
-
-                    StringBuilder sb = new StringBuilder();
-                    int rs = rowspanStart;
-                    for (Integer occupy : occupyRows) {
-                        if ((rs + 1) <= occupy && occupy <= (rowspanEnd + 1)) {
-                            while (occupyRows.contains(rs) && rs < rowspanEnd) {
-                                rs = rs + 1;
-                            }
-                            if (!occupyRows.contains(rs)) {
-                                sb.append(colString).append(rs + 1).append(":").append(colString).append(occupy).append(",");
-                                int occupyi = occupy + 1;
-                                if (occupyi <= rowspanEnd) {
-                                    if (occupyi > rs) {
-                                        rs = occupyi;
-                                    }
-                                } else {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    String sumString;
-                    if (sb.length() > 0) {
-                        sb.delete(sb.length() - 1, sb.length());
-                        sumString = "SUM(" + sb.toString() + ")";
-                    } else {
-                        sumString = "SUM(" + colString + (rowspanStart + 1) + ":" + colString + (rowspanEnd + 1) + ")";
-                    }
-                    cell.setCellFormula(sumString);
+                    this.calculationSum(j, rowspanStart, rowspanEnd, totalColumnIndexs, sheetSet.getSheetCache().sheetModelCache.occupyRows, cell);
                 }
-
                 if (isDeviation) {
                     if (!calculation.getCalculationFieldNameAndOrder().containsValue(j + 1)) {
                         //创建列
                         cell = nextRow.createCell(j);
                     }
                 }
-
                 //加入当前行额外的数据
-                Function.Builder.RowExtraData rowExtraData = calculation.getRowExtraData().get(j + 1);
-                if (rowExtraData != null) {
-                    if (rowExtraData.getIsFormula()) {
-                        String cfv = rowExtraData.getValue();
-                        while (cfv.contains("[") && cfv.contains("]") && cfv.contains("this.")) {
-                            String cf = cfv.substring(cfv.indexOf("[") + 1, cfv.indexOf("]"));
-                            int cellNumber = Integer.parseInt(cf.replaceAll("this.", "")) - 1;
-                            //长度转成ABC列
-                            String colString = CellReference.convertNumToColString(cellNumber);
-                            cfv = cfv.replaceAll("\\[" + cf + "]", colString + (nextRow.getRowNum() + 1));
-                        }
-                        cell.setCellFormula(cfv);
-                    } else {
-                        cell.setCellValue(rowExtraData.getValue());
-                    }
-                }
-
+                this.addRowExtraData(cell, calculation, nextRow, j);
                 //设置样式
-                if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
-                    calculation.setBorder(sheetSet.getStyle().getContextBorder());
-                }
-                if (sheetSet.getStyle().getContextBorderColor() != null) {
-                    calculation.setBorderColor(sheetSet.getStyle().getContextBorderColor());
-                }
-                cell.setCellStyle(calculation.getStyle());
+                this.setCellStyle(sheetSet, cell, calculation);
             }
             return true;
         }
@@ -874,21 +1061,104 @@ public class ExcelExport {
     }
 
     /**
+     * 计算公式
+     */
+    private void calculationSum(
+            int j,
+            int rowspanStart,
+            int rowspanEnd,
+            List<Integer> totalColumnIndexs,
+            List<Integer> occupyRows,
+            Cell cell
+    ) {
+        //长度转成ABC列
+        String colString = CellReference.convertNumToColString(j);
+        StringBuilder sb = new StringBuilder();
+        int rs = rowspanStart;
+        for (Integer occupy : occupyRows) {
+            if ((rs + 1) <= occupy && occupy <= (rowspanEnd + 1)) {
+                while (occupyRows.contains(rs) && rs < rowspanEnd) {
+                    rs = rs + 1;
+                }
+                if (!occupyRows.contains(rs)) {
+                    sb.append(colString).append(rs + 1).append(":").append(colString).append(occupy).append(",");
+                    int occupyi = occupy + 1;
+                    if (occupyi <= rowspanEnd) {
+                        if (occupyi > rs) {
+                            rs = occupyi;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        String sumString;
+        if (sb.length() > 0) {
+            sb.delete(sb.length() - 1, sb.length());
+            sumString = "SUM(" + sb.toString() + ")";
+        } else {
+            sumString = "SUM(" + colString + (rowspanStart + 1) + ":" + colString + (rowspanEnd + 1) + ")";
+        }
+        cell.setCellFormula(sumString);
+    }
+
+    /**
+     * 加入当前行额外的数据
+     */
+    private void addRowExtraData(
+            Cell cell,
+            Function.Builder calculation,
+            Row nextRow,
+            int j
+    ) {
+        Function.Builder.RowExtraData rowExtraData = calculation.getRowExtraData().get(j + 1);
+        if (rowExtraData != null) {
+            if (rowExtraData.getIsFormula()) {
+                String cfv = rowExtraData.getValue();
+                while (cfv.contains(ExcelDisposeConstant.LEFT_BRACKET) && cfv.contains(ExcelDisposeConstant.RIGHT_BRACKET) && cfv.contains(ExcelDisposeConstant.THIS_DOT)) {
+                    String cf = cfv.substring(cfv.indexOf("[") + 1, cfv.indexOf("]"));
+                    int cellNumber = Integer.parseInt(cf.replaceAll("this.", "")) - 1;
+                    //长度转成ABC列
+                    String colString = CellReference.convertNumToColString(cellNumber);
+                    cfv = cfv.replaceAll("\\[" + cf + "]", colString + (nextRow.getRowNum() + 1));
+                }
+                cell.setCellFormula(cfv);
+            } else {
+                cell.setCellValue(rowExtraData.getValue());
+            }
+        }
+    }
+
+    /**
+     * 设置样式
+     */
+    private void setCellStyle(
+            SheetSet sheetSet,
+            Cell cell,
+            Function.Builder calculation
+    ) {
+        if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
+            calculation.setBorder(sheetSet.getStyle().getContextBorder());
+        }
+        if (sheetSet.getStyle().getContextBorderColor() != null) {
+            calculation.setBorderColor(sheetSet.getStyle().getContextBorderColor());
+        }
+        cell.setCellStyle(calculation.getStyle());
+    }
+
+    /**
      * 重新计算跨行
      */
     private void againSpan(
-            int i,
-            int initRow,
-            int extrai,
             Sheet sheetModel,
             SheetSet sheetSet,
-            List<Field> spanFieldNames,
-            Map<String, TotalRowIndex> totalRowIndexMap
+            List<Field> spanFieldNames
     ) throws IllegalAccessException {
         for (Field field : spanFieldNames) {
             if (field != null) {
                 //当前数据行
-                int current = i - initRow - extrai;
+                int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extrai;
                 //下一数据行
                 int next = current + 1;
                 //判断下一行不是数据最后一行
@@ -896,75 +1166,19 @@ public class ExcelExport {
                     Object oldcv = field.get(sheetSet.getSheetData().get(current));
                     Object cv = field.get(sheetSet.getSheetData().get(next));
                     if (oldcv != null && !oldcv.equals(cv)) {
-                        totalRowIndexMap.get(field.getName()).rowspanEnd = totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
+                        sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
                     }
                 } else {
-                    totalRowIndexMap.get(field.getName()).rowspanEnd = totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
+                    sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
                     List<CellRangeAddress> cellRangeAddressList = sheetModel.getMergedRegions();
-                    CellRangeAddress cellAddresses = sheetModel.getMergedRegion(totalRowIndexMap.get(field.getName()).regionIndex);
+                    CellRangeAddress cellAddresses = sheetModel.getMergedRegion(sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex);
                     if (cellRangeAddressList.contains(cellAddresses)) {
                         sheetModel.removeMergedRegion(cellRangeAddressList.indexOf(cellAddresses));
                     }
-                    CellRangeAddress region = new CellRangeAddress(totalRowIndexMap.get(field.getName()).rowspanStart, totalRowIndexMap.get(field.getName()).rowspanEnd, totalRowIndexMap.get(field.getName()).columnNo, totalRowIndexMap.get(field.getName()).columnNo);
-                    totalRowIndexMap.get(field.getName()).regionIndex = sheetModel.addMergedRegion(region);
+                    CellRangeAddress region = new CellRangeAddress(sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanStart, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo);
+                    sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex = sheetModel.addMergedRegion(region);
                 }
             }
-        }
-    }
-
-    /**
-     * 额外数据新增开始行数
-     */
-    private int getInitRow(Sheet sheetModel, List<ExtraRowData> extraRowData, int initRow, Style globalStyle) {
-        ExtraRowData erd = null;
-        for (ExtraRowData e : extraRowData) {
-            if (e != null && e.getRowNumber() != null && e.getRowNumber() == initRow && e.getIsNewRow()) {
-                erd = e;
-                break;
-            }
-        }
-        if (erd != null) {
-            Row row = sheetModel.getRow(initRow);
-            if (row == null) {
-                row = sheetModel.createRow(initRow);
-            }
-            for (ExtraCellData ecd : erd.getExtraCellData()) {
-                Cell cell = row.getCell(ecd.getCellNumber());
-                if (cell == null) {
-                    cell = row.createCell(ecd.getCellNumber());
-                }
-                CellRangeAddress cellAddresses = null;
-                if (ecd.getColspan() != null && ecd.getColspan() > 1) {
-                    cellAddresses = new CellRangeAddress(initRow, initRow, ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
-                    sheetModel.addMergedRegion(cellAddresses);
-                }
-                this.setCellValue(sheetModel, cell, ecd, globalStyle, cellAddresses);
-            }
-            initRow = initRow + 1;
-            return this.getInitRow(sheetModel, extraRowData, initRow, globalStyle);
-        }
-        return initRow;
-    }
-
-    /**
-     * 赋值额外数据
-     */
-    private void setExtraData(Sheet sheetModel, ExtraRowData erd, Style globalStyle) {
-        Row row = sheetModel.getRow(erd.getRowNumber());
-        if (row == null) {
-            row = sheetModel.createRow(erd.getRowNumber());
-        }
-        for (ExtraCellData ecd : erd.getExtraCellData()) {
-            Cell cell = row.getCell(ecd.getCellNumber());
-            if (cell == null) {
-                cell = row.createCell(ecd.getCellNumber());
-            }
-            CellRangeAddress cellAddresses = null;
-            if (ecd.getColspan() != null && ecd.getColspan() > 1) {
-                cellAddresses = new CellRangeAddress(erd.getRowNumber(), erd.getRowNumber(), ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
-                sheetModel.addMergedRegion(cellAddresses);
-            }
-            this.setCellValue(sheetModel, cell, ecd, globalStyle, cellAddresses);
         }
     }
 }

@@ -14,8 +14,10 @@ public class Test {
     static Job job = Job.with(() -> {
         System.out.println(LocalDateTime.now());
     }).when(
-         Minute.at(0,59).with(
-                 Hour.at(11)
-         )
+            Hour.at(0,23).with(
+                    Minute.at(0, 59).with(
+                            Second.at(0,59)
+                    )
+            )
     );
 }

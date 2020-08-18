@@ -29,14 +29,25 @@ public class Test {
 
             List<SheetSet> sheetSets = new ArrayList<>();
 
-            List<ValueLimitTest> st2 = new ArrayList<>();
-            ValueLimitTest test1 = new ValueLimitTest();
-            test1.setName("TYPE01");
-            test1.setValue("类型1");
+//            List<ValueLimitTest> st2 = new ArrayList<>();
+//            ValueLimitTest test1 = new ValueLimitTest();
+//            test1.setName("TYPE01");
+//            test1.setValue("类型1");
+//            st2.add(test1);
+//            ValueLimitTest test2 = new ValueLimitTest();
+//            test2.setName("TYPE02");
+//            test2.setValue("类型2");
+//            st2.add(test2);
+
+
+            List<Map<String,String>> st2 = new ArrayList<>();
+            Map<String,String> test1 = new HashMap<>();
+            test1.put("name","TYPE01");
+            test1.put("value","类型1");
             st2.add(test1);
-            ValueLimitTest test2 = new ValueLimitTest();
-            test2.setName("TYPE02");
-            test2.setValue("类型2");
+            Map<String,String> test2 = new HashMap<>();
+            test2.put("name","TYPE02");
+            test2.put("value","类型2");
             st2.add(test2);
 
             List<Map<String, Object>> excelEntities = new ArrayList<>();
@@ -48,7 +59,7 @@ public class Test {
                     .setSheetData(CopyClass.copyMap(excelEntities, ExcelEntity.class))
                     .setDataClass(ExcelEntity.class)
                     .setIsGetMethodFieldValue(false)
-                    .setValueLimit(ValueLimit.create().setValueList(st2).setValueListName("sT2").setContrastFieldName("name").setReplaceFieldName("value").build())
+                    .setValueLimit(ValueLimit.create().setValueList(st2).setValueListName("sT2").setContrastFieldName("name").setReplaceFieldName("value").setIsMap(true).build())
                     .setExtraData(null
                             , ExtraRowData.create().setRowNumber(3).setExtraCellData(
 //                                    ExtraCellData.create().setCellNumber(2).setCellValue("ceshi").setCellType(String.class).build(),

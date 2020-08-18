@@ -2,11 +2,16 @@ package schedule.service;
 
 import schedule.Job;
 
+/**
+ * 调度任务
+ *
+ * @author fyy
+ */
 public class JobService {
 
     private boolean isStarted;
 
-    private ScheduleContext scheduleContext;
+    private final ScheduleContext scheduleContext;
 
     private ExecutorLoop loop;
 

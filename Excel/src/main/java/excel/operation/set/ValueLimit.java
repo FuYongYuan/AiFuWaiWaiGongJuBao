@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * 值集对象
+ *
+ * @author fyy
  */
 public class ValueLimit {
     /**

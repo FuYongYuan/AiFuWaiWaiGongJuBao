@@ -35,7 +35,7 @@ public class ThreadTest3 {
         //判断项目的时间是否大于当前时间
         if (DateDispose.compareDateSize(DateDispose.formatting_Date(db.time, DateType.Year_Month_Day), d)) {
             //加上3个月
-            String s1 = DateDispose.formatting_Date(DateDispose.month_calculate_Date(db.time, 3, DateType.Year_Month_Day), DateType.Year_Month_Day);
+            String s1 = DateDispose.formatting_Date(DateDispose.monthCalculateDate(db.time, 3, DateType.Year_Month_Day), DateType.Year_Month_Day);
             //判断加上3个月后是否大于当前时间
             if (!DateDispose.compareDateSize(DateDispose.formatting_Date(s1, DateType.Year_Month_Day), d)) {
                 //如果大于理论上来说要转成已完成状态

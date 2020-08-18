@@ -130,7 +130,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String year_calculate_String(Date date, int i, DateType dateType) {
+    public static String yearCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.YEAR, i);
@@ -146,7 +146,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String year_calculate_String(String date, int i, DateType dateType) {
+    public static String yearCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -164,7 +164,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date year_calculate_Date(Date date, int i) {
+    public static Date yearCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.YEAR, i);
@@ -178,7 +178,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date year_calculate_Date(String date, int i, DateType dateType) {
+    public static Date yearCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -197,7 +197,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String month_calculate_String(Date date, int i, DateType dateType) {
+    public static String monthCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.MONTH, i);
@@ -213,7 +213,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String month_calculate_String(String date, int i, DateType dateType) {
+    public static String monthCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -231,7 +231,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date month_calculate_Date(Date date, int i) {
+    public static Date monthCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.MONTH, i);
@@ -245,7 +245,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date month_calculate_Date(String date, int i, DateType dateType) {
+    public static Date monthCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -264,7 +264,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String day_calculate_String(Date date, int i, DateType dateType) {
+    public static String dayCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.DAY_OF_YEAR, i);
@@ -280,7 +280,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String day_calculate_String(String date, int i, DateType dateType) {
+    public static String dayCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -298,7 +298,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date day_calculate_Date(Date date, int i) {
+    public static Date dayCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.DAY_OF_YEAR, i);
@@ -312,7 +312,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date day_calculate_Date(String date, int i, DateType dateType) {
+    public static Date dayCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -331,7 +331,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String hours_calculate_String(Date date, int i, DateType dateType) {
+    public static String hoursCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.HOUR_OF_DAY, i);
@@ -347,7 +347,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String hours_calculate_String(String date, int i, DateType dateType) {
+    public static String hoursCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -365,7 +365,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date hours_calculate_Date(Date date, int i) {
+    public static Date hoursCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.HOUR_OF_DAY, i);
@@ -379,7 +379,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date hours_calculate_Date(String date, int i, DateType dateType) {
+    public static Date hoursCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -398,7 +398,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String minutes_calculate_String(Date date, int i, DateType dateType) {
+    public static String minutesCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.MINUTE, i);
@@ -414,7 +414,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String minutes_calculate_String(String date, int i, DateType dateType) {
+    public static String minutesCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -432,7 +432,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date minutes_calculate_Date(Date date, int i) {
+    public static Date minutesCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.MINUTE, i);
@@ -446,7 +446,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date minutes_calculate_Date(String date, int i, DateType dateType) {
+    public static Date minutesCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -465,7 +465,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String seconds_calculate_String(Date date, int i, DateType dateType) {
+    public static String secondsCalculateString(Date date, int i, DateType dateType) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.SECOND, i);
@@ -481,7 +481,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static String seconds_calculate_String(String date, int i, DateType dateType) {
+    public static String secondsCalculateString(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {
@@ -499,7 +499,7 @@ public class DateDispose {
      * @param date 时间
      * @param i    需要加减 加用正数 减用负数
      */
-    public static Date seconds_calculate_Date(Date date, int i) {
+    public static Date secondsCalculateDate(Date date, int i) {
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(date);
         rightNow.add(Calendar.SECOND, i);
@@ -513,7 +513,7 @@ public class DateDispose {
      * @param i        需要加减 加用正数 减用负数
      * @param dateType 返回的格式
      */
-    public static Date seconds_calculate_Date(String date, int i, DateType dateType) {
+    public static Date secondsCalculateDate(String date, int i, DateType dateType) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateType.getValue());
         Calendar rightNow = Calendar.getInstance();
         try {

@@ -1,5 +1,10 @@
 package schedule.service;
 
+/**
+ * 完成设置
+ *
+ * @author fyy
+ */
 class FiniteNumberSet {
 
     public FiniteNumberSet(int lower, int upper) {
@@ -7,13 +12,13 @@ class FiniteNumberSet {
         this.upper = upper;
     }
 
-    private int lower;
+    private final int lower;
 
     public int getLower() {
         return lower;
     }
 
-    private int upper;
+    private final int upper;
 
     public int getUpper() {
         return upper;

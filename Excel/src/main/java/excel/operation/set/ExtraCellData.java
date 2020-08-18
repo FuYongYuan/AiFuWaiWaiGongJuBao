@@ -8,6 +8,8 @@ import java.lang.reflect.Type;
 
 /**
  * 额外列数据
+ *
+ * @author fyy
  */
 public class ExtraCellData {
     /**

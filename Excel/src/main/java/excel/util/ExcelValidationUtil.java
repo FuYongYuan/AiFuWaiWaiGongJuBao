@@ -7,13 +7,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Excel校验帮助类
+ *
+ * @author fyy
  */
 public class ExcelValidationUtil {
 
@@ -42,16 +43,18 @@ public class ExcelValidationUtil {
             String filePath = path.substring(0, path.lastIndexOf("\\"));
             File file = new File(filePath);
             if (!file.exists()) {
-                file.mkdirs();
+                if (!file.mkdirs()) {
+                    throw new ExcelOperateException("创建文件失败！", new IOException());
+                }
             }
             file = new File(path);
             if (!file.exists()) {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    throw new ExcelOperateException("创建文件失败！", new IOException());
+                }
                 isNow = true;
             }
             if (isNow) {
-                Map<String, List<T>> map = new HashMap<>();
-                map.put(sheetName, new ArrayList<>());
                 ExcelExport excelExport = new ExcelExport(new XSSFWorkbook());
                 SheetSet sheetSet = SheetSet.create().build(excelExport.getWorkbook());
                 List<SheetSet> sheetSets = new ArrayList<>();

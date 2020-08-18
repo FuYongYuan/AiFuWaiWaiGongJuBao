@@ -1,9 +1,19 @@
 package schedule;
 
+/**
+ * 时间设置顺序
+ *
+ * @author fyy
+ */
 class ScheduleCrosscut {
 
-    public static int getOrder(Schedule s) {
-
+    /**
+     * 获取当前设置的顺序
+     *
+     * @param s 设置的单位
+     * @return 顺序
+     */
+    public static int getOrder(AbstractSchedule s) {
         if (s instanceof Second || s instanceof Timer) {
             return 0;
         } else if (s instanceof Minute) {
@@ -17,8 +27,6 @@ class ScheduleCrosscut {
         } else if (s instanceof Month) {
             return 5;
         }
-
-
         return 0;
     }
 }

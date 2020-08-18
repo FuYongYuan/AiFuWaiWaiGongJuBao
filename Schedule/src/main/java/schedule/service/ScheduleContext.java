@@ -1,25 +1,30 @@
 package schedule.service;
 
+import schedule.AbstractSchedule;
 import schedule.Job;
-import schedule.Schedule;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * 调度内容
+ *
+ * @author fyy
+ */
 class ScheduleContext {
 
 
-    private ArrayList<Job> jobs = new ArrayList<>();
+    private final ArrayList<Job> jobs = new ArrayList<>();
 
     public void addJob(Job job) {
 
         jobs.add(job);
 
-        for (Schedule s : job.getSchedules()) {
-            ScheduleState<?> state = ScheduleState.create(s, job);
+        for (AbstractSchedule s : job.getSchedules()) {
+            AbstractScheduleState<?> state = AbstractScheduleState.create(s, job);
             scheduleStateMapping.put(s, state);
-            scheduleStates.add(state);
+            abstractScheduleStates.add(state);
         }
 
         updateNextJob();
@@ -29,10 +34,10 @@ class ScheduleContext {
 
         jobs.remove(job);
 
-        for (Schedule s : job.getSchedules()) {
-            ScheduleState<?> state = scheduleStateMapping.get(s);
+        for (AbstractSchedule s : job.getSchedules()) {
+            AbstractScheduleState<?> state = scheduleStateMapping.get(s);
             scheduleStateMapping.remove(s);
-            scheduleStates.remove(state);
+            abstractScheduleStates.remove(state);
         }
 
         updateNextJob();
@@ -43,7 +48,7 @@ class ScheduleContext {
         jobs.clear();
 
         scheduleStateMapping.clear();
-        scheduleStates.clear();
+        abstractScheduleStates.clear();
 
 
         updateNextJob();
@@ -56,16 +61,16 @@ class ScheduleContext {
         return nextTime;
     }
 
-    private ArrayList<ScheduleState<?>> schedules;
+    private ArrayList<AbstractScheduleState<?>> schedules;
 
-    public ArrayList<ScheduleState<?>> getSchedules() {
+    public ArrayList<AbstractScheduleState<?>> getSchedules() {
         return schedules;
     }
 
 
-    private HashMap<Schedule, ScheduleState<?>> scheduleStateMapping = new HashMap<>();
+    private final HashMap<AbstractSchedule, AbstractScheduleState<?>> scheduleStateMapping = new HashMap<>();
 
-    private ArrayList<ScheduleState<?>> scheduleStates = new ArrayList<>();
+    private final ArrayList<AbstractScheduleState<?>> abstractScheduleStates = new ArrayList<>();
 
 
     public void updateNextJob() {
@@ -77,28 +82,29 @@ class ScheduleContext {
 
             DateNumber now = DateNumber.fromLocalDateTime(nowDate);
 
-            for (Schedule s : agenda.getSchedules()) {
+            for (AbstractSchedule s : agenda.getSchedules()) {
 
-                ScheduleState<?> state = scheduleStateMapping.get(s);
+                AbstractScheduleState<?> state = scheduleStateMapping.get(s);
 
                 LocalDateTime time = state.getNextTime(now).toLocalDateTime();
                 state.desireTime = time;
 
-                if (time != null && (finalTime == null || finalTime.isAfter(time))) {
+                boolean exist = time != null && (finalTime == null || finalTime.isAfter(time));
+                if (exist) {
                     finalTime = time;
                 }
             }
         }
 
 
-        ArrayList<ScheduleState<?>> schedules = new ArrayList<>();
+        ArrayList<AbstractScheduleState<?>> schedules = new ArrayList<>();
 
         if (finalTime != null) {
 
             for (Job job : jobs) {
-                for (Schedule s : job.getSchedules()) {
+                for (AbstractSchedule s : job.getSchedules()) {
 
-                    ScheduleState<?> state = scheduleStateMapping.get(s);
+                    AbstractScheduleState<?> state = scheduleStateMapping.get(s);
 
                     if (finalTime.equals(state.desireTime)) {
                         schedules.add(state);

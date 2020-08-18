@@ -12,6 +12,8 @@ import java.util.*;
 
 /**
  * 直方图比较
+ *
+ * @author fyy
  */
 public class CalcHistCompare {
     /**
@@ -69,7 +71,7 @@ public class CalcHistCompare {
      */
     public LinkedHashMap<String, Double> compare(String imagePath, String filePath) {
         //结果集
-        Map<String, Double> map = new HashMap<>();
+        Map<String, Double> map = new HashMap<>(16);
         //需要比对的图片
         Mat imageMat = Imgcodecs.imread(imagePath);
         //被比对的文件目录下的所有文件

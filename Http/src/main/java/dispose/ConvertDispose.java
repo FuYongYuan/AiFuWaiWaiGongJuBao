@@ -6,22 +6,29 @@ import org.apache.commons.codec.net.URLCodec;
 
 /**
  * 编码转换工具类
+ *
+ * @author fyy
  */
 public class ConvertDispose {
+    /**
+     * 4次
+     */
+    private static final int FREQUENCY = 4;
+
     /**
      * 转换Unicode
      */
     public static String convertUnicode(String ori) {
         char aChar;
         int len = ori.length();
-        StringBuffer outBuffer = new StringBuffer(len);
+        StringBuilder outBuffer = new StringBuilder(len);
         for (int x = 0; x < len; ) {
             aChar = ori.charAt(x++);
             if (aChar == '\\') {
                 aChar = ori.charAt(x++);
                 if (aChar == 'u') {
                     int value = 0;
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < FREQUENCY; i++) {
                         aChar = ori.charAt(x++);
                         switch (aChar) {
                             case '0':
@@ -59,18 +66,20 @@ public class ConvertDispose {
                     }
                     outBuffer.append((char) value);
                 } else {
-                    if (aChar == 't')
+                    if (aChar == 't') {
                         aChar = '\t';
-                    else if (aChar == 'r')
+                    } else if (aChar == 'r') {
                         aChar = '\r';
-                    else if (aChar == 'n')
+                    } else if (aChar == 'n') {
                         aChar = '\n';
-                    else if (aChar == 'f')
+                    } else if (aChar == 'f') {
                         aChar = '\f';
+                    }
                     outBuffer.append(aChar);
                 }
-            } else
+            } else {
                 outBuffer.append(aChar);
+            }
 
         }
         return outBuffer.toString();
@@ -80,21 +89,21 @@ public class ConvertDispose {
     /**
      * BASE64编码
      */
-    public static String encodeBASE64(byte[] str) {
+    public static String encodeBase64(byte[] str) {
         return new String(Base64.encodeBase64(str));
     }
 
     /**
      * BASE64解码
      */
-    public static byte[] decodeBASE64(String str) {
+    public static byte[] decodeBase64(String str) {
         return Base64.decodeBase64(str);
     }
 
     /**
      * URL编码
      */
-    public static String encodeURL(String str) {
+    public static String encodeUrl(String str) {
         try {
             return new URLCodec().encode(str, "UTF-8");
         } catch (Exception e) {
@@ -105,7 +114,7 @@ public class ConvertDispose {
     /**
      * URL解码
      */
-    public static String decodeURL(String str) {
+    public static String decodeUrl(String str) {
         try {
             return new URLCodec().decode(str, "UTF-8");
         } catch (Exception e) {

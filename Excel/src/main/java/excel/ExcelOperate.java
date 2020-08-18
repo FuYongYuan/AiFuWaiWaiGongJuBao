@@ -3,6 +3,7 @@ package excel;
 import dispose.TextDispose;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
+import excel.util.ExcelDisposeConstant;
 import excel.util.ExcelDisposeUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -19,22 +20,24 @@ import java.util.List;
 
 /**
  * Excel操作类
+ *
+ * @author fyy
  */
 public class ExcelOperate {
     /**
      * 地址
      */
-    private String path;
+    private final String path;
 
     /**
      * 是否使用get读取值
      */
-    private boolean isGetMethodFieldValue;
+    private final boolean isGetMethodFieldValue;
 
     /**
      * 文档对象
      */
-    private Workbook workbook;
+    private final Workbook workbook;
 
     /**
      * 文档对象
@@ -48,9 +51,9 @@ public class ExcelOperate {
         if (TextDispose.isNotEmpty(this.path)) {
             String prefix = this.path.substring(this.path.lastIndexOf(".") + 1);
             this.isGetMethodFieldValue = isGetMethodFieldValue;
-            if ("xlsx".equals(prefix)) {
+            if (ExcelDisposeConstant.XLSX.equals(prefix)) {
                 this.workbook = new XSSFWorkbook(new FileInputStream(new File(this.path)));
-            } else if ("xls".equals(prefix)) {
+            } else if (ExcelDisposeConstant.XLS.equals(prefix)) {
                 this.workbook = new HSSFWorkbook(new FileInputStream(new File(this.path)));
             } else {
                 throw new ExcelOperateException("诊断：传入文档格式不正确！", new IOException());
@@ -170,6 +173,10 @@ public class ExcelOperate {
     }
 
     //------------------------------------------------------------------------------------------------------------------内部方法
+
+    /**
+     * 写入文档
+     */
     private void writeDocument() {
         try {
             if (TextDispose.isNotEmpty(path)) {
@@ -187,6 +194,10 @@ public class ExcelOperate {
     }
 
     //------------------------------------------------------------------------------------------------------------------除了数据操作外的方法
+
+    /**
+     * 销毁
+     */
     public void destroy() {
         try {
             if (this.workbook != null) {

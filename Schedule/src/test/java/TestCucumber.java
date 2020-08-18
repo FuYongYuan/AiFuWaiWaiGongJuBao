@@ -78,7 +78,7 @@ public class TestCucumber {
 
 	private static void testBVT() {
 
-		Schedule s =
+		AbstractSchedule s =
 				Month.at(1, 5).with(
 						Hour.at(12, 18).with(
 							Minute.at(50, 59).with(
@@ -98,7 +98,7 @@ public class TestCucumber {
 
 	private static void lastDayOfFebraryOfCommonYear() {
 
-		Schedule s =
+		AbstractSchedule s =
 				Month.at(1, 5).with(
 						Hour.at(12, 18).with(
 							Minute.at(50, 59).with(
@@ -112,7 +112,7 @@ public class TestCucumber {
 
 	private static void febrary28thOfLeapYear() {
 
-		Schedule s =
+		AbstractSchedule s =
 				Month.at(1, 5).with(
 						Hour.at(12, 18).with(
 							Minute.at(50, 59).with(
@@ -125,7 +125,7 @@ public class TestCucumber {
 
 	private static void lastDayOfFebraryOfLeapYear() {
 
-		Schedule s =
+		AbstractSchedule s =
 				Month.at(1, 5).with(
 						Hour.at(12, 18).with(
 							Minute.at(50, 59).with(
@@ -137,7 +137,7 @@ public class TestCucumber {
 
 	private static void weekDay() {
 
-		Schedule s =
+		AbstractSchedule s =
 				WeekDay.at(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY).with(
 						Hour.at(12, 18).with(
 							Minute.at(50, 59).with(
@@ -150,7 +150,7 @@ public class TestCucumber {
 
 	private static void monthDayAndWeekDay() {
 
-		Schedule s =
+		AbstractSchedule s =
 			Month.at(5,7).with(
 				WeekDay.at(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY).with(
 						Hour.at(12, 18).with(
@@ -165,7 +165,7 @@ public class TestCucumber {
 
 	private static void currentTimeBeforeWeekDay() {
 
-		Schedule s =
+		AbstractSchedule s =
 			Month.at(5,7).with(
 				WeekDay.at(DayOfWeek.SATURDAY).with(
 						Hour.at(12, 18).with(
@@ -181,7 +181,7 @@ public class TestCucumber {
 
 	private static void currentTimeAfterWeekDay() {
 
-		Schedule s =
+		AbstractSchedule s =
 			Month.at(5,7).with(
 				WeekDay.at(DayOfWeek.TUESDAY).with(
 						Hour.at(12, 18).with(
@@ -197,7 +197,7 @@ public class TestCucumber {
 
 	private static void twoSchedules() {
 
-		Schedule s =
+		AbstractSchedule s =
 			Month.at(5,7).with(
 				WeekDay.at(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY).with(
 						Hour.at(12, 18).with(
@@ -220,7 +220,7 @@ public class TestCucumber {
 
 	private static void timer() {
 
-		Schedule s =
+		AbstractSchedule s =
 			Month.at(5,7).with(
 					Hour.at(12, 18).with(
 							Minute.at(5).with(

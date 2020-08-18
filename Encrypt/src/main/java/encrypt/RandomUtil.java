@@ -9,6 +9,8 @@ import java.util.Random;
 
 /**
  * 随机数
+ *
+ * @author fyy
  */
 public class RandomUtil {
     //------------------------------------------------------------------------------------------------------------------随机数字
@@ -17,7 +19,7 @@ public class RandomUtil {
      * 根据长度获取随机数
      */
     public static String randomNumberByLength(int length) {
-        StringBuilder randomStr = new StringBuilder("");
+        StringBuilder randomStr = new StringBuilder();
         Random random = new Random();
         for (int i = 0; i < length; i++) {
             randomStr.append(random.nextInt(10));
@@ -45,14 +47,14 @@ public class RandomUtil {
      * 随机字母
      */
     public static String randomAlphabet(int length) {
-        char[] A_Z_a_z = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'
+        char[] alphabet = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'
                 , 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'
                 , 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
         Random rd = new Random();
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < length; i++)//随即10个拿出来看看
-        {
-            result.append(A_Z_a_z[rd.nextInt(52)]);
+        //随即10个拿出来看看
+        for (int i = 0; i < length; i++) {
+            result.append(alphabet[rd.nextInt(52)]);
         }
         return result.toString();
     }
@@ -80,23 +82,21 @@ public class RandomUtil {
         Calendar calendar = Calendar.getInstance();
         //注意月份要减去1
         calendar.set(
-                Integer.parseInt(DateDispose.formatting_Date(startDate, DateType.Year)),
-                Integer.parseInt(DateDispose.formatting_Date(startDate, DateType.Month)) - 1,
-                Integer.parseInt(DateDispose.formatting_Date(startDate, DateType.Day)));
-        calendar.getTime().getTime();
+                Integer.parseInt(DateDispose.formattingDate(startDate, DateType.Year)),
+                Integer.parseInt(DateDispose.formattingDate(startDate, DateType.Month)) - 1,
+                Integer.parseInt(DateDispose.formattingDate(startDate, DateType.Day)));
         //根据需求，这里要将时分秒设置为0
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(DateDispose.formatting_Date(startDate, DateType.Hour)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(DateDispose.formatting_Date(startDate, DateType.Minute)));
-        calendar.set(Calendar.SECOND, Integer.parseInt(DateDispose.formatting_Date(startDate, DateType.Second)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(DateDispose.formattingDate(startDate, DateType.Hour)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(DateDispose.formattingDate(startDate, DateType.Minute)));
+        calendar.set(Calendar.SECOND, Integer.parseInt(DateDispose.formattingDate(startDate, DateType.Second)));
         long min = calendar.getTime().getTime();
         calendar.set(
-                Integer.parseInt(DateDispose.formatting_Date(endDate, DateType.Year)),
-                Integer.parseInt(DateDispose.formatting_Date(endDate, DateType.Month)) - 1,
-                Integer.parseInt(DateDispose.formatting_Date(endDate, DateType.Day)));
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(DateDispose.formatting_Date(endDate, DateType.Hour)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(DateDispose.formatting_Date(endDate, DateType.Minute)));
-        calendar.set(Calendar.SECOND, Integer.parseInt(DateDispose.formatting_Date(endDate, DateType.Second)));
-        calendar.getTime().getTime();
+                Integer.parseInt(DateDispose.formattingDate(endDate, DateType.Year)),
+                Integer.parseInt(DateDispose.formattingDate(endDate, DateType.Month)) - 1,
+                Integer.parseInt(DateDispose.formattingDate(endDate, DateType.Day)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(DateDispose.formattingDate(endDate, DateType.Hour)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(DateDispose.formattingDate(endDate, DateType.Minute)));
+        calendar.set(Calendar.SECOND, Integer.parseInt(DateDispose.formattingDate(endDate, DateType.Second)));
         long max = calendar.getTime().getTime();
         //得到大于等于min小于max的double值
         double randomDate = Math.random() * (max - min) + min;
@@ -116,23 +116,21 @@ public class RandomUtil {
         Calendar calendar = Calendar.getInstance();
         //注意月份要减去1
         calendar.set(
-                Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(startDate), DateType.Year)),
-                Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(startDate), DateType.Month)) - 1,
-                Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(startDate), DateType.Day)));
-        calendar.getTime().getTime();
+                Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(startDate), DateType.Year)),
+                Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(startDate), DateType.Month)) - 1,
+                Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(startDate), DateType.Day)));
         //根据需求，这里要将时分秒设置为0
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(startDate), DateType.Hour)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(startDate), DateType.Minute)));
-        calendar.set(Calendar.SECOND, Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(startDate), DateType.Second)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(startDate), DateType.Hour)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(startDate), DateType.Minute)));
+        calendar.set(Calendar.SECOND, Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(startDate), DateType.Second)));
         long min = calendar.getTime().getTime();
         calendar.set(
-                Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(endDate), DateType.Year)),
-                Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(endDate), DateType.Month)) - 1,
-                Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(endDate), DateType.Day)));
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(endDate), DateType.Hour)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(endDate), DateType.Minute)));
-        calendar.set(Calendar.SECOND, Integer.parseInt(DateDispose.formatting_Date(DateDispose.formatting_StringToDate(endDate), DateType.Second)));
-        calendar.getTime().getTime();
+                Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(endDate), DateType.Year)),
+                Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(endDate), DateType.Month)) - 1,
+                Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(endDate), DateType.Day)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(endDate), DateType.Hour)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(endDate), DateType.Minute)));
+        calendar.set(Calendar.SECOND, Integer.parseInt(DateDispose.formattingDate(DateDispose.formattingStringToDate(endDate), DateType.Second)));
         long max = calendar.getTime().getTime();
         //得到大于等于min小于max的double值
         double randomDate = Math.random() * (max - min) + min;

@@ -10,6 +10,8 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * 压缩处理
+ *
+ * @author fyy
  */
 public class ZipDispose {
 
@@ -125,9 +127,9 @@ public class ZipDispose {
                     if (keepPathStructure) {
                         // 注意：file.getName()前面需要带上父文件夹的名字加一斜杠,
                         // 不然最后压缩包中就不能保留原来的文件结构,即：所有文件都跑到压缩包根目录下了
-                        compress(file, zipOutputStream, name + "/" + file.getName(), keepPathStructure);
+                        compress(file, zipOutputStream, name + "/" + file.getName(), true);
                     } else {
-                        compress(file, zipOutputStream, file.getName(), keepPathStructure);
+                        compress(file, zipOutputStream, file.getName(), false);
                     }
                 }
             }

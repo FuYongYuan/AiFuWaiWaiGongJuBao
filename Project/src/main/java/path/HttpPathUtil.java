@@ -2,6 +2,11 @@ package path;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * 获取http请求中信息
+ *
+ * @author fyy
+ */
 public class HttpPathUtil {
     /**
      * resources目录

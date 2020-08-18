@@ -86,8 +86,10 @@ class SendMailService {
      * @return 成功失败
      */
     boolean createMimeMessage(String personal) {
-        Authenticator auth = new AjavaAuthenticator(this.username, this.password); // 使用验证，创建一个Authenticator
-        Session session = Session.getDefaultInstance(this.props, auth);// 根据Properties，Authenticator创建Session
+        // 使用验证，创建一个Authenticator
+        Authenticator auth = new AjavaAuthenticator(this.username, this.password);
+        // 根据Properties，Authenticator创建Session
+        Session session = Session.getDefaultInstance(this.props, auth);
 
         try {
             if (this.message == null) {
@@ -99,25 +101,25 @@ class SendMailService {
             this.message.setFrom(setfrom);
             //设置收信邮箱
             if (this.to != null && this.to.size() > 0) {
-                InternetAddress[] toIA = new InternetAddress[this.to.size()];
+                InternetAddress[] toInternetAddress = new InternetAddress[this.to.size()];
                 for (int i = 0; i < this.to.size(); i++) {
-                    toIA[i] = new InternetAddress(this.to.get(i));
+                    toInternetAddress[i] = new InternetAddress(this.to.get(i));
                 }
-                this.message.setRecipients(Message.RecipientType.TO, toIA);
+                this.message.setRecipients(Message.RecipientType.TO, toInternetAddress);
             }
             if (this.cc != null && this.cc.size() > 0) {
-                InternetAddress[] ccIA = new InternetAddress[this.cc.size()];
+                InternetAddress[] ccInternetAddress = new InternetAddress[this.cc.size()];
                 for (int i = 0; i < this.cc.size(); i++) {
-                    ccIA[i] = new InternetAddress(this.cc.get(i));
+                    ccInternetAddress[i] = new InternetAddress(this.cc.get(i));
                 }
-                this.message.setRecipients(Message.RecipientType.CC, ccIA);
+                this.message.setRecipients(Message.RecipientType.CC, ccInternetAddress);
             }
             if (this.bcc != null && this.bcc.size() > 0) {
-                InternetAddress[] bccIA = new InternetAddress[this.bcc.size()];
+                InternetAddress[] bccInternetAddress = new InternetAddress[this.bcc.size()];
                 for (int i = 0; i < this.bcc.size(); i++) {
-                    bccIA[i] = new InternetAddress(this.bcc.get(i));
+                    bccInternetAddress[i] = new InternetAddress(this.bcc.get(i));
                 }
-                this.message.setRecipients(Message.RecipientType.BCC, bccIA);
+                this.message.setRecipients(Message.RecipientType.BCC, bccInternetAddress);
             }
             //设置主题
             this.message.setSubject(this.subject);
@@ -258,8 +260,8 @@ class SendMailService {
      * 创建传入身份验证信息的 Authenticator类
      */
     static class AjavaAuthenticator extends Authenticator {
-        private String user;
-        private String pwd;
+        private final String user;
+        private final String pwd;
 
         AjavaAuthenticator(String user, String pwd) {
             this.user = user;

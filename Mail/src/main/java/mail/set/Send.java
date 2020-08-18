@@ -3,6 +3,11 @@ package mail.set;
 import dispose.TextDispose;
 import mail.exception.MailException;
 
+/**
+ * 邮件发送对象
+ *
+ * @author fyy
+ */
 public class Send {
     /**
      * 系统名称

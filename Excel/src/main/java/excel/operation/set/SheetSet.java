@@ -2,11 +2,17 @@ package excel.operation.set;
 
 import dispose.TextDispose;
 import excel.exception.ExcelOperateException;
+import excel.operation.cache.SheetCache;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 页签设置类
+ *
+ * @author fyy
+ */
 public class SheetSet {
 
     /**

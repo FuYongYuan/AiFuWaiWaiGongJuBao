@@ -15,6 +15,8 @@ import java.util.Map;
 
 /**
  * 将一个Class对象的各个属性值，复制到另外一个Class对象
+ *
+ * @author fyy
  */
 public class CopyClass {
     /**
@@ -32,7 +34,8 @@ public class CopyClass {
             String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
             Method method = object1.getClass().getMethod("get" + fieldNameFirstUpperCase);
             Object value = method.invoke(object1);
-            if ((value != null && !"".equals(value)) || getNull) {
+            boolean exist = (value != null && !"".equals(value)) || getNull;
+            if (exist) {
                 method = getMethod(clazz, field, fieldNameFirstUpperCase);
                 method.invoke(object2, value);
             }
@@ -51,7 +54,8 @@ public class CopyClass {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             Object value = field.get(object1);
-            if ((value != null && !"".equals(value)) || getNull) {
+            boolean exist = (value != null && !"".equals(value)) || getNull;
+            if (exist) {
                 if (field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
                     if (value != null) {
                         field.set(object2, value.toString());
@@ -146,7 +150,8 @@ public class CopyClass {
             Method method;
             Object value1 = map.get(fieldName);
             Object value2 = map.get(fieldNameFirstUpperCase);
-            if ((value1 != null && !"".equals(value1)) || (value2 != null && !"".equals(value2))) {
+            boolean exist = (value1 != null && !"".equals(value1)) || (value2 != null && !"".equals(value2));
+            if (exist) {
                 Object value = value1 != null ? value1 : value2;
                 if (!"".equals(value)) {
                     method = getMethod(clazz, field, fieldNameFirstUpperCase);

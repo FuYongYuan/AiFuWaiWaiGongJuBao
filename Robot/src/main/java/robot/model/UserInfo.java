@@ -2,6 +2,8 @@ package robot.model;
 
 /**
  * 用户参数
+ *
+ * @author fyy
  */
 public class UserInfo {
     /**

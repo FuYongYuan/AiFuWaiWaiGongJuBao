@@ -10,13 +10,15 @@ import java.util.List;
 
 /**
  * 发送邮件逻辑类
+ *
+ * @author fyy
  */
 public class SendMail {
 
     /**
      * 发送信息
      */
-    private Send send;
+    private final Send send;
 
     /**
      * 创建发送邮件服务类

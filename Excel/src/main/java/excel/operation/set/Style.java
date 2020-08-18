@@ -4,6 +4,8 @@ import org.apache.poi.ss.usermodel.*;
 
 /**
  * 样式设置类
+ *
+ * @author fyy
  */
 public class Style {
     /**
@@ -25,9 +27,15 @@ public class Style {
     /**
      * 字体
      */
-    private Font font;
+    private final Font font;
 
     //------------------------------------------------------------------------------------------------------------------构造
+
+    /**
+     * 构造
+     *
+     * @param workbook 导出工作簿对象
+     */
     public Style(Workbook workbook) {
         this.title = workbook.createCellStyle();
         this.font = workbook.createFont();
