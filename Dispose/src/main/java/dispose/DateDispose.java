@@ -618,7 +618,6 @@ public class DateDispose {
      * @param returnType 返回类型   hh小时  mm分钟  ss秒  day天
      */
     public static Long dateDiff(Date startTime, Date endTime, DateType returnType) {
-        // 按照传入的格式生成一个simpledateformate对象
         // 一天的毫秒数
         long nd = 1000 * 24 * 60 * 60;
         // 一小时的毫秒数
@@ -665,7 +664,7 @@ public class DateDispose {
      * @param returnType 返回类型   hh小时  mm分钟  ss秒  day天
      */
     public static Long dateDiff(String startTime, String endTime, DateType formatType, DateType returnType) {
-        // 按照传入的格式生成一个simpledateformate对象
+        // 按照传入的格式生成一个SimpleDateFormat对象
         SimpleDateFormat sd = new SimpleDateFormat(formatType.getValue());
         // 一天的毫秒数
         long nd = 1000 * 24 * 60 * 60;

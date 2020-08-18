@@ -670,7 +670,6 @@ public class TextDispose {
         if (isEmpty(str)) {
             return false;
         }
-        String head = str.substring(0, 1);
         str = str.substring(1);
         int upper = 0;
         int lower = 0;
@@ -699,7 +698,6 @@ public class TextDispose {
      */
     public static boolean isContainsEmoji(String source) {
         int len = source.length();
-        boolean isEmoji = false;
         for (int i = 0; i < len; i++) {
             char hs = source.charAt(i);
             if (0xd800 <= hs && hs <= 0xdbff) {

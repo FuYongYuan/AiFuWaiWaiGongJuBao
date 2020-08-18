@@ -12,14 +12,14 @@ import java.util.Map;
  */
 public class SheetModelCache {
     /**
-     * 行数
+     * 初始行数
      */
     public Integer initRow = 0;
 
     /**
      * 额外行数
      */
-    public Integer extrai = 0;
+    public Integer extraRow = 0;
 
     /**
      * 行

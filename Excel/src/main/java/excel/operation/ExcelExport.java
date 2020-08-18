@@ -196,7 +196,7 @@ public class ExcelExport {
     ) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
         int rowSize = sheetSet.getSheetData().size();
         for (sheetSet.getSheetCache().sheetModelCache.i = sheetSet.getSheetCache().sheetModelCache.initRow;
-             sheetSet.getSheetCache().sheetModelCache.i < (rowSize + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extrai);
+             sheetSet.getSheetCache().sheetModelCache.i < (rowSize + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extraRow);
              sheetSet.getSheetCache().sheetModelCache.i++) {
             //创建行    （标题的下一行）
             Row nextRow = sheetModel.createRow(sheetSet.getSheetCache().sheetModelCache.i + 1);
@@ -270,7 +270,7 @@ public class ExcelExport {
                     sheetSet.getSheetCache().subTotalColumnIndex
             )) {
                 //校准变更的数据
-                sheetSet.getSheetCache().sheetModelCache.extrai = sheetSet.getSheetCache().sheetModelCache.extrai + 1;
+                sheetSet.getSheetCache().sheetModelCache.extraRow = sheetSet.getSheetCache().sheetModelCache.extraRow + 1;
                 sheetSet.getSheetCache().sheetModelCache.i = sheetSet.getSheetCache().sheetModelCache.i + 1;
             }
         }
@@ -286,7 +286,7 @@ public class ExcelExport {
                     sheetSet.getSheetCache().totalColumnIndex
             )) {
                 //校准变更的数据
-                sheetSet.getSheetCache().sheetModelCache.extrai = sheetSet.getSheetCache().sheetModelCache.extrai + 1;
+                sheetSet.getSheetCache().sheetModelCache.extraRow = sheetSet.getSheetCache().sheetModelCache.extraRow + 1;
                 sheetSet.getSheetCache().sheetModelCache.i = sheetSet.getSheetCache().sheetModelCache.i + 1;
             }
         }
@@ -303,9 +303,9 @@ public class ExcelExport {
                 sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder() != null &&
                         sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().size() > 0
         ) {
-            sheetSet.getSheetCache().sheetModelCache.occupyRows.add(sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extrai + 1);
+            sheetSet.getSheetCache().sheetModelCache.occupyRows.add(sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extraRow + 1);
             this.calculationDispose(
-                    sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extrai - 1,
+                    sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extraRow - 1,
                     sheetSet.getSheetCache().sheetModelCache.initRow + 1,
                     sheetModel.getLastRowNum(),
                     sheetModel,
@@ -469,17 +469,7 @@ public class ExcelExport {
             Style globalStyle
     ) {
         if (globalStyle.getContextBorder() != null && globalStyle.getContextBorder() != BorderStyle.NONE) {
-            cellStyle.setBorderTop(globalStyle.getContextBorder());
-            cellStyle.setBorderBottom(globalStyle.getContextBorder());
-            cellStyle.setBorderLeft(globalStyle.getContextBorder());
-            cellStyle.setBorderRight(globalStyle.getContextBorder());
-
-            if (globalStyle.getContextBorderColor() != null) {
-                cellStyle.setTopBorderColor(globalStyle.getContextBorderColor().getIndex());
-                cellStyle.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex());
-                cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
-                cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
-            }
+            setContextBorder(cellStyle, globalStyle);
         } else {
             if (excelField.border() != BorderStyle.NONE) {
                 cellStyle.setBorderTop(excelField.border());
@@ -509,6 +499,26 @@ public class ExcelExport {
                     cellStyle.setRightBorderColor(excelField.borderRightColor().getIndex());
                 }
             }
+        }
+    }
+
+    /**
+     * 设置全局边框
+     */
+    private void setContextBorder(
+            CellStyle cellStyle,
+            Style globalStyle
+    ) {
+        cellStyle.setBorderTop(globalStyle.getContextBorder());
+        cellStyle.setBorderBottom(globalStyle.getContextBorder());
+        cellStyle.setBorderLeft(globalStyle.getContextBorder());
+        cellStyle.setBorderRight(globalStyle.getContextBorder());
+
+        if (globalStyle.getContextBorderColor() != null) {
+            cellStyle.setTopBorderColor(globalStyle.getContextBorderColor().getIndex());
+            cellStyle.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex());
+            cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
+            cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
         }
     }
 
@@ -651,17 +661,7 @@ public class ExcelExport {
             CellRangeAddress cellAddresses
     ) {
         //处理原单元格
-        cellStyle.setBorderTop(globalStyle.getContextBorder());
-        cellStyle.setBorderBottom(globalStyle.getContextBorder());
-        cellStyle.setBorderLeft(globalStyle.getContextBorder());
-        cellStyle.setBorderRight(globalStyle.getContextBorder());
-
-        if (globalStyle.getContextBorderColor() != null) {
-            cellStyle.setTopBorderColor(globalStyle.getContextBorderColor().getIndex());
-            cellStyle.setBottomBorderColor(globalStyle.getContextBorderColor().getIndex());
-            cellStyle.setLeftBorderColor(globalStyle.getContextBorderColor().getIndex());
-            cellStyle.setRightBorderColor(globalStyle.getContextBorderColor().getIndex());
-        }
+        setContextBorder(cellStyle, globalStyle);
         //处理合并单元格
         if (cellAddresses != null) {
             RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
@@ -759,7 +759,7 @@ public class ExcelExport {
             ExcelField excelField
     ) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         //当前数据行
-        int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extrai;
+        int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extraRow;
         //当前的字段值
         String cellValue = ExcelDisposeUtil.correspondingValue(field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(), excelField.dateType(), excelField.decimalAfterDigit());
         //获取转换值集中对应值
@@ -771,13 +771,13 @@ public class ExcelExport {
             //下一数据行
             int next = current + 1;
             //是否是最后一行
-            boolean isLast = (sheetSet.getSheetCache().sheetModelCache.i == sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extrai - 1);
+            boolean isLast = (sheetSet.getSheetCache().sheetModelCache.i == sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extraRow - 1);
             //获取参考字段
             ReferenceFieldCache referenceFieldCache = new ReferenceFieldCache();
             //参考列值
             referenceFieldCache.rowspanAlignCellValue = cellValue;
             //计算参考字段
-            this.getReferenceField(current, sheetSet, excelField, cellValue, referenceFieldCache);
+            this.getReferenceField(current, sheetSet, excelField, referenceFieldCache);
             //对比列下一行值
             this.getNextCellValue(previous, next, isLast, sheetSet, field, excelField, referenceFieldCache);
             //开始计算合并
@@ -787,7 +787,7 @@ public class ExcelExport {
                 totalRowIndex.field = field;
                 totalRowIndex.columnNo = sheetSet.getSheetCache().sheetModelCache.j;
             }
-            this.addMergedRegion(isLast, sheetModel, sheetSet, field, totalRowIndex, referenceFieldCache);
+            this.addMergedRegion(isLast, sheetModel, sheetSet, totalRowIndex, referenceFieldCache);
             //小计、总计、全部总计
             boolean existTotal = sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null
                     || sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null
@@ -797,17 +797,17 @@ public class ExcelExport {
                     || sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null;
             //判断当前的内容和下一行内容不一致 并且是最后一行
             boolean exist = (totalRowIndex.oldCellValue != null
-                    && !totalRowIndex.oldCellValue.equals(referenceFieldCache.nextCellValue)
+                    && !totalRowIndex.oldCellValue.equals(referenceFieldCache.cellValue)
                     && existTotal && totalRowIndex.nextRowspan)
                     || (totalRowIndex.oldCellValue != null
-                    && totalRowIndex.oldCellValue.equals(referenceFieldCache.nextCellValue)
+                    && totalRowIndex.oldCellValue.equals(referenceFieldCache.cellValue)
                     && existTotal && isLast);
             //判断当前的内容和下一行内容是一致 接下来是否会合并
-            if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(referenceFieldCache.nextCellValue) && existTotal && totalRowIndex.nextRowspan) {
+            if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(referenceFieldCache.cellValue) && existTotal && totalRowIndex.nextRowspan) {
                 cellValue = null;
             } else if (exist) {
                 cellValue = null;
-            } else if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(referenceFieldCache.nextCellValue) && existTotal) {
+            } else if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(referenceFieldCache.cellValue) && existTotal) {
                 totalRowIndex.nextRowspan = true;
             }
             sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.put(field.getName(), totalRowIndex);
@@ -822,7 +822,6 @@ public class ExcelExport {
             int current,
             SheetSet sheetSet,
             ExcelField excelField,
-            String cellValue,
             ReferenceFieldCache referenceFieldCache
     ) {
         if (excelField.rowspanAlignOrder() > 0) {
@@ -853,41 +852,32 @@ public class ExcelExport {
             ReferenceFieldCache referenceFieldCache
     ) {
         if (next < sheetSet.getSheetData().size()) {
-            if (excelField.rowspanAlignOrder() == 0) {
-                referenceFieldCache.nextCellValue = ExcelDisposeUtil.correspondingValue(
-                        field,
-                        sheetSet.getSheetData().get(next),
-                        sheetSet.getIsGetMethodFieldValue(),
-                        excelField.dateType(),
-                        excelField.decimalAfterDigit()
-                );
-            } else if (referenceFieldCache.referenceField != null && referenceFieldCache.referenceExcelField != null) {
-                referenceFieldCache.nextCellValue = ExcelDisposeUtil.correspondingValue(
-                        referenceFieldCache.referenceField,
-                        sheetSet.getSheetData().get(next),
-                        sheetSet.getIsGetMethodFieldValue(),
-                        referenceFieldCache.referenceExcelField.dateType(),
-                        referenceFieldCache.referenceExcelField.decimalAfterDigit()
-                );
-            }
+            getReferenceFieldCellValue(next, sheetSet, field, excelField, referenceFieldCache);
         } else if (isLast && sheetSet.getSheetData().size() > 1) {
-            if (excelField.rowspanAlignOrder() == 0) {
-                referenceFieldCache.nextCellValue = ExcelDisposeUtil.correspondingValue(
-                        field,
-                        sheetSet.getSheetData().get(previous),
-                        sheetSet.getIsGetMethodFieldValue(),
-                        excelField.dateType(),
-                        excelField.decimalAfterDigit()
-                );
-            } else if (referenceFieldCache.referenceField != null && referenceFieldCache.referenceExcelField != null) {
-                referenceFieldCache.nextCellValue = ExcelDisposeUtil.correspondingValue(
-                        referenceFieldCache.referenceField,
-                        sheetSet.getSheetData().get(previous),
-                        sheetSet.getIsGetMethodFieldValue(),
-                        referenceFieldCache.referenceExcelField.dateType(),
-                        referenceFieldCache.referenceExcelField.decimalAfterDigit()
-                );
-            }
+            getReferenceFieldCellValue(previous, sheetSet, field, excelField, referenceFieldCache);
+        }
+    }
+
+    /**
+     * 获取参考列的值
+     */
+    private void getReferenceFieldCellValue(int current, SheetSet sheetSet, Field field, ExcelField excelField, ReferenceFieldCache referenceFieldCache) {
+        if (excelField.rowspanAlignOrder() == 0) {
+            referenceFieldCache.cellValue = ExcelDisposeUtil.correspondingValue(
+                    field,
+                    sheetSet.getSheetData().get(current),
+                    sheetSet.getIsGetMethodFieldValue(),
+                    excelField.dateType(),
+                    excelField.decimalAfterDigit()
+            );
+        } else if (referenceFieldCache.referenceField != null && referenceFieldCache.referenceExcelField != null) {
+            referenceFieldCache.cellValue = ExcelDisposeUtil.correspondingValue(
+                    referenceFieldCache.referenceField,
+                    sheetSet.getSheetData().get(current),
+                    sheetSet.getIsGetMethodFieldValue(),
+                    referenceFieldCache.referenceExcelField.dateType(),
+                    referenceFieldCache.referenceExcelField.decimalAfterDigit()
+            );
         }
     }
 
@@ -898,7 +888,6 @@ public class ExcelExport {
             boolean isLast,
             Sheet sheetModel,
             SheetSet sheetSet,
-            Field field,
             TotalRowIndex totalRowIndex,
             ReferenceFieldCache referenceFieldCache
     ) {
@@ -942,7 +931,7 @@ public class ExcelExport {
         if (referenceField != null) {
             TotalRowIndex totalRowIndex = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(referenceField.getName());
             //当前数据行
-            int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extrai;
+            int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extraRow;
             //下一数据行
             int next = current + 1;
             //判断下一行不是数据最后一行
@@ -1042,7 +1031,7 @@ public class ExcelExport {
                 }
                 //需要计算的列
                 if (totalColumnIndexs.contains(j + 1)) {
-                    this.calculationSum(j, rowspanStart, rowspanEnd, totalColumnIndexs, sheetSet.getSheetCache().sheetModelCache.occupyRows, cell);
+                    this.calculationSum(j, rowspanStart, rowspanEnd, sheetSet.getSheetCache().sheetModelCache.occupyRows, cell);
                 }
                 if (isDeviation) {
                     if (!calculation.getCalculationFieldNameAndOrder().containsValue(j + 1)) {
@@ -1067,7 +1056,6 @@ public class ExcelExport {
             int j,
             int rowspanStart,
             int rowspanEnd,
-            List<Integer> totalColumnIndexs,
             List<Integer> occupyRows,
             Cell cell
     ) {
@@ -1158,7 +1146,7 @@ public class ExcelExport {
         for (Field field : spanFieldNames) {
             if (field != null) {
                 //当前数据行
-                int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extrai;
+                int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extraRow;
                 //下一数据行
                 int next = current + 1;
                 //判断下一行不是数据最后一行

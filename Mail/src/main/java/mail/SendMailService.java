@@ -97,8 +97,8 @@ class SendMailService {
                 this.message = new MimeMessage(session);
             }
             //设置发件人
-            InternetAddress setfrom = new InternetAddress(this.from, personal);
-            this.message.setFrom(setfrom);
+            InternetAddress setFrom = new InternetAddress(this.from, personal);
+            this.message.setFrom(setFrom);
             //设置收信邮箱
             if (this.to != null && this.to.size() > 0) {
                 InternetAddress[] toInternetAddress = new InternetAddress[this.to.size()];

@@ -26,7 +26,7 @@ public class ReferenceFieldCache {
     public String rowspanAlignCellValue;
 
     /**
-     * 对比列下一行值
+     * 参考列值
      */
-    public String nextCellValue;
+    public String cellValue;
 }
