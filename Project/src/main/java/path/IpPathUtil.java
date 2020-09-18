@@ -20,7 +20,7 @@ public class IpPathUtil {
     /**
      * 获取访问者ip地址
      */
-    public static String getVisitorIpAddress(HttpServletRequest request) {
+    public static String getVisitorIp(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
         if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");

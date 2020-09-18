@@ -1,4 +1,6 @@
+import dispose.DateDispose;
 import dispose.TextDispose;
+import enumerate.DateType;
 import enumerate.Format;
 
 import java.util.*;
@@ -77,12 +79,29 @@ public class Test {
     }
 
     public static void main(String[] args) {
+
+//        String sds = "2020-09-01";
+//        String eds = "2020-09-09";
+//        Date sd = DateDispose.formattingDate(sds, DateType.Year_Month_Day);
+//        Date ed = DateDispose.formattingDate(eds, DateType.Year_Month_Day);
+//        Date d = sd;
+//        for (int i = 1; DateDispose.compareDateSize(d, ed) || DateDispose.compareDate(d, ed); i++) {
+//            System.out.println(DateDispose.formattingDate(d, DateType.Year_Month_Day));
+//            d = DateDispose.dayCalculateDate(sd, i);
+//        }
+//
+//        System.out.println(DateDispose.dateDiff(sd,ed,DateType.Day)+1);
+
 //        String ceshi = "abbaabbaaabbaaaabbaaaaabbaaaaaa";
 //
 //
 //        System.out.println(replaceText(ceshi, "bb", 0));
-
-        System.out.println(TextDispose.toRemoverCamelCase("T_User_Action_X_X",Format.Upper, Format.NoFormat));
+//
+//        String s = "T_T_User_Action_X_X";
+//
+//        s=s.replaceFirst("T_","");
+//
+//        System.out.println(TextDispose.toRemoverCamelCase(s,Format.Upper,Format.NoFormat));
 
 //        //集合
 //        List<String> list = new ArrayList<>();

@@ -65,7 +65,12 @@ public enum CommonlyUsedType {
     /**
      * java.math.BigInteger
      */
-    Type_BigInteger("java.math.BigInteger");
+    Type_BigInteger("java.math.BigInteger"),
+
+    /**
+     * java.lang.Long
+     */
+    Type_Long("java.lang.Long");
 
     /**
      * 实际值
