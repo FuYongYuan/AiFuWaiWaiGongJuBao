@@ -80,6 +80,11 @@ public class Test {
 
     public static void main(String[] args) {
 
+        System.out.println(TextDispose.isInteger("1"));
+        System.out.println(TextDispose.isDouble("1111111.11111111"));
+        System.out.println(TextDispose.isInteger("1111111.11111111"));
+        System.out.println(TextDispose.isDouble("1"));
+
 //        String sds = "2020-09-01";
 //        String eds = "2020-09-09";
 //        Date sd = DateDispose.formattingDate(sds, DateType.Year_Month_Day);

@@ -576,17 +576,20 @@ public class TextDispose {
     /**
      * 整型正则
      */
-    private static final Pattern INTEGER_PATTERN = Pattern.compile("[0-9]+");
+    private static final Pattern INTEGER_PATTERN = Pattern.compile("^[-\\+]?[\\d]*$");
 
     /**
      * 浮点正则
      */
-    private static final Pattern DOUBLE_PATTERN = Pattern.compile("[0-9]+[.]?[0-9]*[dD]?");
+    private static final Pattern DOUBLE_PATTERN = Pattern.compile("^[-\\+]?\\d*[.]\\d+$");
 
     /**
      * 判断字符串是否是整数
      */
     public static boolean isInteger(String value) {
+        if (null == value || value.isEmpty()) {
+            return false;
+        }
         Matcher matcher = INTEGER_PATTERN.matcher(value);
         return matcher.matches();
     }
@@ -595,6 +598,9 @@ public class TextDispose {
      * 判断字符串是否是浮点数
      */
     public static boolean isDouble(String value) {
+        if (null == value || value.isEmpty()) {
+            return false;
+        }
         Matcher matcher = DOUBLE_PATTERN.matcher(value);
         return matcher.matches();
     }
