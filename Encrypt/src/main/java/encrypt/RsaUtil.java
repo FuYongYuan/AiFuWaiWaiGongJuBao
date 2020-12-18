@@ -25,13 +25,13 @@ public class RsaUtil {
     public static String encrypt(String publicKey, String context) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
-            byte[] keyBytes = Base64.decodeBase64(publicKey);
+            byte[] keyBytes = Base64.decodeBase64(publicKey.getBytes());
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             PublicKey key = keyFactory.generatePublic(keySpec);
             cipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] bytes = cipher.doFinal(context.getBytes());
-            return Base64.encodeBase64String(bytes);
+            return new String(Base64.encodeBase64(bytes));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,7 +49,7 @@ public class RsaUtil {
         try {
             byte[] content = context.getBytes();
             Cipher cipher = Cipher.getInstance("RSA");
-            byte[] keyBytes = Base64.decodeBase64(privateKey);
+            byte[] keyBytes = Base64.decodeBase64(privateKey.getBytes());
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             PrivateKey key = keyFactory.generatePrivate(keySpec);

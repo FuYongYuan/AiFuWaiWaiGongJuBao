@@ -1,17 +1,17 @@
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.net.URLCodec;
 
 public class CodecTest
 {
-   public static void testBase64()
-   {
+   public static void testBase64() throws DecoderException {
       System.out.println("==============Base64================");
       byte[] data = "FYY".getBytes();
       Base64 base64 = new Base64();
-      String encode = base64.encodeAsString(data);
+      String encode = new String(base64.encode(data));
       System.out.println(encode);
-      System.out.println(new String(base64.decode(encode)));
+      System.out.println(new String((byte[]) base64.decode(encode)));
    }
 
    public static void testMD5()

@@ -1,4 +1,6 @@
 import encrypt.RsaUtil;
+import encrypt.Sha1Util;
+import encrypt.Sha256Util;
 
 public class Test {
     public static void main(String[] args) throws Exception {
@@ -25,6 +27,11 @@ public class Test {
         String s = RsaUtil.encrypt(publicKeyStr,"fyyain77");
         System.out.println(s);
         System.out.println(RsaUtil.decrypt(privateKeyStr,s));
+
+
+        System.out.println(Sha256Util.encode("fyyain77"));
+
+        System.out.println(Sha1Util.encode("fyyain77"));
 
 //        System.out.println(RandomUtil.randomNumberByLength(6));
 

@@ -16,7 +16,7 @@ public final class Sha1Util {
         if (str == null) {
             str = "";
         }
-        return DigestUtils.sha1Hex(str);
+        return DigestUtils.shaHex(str);
     }
 
 }  
