@@ -172,6 +172,14 @@ public class ExcelImport {
             } else {
                 method.invoke(obj, Integer.parseInt(value.toString()));
             }
+        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_long.getValue())) {
+            method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Long.class);
+            if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
+                double d = Double.parseDouble(value.toString());
+                method.invoke(obj, (long) d);
+            } else {
+                method.invoke(obj, Long.parseLong(value.toString()));
+            }
         } else if (field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Double.class);
             method.invoke(obj, Double.parseDouble(value.toString()));
@@ -202,6 +210,13 @@ public class ExcelImport {
                 field.set(obj, (int) d);
             } else {
                 field.set(obj, Integer.parseInt(value.toString()));
+            }
+        } else if (field.getType().getName().equals(CommonlyUsedType.Type_long.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue())) {
+            if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
+                double d = Double.parseDouble(value.toString());
+                field.set(obj, (long) d);
+            } else {
+                field.set(obj, Long.parseLong(value.toString()));
             }
         } else if (field.getType().getName().equals(CommonlyUsedType.Type_double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())) {
             field.set(obj, Double.parseDouble(value.toString()));
