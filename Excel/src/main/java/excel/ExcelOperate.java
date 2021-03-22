@@ -11,7 +11,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,7 +18,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 /**
- * Excel操作类
+ * Excel简单操作类
  *
  * @author fyy
  */
@@ -52,9 +51,9 @@ public class ExcelOperate {
             String prefix = this.path.substring(this.path.lastIndexOf(".") + 1);
             this.isGetMethodFieldValue = isGetMethodFieldValue;
             if (ExcelDisposeConstant.XLSX.equals(prefix)) {
-                this.workbook = new XSSFWorkbook(new FileInputStream(new File(this.path)));
+                this.workbook = new XSSFWorkbook(new FileInputStream(this.path));
             } else if (ExcelDisposeConstant.XLS.equals(prefix)) {
-                this.workbook = new HSSFWorkbook(new FileInputStream(new File(this.path)));
+                this.workbook = new HSSFWorkbook(new FileInputStream(this.path));
             } else {
                 throw new ExcelOperateException("诊断：传入文档格式不正确！", new IOException());
             }
