@@ -258,7 +258,7 @@ public class Test {
 //            }
             omap.put("DT", new Date());
             if (i % 2 != 0) {
-                omap.put("dT", randomNumberByWithin(i) + "." + randomNumberByWithin(i));
+                omap.put("dT", randomNumberByWithin(i) + "." + randomNumberByWithin(i)+ randomNumberByWithin(i)+ randomNumberByWithin(i)+ randomNumberByWithin(i)+ randomNumberByWithin(i));
             }
 //            if (i % 2 == 0) {
 //                omap.put("bDT", RandomUtil.randomNumberByWithin(i) + "." + RandomUtil.randomNumberByWithin(i));

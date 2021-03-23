@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -139,6 +140,7 @@ public class ExcelDisposeUtil {
                     sb.append("000");
                 }
                 DecimalFormat df = new DecimalFormat(sb.toString());
+                df.setRoundingMode(RoundingMode.HALF_UP);
                 BigDecimal bigDecimal = new BigDecimal(String.valueOf(objectValue));
                 value = df.format(bigDecimal);
             } else {
