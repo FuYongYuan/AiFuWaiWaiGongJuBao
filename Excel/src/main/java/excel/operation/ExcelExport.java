@@ -807,7 +807,7 @@ public class ExcelExport {
         //当前数据行
         int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extraRow;
         //当前的字段值
-        String cellValue = ExcelDisposeUtil.correspondingValue(field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(), excelField.dateType(), excelField.decimalAfterDigit());
+        String cellValue = ExcelDisposeUtil.correspondingValue(field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(), excelField.dateType(), excelField.decimalAfterDigit(), excelField.roundingMode());
         //获取转换值集中对应值
         cellValue = ExcelDisposeUtil.getValueLimit(sheetSet, cellValue, excelField);
         //跨行处理
@@ -881,7 +881,9 @@ public class ExcelExport {
             referenceFieldCache.rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
                     referenceFieldCache.referenceField, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
                     referenceFieldCache.referenceExcelField.dateType(),
-                    referenceFieldCache.referenceExcelField.decimalAfterDigit());
+                    referenceFieldCache.referenceExcelField.decimalAfterDigit(),
+                    referenceFieldCache.referenceExcelField.roundingMode()
+            );
         }
     }
 
@@ -914,7 +916,8 @@ public class ExcelExport {
                     sheetSet.getSheetData().get(current),
                     sheetSet.getIsGetMethodFieldValue(),
                     excelField.dateType(),
-                    excelField.decimalAfterDigit()
+                    excelField.decimalAfterDigit(),
+                    excelField.roundingMode()
             );
         } else if (referenceFieldCache.referenceField != null && referenceFieldCache.referenceExcelField != null) {
             referenceFieldCache.cellValue = ExcelDisposeUtil.correspondingValue(
@@ -922,7 +925,8 @@ public class ExcelExport {
                     sheetSet.getSheetData().get(current),
                     sheetSet.getIsGetMethodFieldValue(),
                     referenceFieldCache.referenceExcelField.dateType(),
-                    referenceFieldCache.referenceExcelField.decimalAfterDigit()
+                    referenceFieldCache.referenceExcelField.decimalAfterDigit(),
+                    referenceFieldCache.referenceExcelField.roundingMode()
             );
         }
     }

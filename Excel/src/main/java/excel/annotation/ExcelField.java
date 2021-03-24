@@ -10,6 +10,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.math.RoundingMode;
 
 /**
  * ExcelField 到处导入Excel时使用的注解
@@ -33,6 +34,11 @@ public @interface ExcelField {
      * 保留位数
      */
     int decimalAfterDigit() default 3;
+
+    /**
+     * 四舍五入规则设置
+     */
+    RoundingMode roundingMode() default RoundingMode.HALF_UP;
 
     /**
      * 日期格式

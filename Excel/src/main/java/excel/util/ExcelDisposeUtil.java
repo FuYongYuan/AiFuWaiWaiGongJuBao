@@ -107,13 +107,15 @@ public class ExcelDisposeUtil {
     /**
      * 匹配对象中属性的值
      *
-     * @param field             字段
-     * @param obj               对象
-     * @param dateType          日期格式
-     * @param decimalAfterDigit 保留小数
+     * @param field                 字段
+     * @param obj                   对象
+     * @param isGetMethodFieldValue 是否根据GetSet方法取值
+     * @param dateType              日期格式
+     * @param decimalAfterDigit     保留小数
+     * @param roundingMode          保留小数点方式
      * @return 处理后的值
      */
-    public static String correspondingValue(Field field, Object obj, boolean isGetMethodFieldValue, DateType dateType, int decimalAfterDigit) {
+    public static String correspondingValue(Field field, Object obj, boolean isGetMethodFieldValue, DateType dateType, int decimalAfterDigit, RoundingMode roundingMode) {
         try {
             //定义一个取对象中get方法的对象
             Object objectValue;
@@ -140,7 +142,7 @@ public class ExcelDisposeUtil {
                     sb.append("000");
                 }
                 DecimalFormat df = new DecimalFormat(sb.toString());
-                df.setRoundingMode(RoundingMode.HALF_UP);
+                df.setRoundingMode(roundingMode);
                 BigDecimal bigDecimal = new BigDecimal(String.valueOf(objectValue));
                 value = df.format(bigDecimal);
             } else {
