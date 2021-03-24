@@ -3,6 +3,7 @@ package excel.operation;
 import dispose.DateDispose;
 import dispose.TextDispose;
 import enumerate.CommonlyUsedType;
+import enumerate.DateType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.cache.ReferenceFieldCache;
@@ -20,6 +21,8 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -242,7 +245,7 @@ public class ExcelExport {
                 }
                 if (isSetValue) {
                     //赋值
-                    this.setCellValue(field, cell, cellValue);
+                    this.setCellValue(field, excelField, cell, cellValue);
                 }
             }
 
@@ -368,6 +371,7 @@ public class ExcelExport {
      */
     private void setCellValue(
             Field field,
+            ExcelField excelField,
             Cell cell,
             String cellValue
     ) {
@@ -377,13 +381,17 @@ public class ExcelExport {
                 //结果转换
                 if (field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())) {
                     cell.setCellValue(Double.parseDouble(cellValue));
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue())) {
+                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_BigInteger.getValue())) {
                     cell.setCellValue(Integer.parseInt(cellValue));
+                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_long.getValue())) {
+                    cell.setCellValue(Long.parseLong(cellValue));
                 } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())) {
                     cell.setCellValue(new BigDecimal(cellValue).doubleValue());
                 } else {
                     cell.setCellValue(cellValue);
                 }
+            } else if (field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Timestamp.getValue())) {
+                cell.setCellValue(DateDispose.formattingDate(cellValue, excelField.dateType()));
             } else {
                 cell.setCellValue(cellValue);
             }
@@ -419,31 +427,48 @@ public class ExcelExport {
             ExcelField excelField,
             CellStyle cellStyle
     ) {
-        boolean exist = (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())
+        // 是否存在
+        boolean exist;
+
+        // 数字
+        exist = field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())
                 || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue()))
-                && excelField.decimalAfterDigit() > 0;
+                || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())
+                || field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue())
+                || field.getType().getName().equals(CommonlyUsedType.Type_long.getValue())
+                || field.getType().getName().equals(CommonlyUsedType.Type_BigInteger.getValue())
+                || field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue())
+                || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue());
+        if (exist) {
+            if (excelField.isMoney()) {
+                DataFormat format = this.workbook.createDataFormat();
+                StringBuilder moneyFormat = new StringBuilder("#,##0");
 
-        if (excelField.isMoney()) {
-            DataFormat format = this.workbook.createDataFormat();
-            StringBuilder moneyFormat = new StringBuilder("#,##0");
-
-            if (exist) {
-                moneyFormat.append(".");
+                if (excelField.decimalAfterDigit() > 0) {
+                    moneyFormat.append(".");
+                    int decimalAfterDigit = excelField.decimalAfterDigit();
+                    for (int i = 0; i < decimalAfterDigit; i++) {
+                        moneyFormat.append("0");
+                    }
+                }
+                cellStyle.setDataFormat(format.getFormat(moneyFormat.toString()));
+            } else if (excelField.decimalAfterDigit() > 0) {
+                DataFormat format = this.workbook.createDataFormat();
+                StringBuilder sb = new StringBuilder("#0.");
                 int decimalAfterDigit = excelField.decimalAfterDigit();
                 for (int i = 0; i < decimalAfterDigit; i++) {
-                    moneyFormat.append("0");
+                    sb.append("0");
                 }
+                cellStyle.setDataFormat(format.getFormat(sb.toString()));
             }
-            cellStyle.setDataFormat(format.getFormat(moneyFormat.toString()));
-        } else if (exist) {
+        }
+        // 时间
+        exist = field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue())
+                || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue())
+                || field.getType().getName().equals(CommonlyUsedType.Type_Timestamp.getValue());
+        if (exist) {
             DataFormat format = this.workbook.createDataFormat();
-            StringBuilder sb = new StringBuilder("#0.");
-            int decimalAfterDigit = excelField.decimalAfterDigit();
-            for (int i = 0; i < decimalAfterDigit; i++) {
-                sb.append("0");
-            }
-            cellStyle.setDataFormat(format.getFormat(sb.toString()));
+            cellStyle.setDataFormat(format.getFormat(excelField.dateType().getValue()));
         }
     }
 
@@ -538,12 +563,14 @@ public class ExcelExport {
                 //结果转换
                 if (ecd.getCellType() == Double.class || ecd.getCellType() == double.class) {
                     cell.setCellValue(Double.parseDouble(ecd.getCellValue().toString()));
-                } else if (ecd.getCellType() == Integer.class || ecd.getCellType() == int.class) {
+                } else if (ecd.getCellType() == Integer.class || ecd.getCellType() == int.class || ecd.getCellType() == BigInteger.class) {
                     cell.setCellValue(Integer.parseInt(ecd.getCellValue().toString()));
+                } else if (ecd.getCellType() == Long.class || ecd.getCellType() == long.class) {
+                    cell.setCellValue(Long.parseLong(ecd.getCellValue().toString()));
                 } else if (ecd.getCellType() == BigDecimal.class) {
                     cell.setCellValue(new BigDecimal(ecd.getCellValue().toString()).doubleValue());
-                } else if (ecd.getCellType() == Date.class) {
-                    cell.setCellValue(DateDispose.formattingDate((Date) ecd.getCellValue(), ecd.getDateType()));
+                } else if (ecd.getCellType() == Date.class || ecd.getCellType() == java.sql.Date.class || ecd.getCellType() == Timestamp.class) {
+                    cell.setCellValue((Date) ecd.getCellValue());
                 } else {
                     cell.setCellValue(ecd.getCellValue().toString());
                 }
@@ -582,30 +609,50 @@ public class ExcelExport {
             ExtraCellData ecd,
             CellStyle cellStyle
     ) {
-        boolean exist = (ecd.getCellType() == BigDecimal.class
+        // 是否存在
+        boolean exist;
+        // 数字
+        exist = ecd.getCellType() == BigDecimal.class
                 || ecd.getCellType() == Double.class
-                || ecd.getCellType() == double.class)
-                && ecd.getDecimalAfterDigit() > 0;
-        if (ecd.getIsMoney()) {
-            DataFormat format = this.workbook.createDataFormat();
-            StringBuilder moneyFormat = new StringBuilder("#,##0");
-            if (exist) {
-                moneyFormat.append(".");
+                || ecd.getCellType() == double.class
+                || ecd.getCellType() == Long.class
+                || ecd.getCellType() == long.class
+                || ecd.getCellType() == BigInteger.class
+                || ecd.getCellType() == Integer.class
+                || ecd.getCellType() == int.class;
+        if (exist) {
+            if (ecd.getIsMoney()) {
+                DataFormat format = this.workbook.createDataFormat();
+                StringBuilder moneyFormat = new StringBuilder("#,##0");
+                if (ecd.getDecimalAfterDigit() > 0) {
+                    moneyFormat.append(".");
+                    int decimalAfterDigit = ecd.getDecimalAfterDigit();
+                    for (int i = 0; i < decimalAfterDigit; i++) {
+                        moneyFormat.append("0");
+                    }
+                }
+                cellStyle.setDataFormat(format.getFormat(moneyFormat.toString()));
+            } else if (ecd.getDecimalAfterDigit() > 0) {
+                DataFormat format = this.workbook.createDataFormat();
+                StringBuilder sb = new StringBuilder("#0.");
                 int decimalAfterDigit = ecd.getDecimalAfterDigit();
                 for (int i = 0; i < decimalAfterDigit; i++) {
-                    moneyFormat.append("0");
+                    sb.append("0");
                 }
+                cellStyle.setDataFormat(format.getFormat(sb.toString()));
             }
-            cellStyle.setDataFormat(format.getFormat(moneyFormat.toString()));
-        } else if (exist) {
-            DataFormat format = this.workbook.createDataFormat();
-            StringBuilder sb = new StringBuilder("#0.");
-            int decimalAfterDigit = ecd.getDecimalAfterDigit();
-            for (int i = 0; i < decimalAfterDigit; i++) {
-                sb.append("0");
-            }
-            cellStyle.setDataFormat(format.getFormat(sb.toString()));
         }
+
+        // 时间
+        exist = ecd.getCellType() == Date.class
+                || ecd.getCellType() == java.sql.Date.class
+                || ecd.getCellType() == Timestamp.class;
+        if (exist) {
+            DataFormat format = this.workbook.createDataFormat();
+            cellStyle.setDataFormat(format.getFormat(ecd.getDateType().getValue()));
+        }
+
+        // 其他
         if (ecd.getFillPattern() != FillPatternType.NO_FILL) {
             cellStyle.setFillPattern(ecd.getFillPattern());
             if (ecd.getFillForegroundColor() != ((short) -1)) {
