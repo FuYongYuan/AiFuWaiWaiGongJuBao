@@ -106,63 +106,63 @@ public class Test {
 //            ;
 
 
-            //小计 - 无限set写法
-            sheetSet.getFunction().getSubTotal()
-                    .setReferenceFieldName("整型")
-                    .setSpanFieldNames("整型")
-                    .setCalculationFieldNames("小数点", "钱")
-                    .setCalculationFieldNameAndOrder("钱", 6)
-                    .setExplainAndOrder("小计：", 2)
-                    .setStyleColor(IndexedColors.CORAL)
-                    .setStyleBold(true).setStyleMoneyFormat(2)
-                    .setAlignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER)
-            ;
-            //总计 - 方法写法
-            Map<String, Integer> calculationFieldNameAndOrder = new HashMap<String, Integer>();
-            calculationFieldNameAndOrder.put("小数点", 4);
-            calculationFieldNameAndOrder.put("钱", 2);
-            sheetSet.getFunction().getTotal().setCalculationModel(
-                    "字符串",
-                    new String[]{"整型"},
-                    calculationFieldNameAndOrder,
-                    "总计：",
-                    3
-            );
-            sheetSet.getFunction().getTotal().setStyleColor(IndexedColors.SKY_BLUE);
-            sheetSet.getFunction().getTotal().setStyleBold(true);
-            sheetSet.getFunction().getTotal().setStyleMoneyFormat(2);
-            sheetSet.getFunction().getTotal().setHorizontalAlignment(HorizontalAlignment.CENTER);
-            sheetSet.getFunction().getTotal().setVerticalAlignment(VerticalAlignment.CENTER);
-            sheetSet.getFunction().getTotal().setRowExtraData(
-                    Function.Builder.RowExtraData.create()
-                            .setOrder(5)
-                            .setValue("[this.2]-([this.4]+[this.2])*[this.4]")
-                            .setIsFormula(true)
-                            .build()
-            );
+//            //小计 - 无限set写法
+//            sheetSet.getFunction().getSubTotal()
+//                    .setReferenceFieldName("整型")
+//                    .setSpanFieldNames("整型")
+//                    .setCalculationFieldNames("小数点", "钱")
+//                    .setCalculationFieldNameAndOrder("钱", 6)
+//                    .setExplainAndOrder("小计：", 2)
+//                    .setStyleColor(IndexedColors.CORAL)
+//                    .setStyleBold(true).setStyleMoneyFormat(2)
+//                    .setAlignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER)
+//            ;
+//            //总计 - 方法写法
+//            Map<String, Integer> calculationFieldNameAndOrder = new HashMap<String, Integer>();
+//            calculationFieldNameAndOrder.put("小数点", 4);
+//            calculationFieldNameAndOrder.put("钱", 2);
+//            sheetSet.getFunction().getTotal().setCalculationModel(
+//                    "字符串",
+//                    new String[]{"整型"},
+//                    calculationFieldNameAndOrder,
+//                    "总计：",
+//                    3
+//            );
+//            sheetSet.getFunction().getTotal().setStyleColor(IndexedColors.SKY_BLUE);
+//            sheetSet.getFunction().getTotal().setStyleBold(true);
+//            sheetSet.getFunction().getTotal().setStyleMoneyFormat(2);
+//            sheetSet.getFunction().getTotal().setHorizontalAlignment(HorizontalAlignment.CENTER);
+//            sheetSet.getFunction().getTotal().setVerticalAlignment(VerticalAlignment.CENTER);
+//            sheetSet.getFunction().getTotal().setRowExtraData(
+//                    Function.Builder.RowExtraData.create()
+//                            .setOrder(5)
+//                            .setValue("[this.2]-([this.4]+[this.2])*[this.4]")
+//                            .setIsFormula(true)
+//                            .build()
+//            );
 
-            //全部总计 - 无限set写法
-            sheetSet.getFunction().getTotalAll()
-                    .setCalculationFieldNameAndOrder("小数点", 2)
-                    .setCalculationFieldNameAndOrder("钱", 4)
-                    .setRowExtraData(
-                            Function.Builder.RowExtraData.create()
-                                    .setOrder(3)
-                                    .setValue("总计所有：")
-                                    .build(),
-                            Function.Builder.RowExtraData.create()
-                                    .setOrder(5)
-                                    .setValue("[this.2]-([this.4]+[this.2])*[this.4]")
-//                                    .setValue("D22-B22")
-                                    .setIsFormula(true)
-                                    .build()
-                    )
-                    .setStyleColor(IndexedColors.LIME)
-                    .setStyleBold(true)
-                    .setStyleNumberFormat(2)
-                    .setHorizontalAlignment(HorizontalAlignment.CENTER)
-                    .setVerticalAlignment(VerticalAlignment.CENTER)
-            ;
+//            //全部总计 - 无限set写法
+//            sheetSet.getFunction().getTotalAll()
+//                    .setCalculationFieldNameAndOrder("小数点", 2)
+//                    .setCalculationFieldNameAndOrder("钱", 4)
+//                    .setRowExtraData(
+//                            Function.Builder.RowExtraData.create()
+//                                    .setOrder(3)
+//                                    .setValue("总计所有：")
+//                                    .build(),
+//                            Function.Builder.RowExtraData.create()
+//                                    .setOrder(5)
+//                                    .setValue("[this.2]-([this.4]+[this.2])*[this.4]")
+////                                    .setValue("D22-B22")
+//                                    .setIsFormula(true)
+//                                    .build()
+//                    )
+//                    .setStyleColor(IndexedColors.LIME)
+//                    .setStyleBold(true)
+//                    .setStyleNumberFormat(2)
+//                    .setHorizontalAlignment(HorizontalAlignment.CENTER)
+//                    .setVerticalAlignment(VerticalAlignment.CENTER)
+//            ;
 
             sheetSets.add(sheetSet);
 
@@ -238,7 +238,7 @@ public class Test {
         /**
          * 在全配置下.跨行多的情况下 XSSF最多 1250 条  HSSF最多 150 条   SXSSF最多 * 条
          */
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 50000; i++) {
             int ix = i / 10;
 
 //            ExcelEntity excelEntity = new ExcelEntity();
