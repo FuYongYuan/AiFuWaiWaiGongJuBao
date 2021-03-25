@@ -81,7 +81,10 @@ public class ExcelOperate {
                     row.createCell(i).setCellValue(ExcelDisposeUtil.correspondingValue(
                             fieldList.get(i), obj, this.isGetMethodFieldValue,
                             fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
-                            fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit()));
+                            fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit(),
+                            fieldList.get(i).getAnnotation(ExcelField.class).roundingMode()
+                            )
+                    );
                 }
             } else {
                 new ExcelOperateException("诊断：对象中没有匹配的文档内容！", new NullPointerException()).printStackTrace();
@@ -115,7 +118,9 @@ public class ExcelOperate {
                         String value = ExcelDisposeUtil.correspondingValue(
                                 fieldList.get(i), obj, this.isGetMethodFieldValue,
                                 fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
-                                fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit());
+                                fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit(),
+                                fieldList.get(i).getAnnotation(ExcelField.class).roundingMode()
+                        );
                         if (TextDispose.isNotEmpty(value)) {
                             if (row.getCell(i) != null) {
                                 row.getCell(i).setCellValue(value);

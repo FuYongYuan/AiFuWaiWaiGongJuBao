@@ -15,7 +15,7 @@ public class Test2 {
 
         TestEntity t = new TestEntity();
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1; i++) {
             t.date1 = DateDispose.monthCalculateDate(new Date(), -3);
             t.date2 = DateDispose.hoursCalculateDate(DateDispose.monthCalculateDate(new Date(), -3), -3);
             list.add(t);

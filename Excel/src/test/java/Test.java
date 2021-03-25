@@ -1,5 +1,6 @@
 import dispose.CopyClass;
 import enumerate.DateType;
+import excel.annotation.ExcelField;
 import excel.operation.ExcelExport;
 import excel.operation.set.*;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -82,7 +83,8 @@ public class Test {
                                     ExtraCellData.create().setCellNumber(3).setCellValue("测试2").setCellType(String.class).setVerticalAlignment(VerticalAlignment.TOP).build(),
                                     ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
                                     ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).setDateType(DateType.Hour_Minute_Second).build(),
-                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).build()
+                                    ExtraCellData.create().setCellNumber(4).setCellValue(1.22222222333).setCellType(Double.class).build(),
+                                    ExtraCellData.create().setCellNumber(5).setCellValue(1.125).setCellType(Double.class).setDecimalAfterDigit(2).build()
                             ).setIsNewRow(true).build()
                             , ExtraRowData.create().setIsMaxRowNumber(true).setExtraCellData(
                                     ExtraCellData.create().setCellNumber(3).setCellValue("测试").setCellType(String.class).build(),
