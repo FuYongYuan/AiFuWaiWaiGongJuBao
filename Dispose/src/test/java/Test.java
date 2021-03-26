@@ -1,8 +1,6 @@
-import dispose.DateDispose;
-import dispose.TextDispose;
-import enumerate.DateType;
-import enumerate.Format;
+import dispose.MoneyToChinese;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class Test {
@@ -85,7 +83,7 @@ public class Test {
 //        System.out.println(TextDispose.isInteger("1111111.11111111"));
 //        System.out.println(TextDispose.isDouble("1"));
 
-          System.out.println(3d/24d/60d);
+        System.out.println("-2369993847032471.125 ==》 " + MoneyToChinese.to(new BigDecimal("1.001")));
 
 
 //        String sds = "2020-09-01";
