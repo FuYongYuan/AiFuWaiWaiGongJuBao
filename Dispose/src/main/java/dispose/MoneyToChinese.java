@@ -13,24 +13,29 @@ public class MoneyToChinese {
      */
     private static final String[] CHINESE_UPPER_NUMBER = {"零", "壹", "贰", "叁", "肆",
             "伍", "陆", "柒", "捌", "玖"};
+
     /**
      * 汉语中货币单位大写，这样的设计类似于占位符
      */
     private static final String[] CHINESE_UPPER_MONEY_UNIT = {"厘", "分", "角", "元",
             "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿", "拾", "佰", "仟", "兆", "拾",
             "佰", "仟"};
+
     /**
      * 特殊字符：整
      */
     private static final String CHINESE_FULL = "整";
+
     /**
      * 特殊字符：负
      */
     private static final String CHINESE_NEGATIVE = "负";
+
     /**
      * 金额的精度，默认值为2
      */
     private static final int MONEY_PRECISION = 3;
+
     /**
      * 特殊字符：零元整
      */
@@ -39,19 +44,59 @@ public class MoneyToChinese {
     /**
      * 把输入的金额转换为汉语中人民币的大写
      *
-     * @param numberOfMoney 输入的金额
+     * @param money 输入的金额
      * @return 对应的汉语大写
      */
-    public static String to(BigDecimal numberOfMoney) {
+    public static String to(long money) {
+        return to(new BigDecimal(money));
+    }
+
+    /**
+     * 把输入的金额转换为汉语中人民币的大写
+     *
+     * @param money 输入的金额
+     * @return 对应的汉语大写
+     */
+    public static String to(int money) {
+        return to(new BigDecimal(money));
+    }
+
+    /**
+     * 把输入的金额转换为汉语中人民币的大写
+     *
+     * @param money 输入的金额
+     * @return 对应的汉语大写
+     */
+    public static String to(double money) {
+        return to(new BigDecimal(money));
+    }
+
+    /**
+     * 把输入的金额转换为汉语中人民币的大写
+     *
+     * @param money 输入的金额
+     * @return 对应的汉语大写
+     */
+    public static String to(String money) {
+        return to(new BigDecimal(money));
+    }
+
+    /**
+     * 把输入的金额转换为汉语中人民币的大写
+     *
+     * @param money 输入的金额
+     * @return 对应的汉语大写
+     */
+    public static String to(BigDecimal money) {
         StringBuilder sb = new StringBuilder();
         // -1、0、1，因为此BigDecimal的值是负数、零、正数
-        int signum = numberOfMoney.signum();
+        int signum = money.signum();
         // 零元整的情况
         if (signum == 0) {
             return CHINESE_ZERO_FULL;
         }
         //这里会进行金额的四舍五入
-        long number = numberOfMoney.movePointRight(MONEY_PRECISION)
+        long number = money.movePointRight(MONEY_PRECISION)
                 .setScale(0, 4).abs().longValue();
         // 得到小数点后两位值
         long scale = number % 1000;
