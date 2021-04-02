@@ -2,7 +2,9 @@ import excel.operation.ExcelImport;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
 
 public class Test3 {
     public static void main(String[] args) {
@@ -23,7 +25,7 @@ public class Test3 {
 //            e.printStackTrace();
 //        }
         try {
-            String rulesPath = "D:\\fuyy\\Desktop\\3.xlsx";
+            String rulesPath = "D:\\fuyy\\Desktop\\5.xlsx";
             XSSFWorkbook work = new XSSFWorkbook(new FileInputStream(rulesPath));
             List<TreeMap<String, Object>> rulesList = ExcelImport.getExcel(work.getSheet("1"));
 
@@ -40,16 +42,19 @@ public class Test3 {
             // 补全信息
             List<String[]> list = new ArrayList<>();
             int snum = 0;
-            for (TreeMap<String, Object> stringObjectTreeMap : rulesList) {
-                if (snum < stringObjectTreeMap.size()) {
-                    snum = stringObjectTreeMap.size();
+            for (TreeMap<String, Object> map : rulesList) {
+                for (String key : map.keySet()) {
+                    int e = excelColStrToNum(key);
+                    if (snum < e) {
+                        snum = e;
+                    }
                 }
             }
 
-            for (TreeMap<String, Object> stringObjectTreeMap : rulesList) {
+            for (TreeMap<String, Object> map : rulesList) {
                 String[] ss = new String[snum];
-                stringObjectTreeMap.forEach((k, v) -> {
-                    ss[excelColStrToNum(k)-1] = v.toString();
+                map.forEach((k, v) -> {
+                    ss[excelColStrToNum(k) - 1] = v.toString();
                 });
                 list.add(ss);
             }
@@ -59,7 +64,7 @@ public class Test3 {
                     System.out.print(s);
                     System.out.print(" | ");
                 }
-               System.out.println();
+                System.out.println();
             });
 
         } catch (Exception e) {

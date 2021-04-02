@@ -20,7 +20,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeMap;
 
 
 /**
@@ -47,12 +50,12 @@ public class ExcelImport {
             List<LoadSpanCache> loadSpanCacheList = new ArrayList<>();
             // 循环之后的行数据
             for (int j = 0; j <= rows; j++) {
-                // 当前页一共多少列
-                int columns = sheet.getRow(j).getLastCellNum();
-                TreeMap<String,Object> map = new TreeMap<>();
+                TreeMap<String, Object> map = new TreeMap<>();
                 // 得到第j行
                 row = sheet.getRow(j);
                 if (row != null) {
+                    // 当前页一共多少列
+                    int columns = row.getLastCellNum();
                     // 循环列
                     for (int i = 0; i < columns; i++) {
                         try {
@@ -65,7 +68,7 @@ public class ExcelImport {
                                 // 获取cell的类型
                                 CellType type = cell.getCellType();
                                 if (type != CellType.BLANK) {
-                                    setObj(sheet,cell, type, map,loadSpanCacheList);
+                                    setObj(sheet, cell, type, map, loadSpanCacheList);
                                 }
                             }
                         }
