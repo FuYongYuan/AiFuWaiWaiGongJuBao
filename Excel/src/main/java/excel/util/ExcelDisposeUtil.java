@@ -8,6 +8,7 @@ import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.set.SheetSet;
 import excel.operation.set.ValueLimit;
+import org.apache.poi.ss.util.CellReference;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -246,5 +247,31 @@ public class ExcelDisposeUtil {
             }
         }
         return cellValue;
+    }
+
+    /**
+     * 根据编号返回第几列
+     *
+     * @param colString 列编码
+     */
+    public static int convertColStringToNum(String colString) {
+        int num;
+        int result = 0;
+        for (int i = 0; i < colString.length(); i++) {
+            char ch = colString.charAt(colString.length() - i - 1);
+            num = ch - 'A' + 1;
+            num *= Math.pow(26, i);
+            result += num;
+        }
+        return result;
+    }
+
+    /**
+     * 根据第几列返回列编码
+     *
+     * @param num 第几列
+     */
+    public static String convertNumToColString(int num) {
+        return CellReference.convertNumToColString(num);
     }
 }
