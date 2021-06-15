@@ -1,7 +1,6 @@
 package encrypt;
 
 import org.apache.commons.codec.binary.Base64;
-import sun.misc.BASE64Decoder;
 
 import javax.crypto.Cipher;
 import java.security.KeyFactory;
@@ -62,7 +61,7 @@ public class RsaUtil {
      */
     public static RSAPublicKey getRsaPublicKey(String publicKey) {
         try {
-            byte[] keyBytes = (new BASE64Decoder()).decodeBuffer(publicKey);
+            byte[] keyBytes = Base64.decodeBase64(publicKey.getBytes());
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return (RSAPublicKey) keyFactory.generatePublic(keySpec);
@@ -79,7 +78,7 @@ public class RsaUtil {
      */
     public static RSAPrivateKey getRsaPrivateKey(String privateKey) {
         try {
-            byte[] keyBytes = (new BASE64Decoder()).decodeBuffer(privateKey);
+            byte[] keyBytes = Base64.decodeBase64(privateKey.getBytes());
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
