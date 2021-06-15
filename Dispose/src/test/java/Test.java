@@ -83,8 +83,13 @@ public class Test {
 //        System.out.println(TextDispose.isInteger("1111111.11111111"));
 //        System.out.println(TextDispose.isDouble("1"));
 
-        System.out.println("-2369993847032471.125 ==》 " + MoneyToChinese.to(new BigDecimal("1.001")));
+//        System.out.println("-2369993847032471.125 ==》 " + MoneyToChinese.to(new BigDecimal("1.001")));
 
+            Map<Object, Object> map = new HashMap<>(8);
+
+        double i = 1;
+
+        System.out.println(i);
 
 //        String sds = "2020-09-01";
 //        String eds = "2020-09-09";

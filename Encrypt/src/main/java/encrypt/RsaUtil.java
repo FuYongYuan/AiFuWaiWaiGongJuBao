@@ -1,11 +1,12 @@
 package encrypt;
 
 import org.apache.commons.codec.binary.Base64;
+import sun.misc.BASE64Decoder;
 
 import javax.crypto.Cipher;
 import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -25,11 +26,7 @@ public class RsaUtil {
     public static String encrypt(String publicKey, String context) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
-            byte[] keyBytes = Base64.decodeBase64(publicKey.getBytes());
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            PublicKey key = keyFactory.generatePublic(keySpec);
-            cipher.init(Cipher.ENCRYPT_MODE, key);
+            cipher.init(Cipher.ENCRYPT_MODE, getRsaPublicKey(publicKey));
             byte[] bytes = cipher.doFinal(context.getBytes());
             return new String(Base64.encodeBase64(bytes));
         } catch (Exception e) {
@@ -47,13 +44,9 @@ public class RsaUtil {
      */
     public static String decrypt(String privateKey, String context) {
         try {
-            byte[] content = context.getBytes();
             Cipher cipher = Cipher.getInstance("RSA");
-            byte[] keyBytes = Base64.decodeBase64(privateKey.getBytes());
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            PrivateKey key = keyFactory.generatePrivate(keySpec);
-            cipher.init(Cipher.DECRYPT_MODE, key);
+            cipher.init(Cipher.DECRYPT_MODE, getRsaPrivateKey(privateKey));
+            byte[] content = context.getBytes();
             byte[] responseByte = cipher.doFinal(Base64.decodeBase64(content));
             return new String(responseByte);
         } catch (Exception e) {
@@ -61,4 +54,40 @@ public class RsaUtil {
         }
         return null;
     }
+
+    /**
+     * 使用getRSAPublicKey得到公钥,返回类型为PublicKey
+     *
+     * @param publicKey base64
+     */
+    public static RSAPublicKey getRsaPublicKey(String publicKey) {
+        try {
+            byte[] keyBytes = (new BASE64Decoder()).decodeBuffer(publicKey);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return (RSAPublicKey) keyFactory.generatePublic(keySpec);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 使用getRsaPrivateKey得到公钥,返回类型为PrivateKey
+     *
+     * @param privateKey base64
+     */
+    public static RSAPrivateKey getRsaPrivateKey(String privateKey) {
+        try {
+            byte[] keyBytes = (new BASE64Decoder()).decodeBuffer(privateKey);
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }
