@@ -24,17 +24,23 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>[${poi.version},)</version>
+            <version>${poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>[${poi.version},)</version>
+            <version>${poi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>cn.fyy</groupId>
             <artifactId>dispose</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.fyy</groupId>
+            <artifactId>encrypt</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>

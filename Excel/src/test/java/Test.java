@@ -101,11 +101,11 @@ public class Test {
                     .setTitleAlignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER)
             ;
 
-//            //设置整体边框
-//            sheetSet.getStyle()
-//                    .setContextBorder(BorderStyle.THIN)
-//                    .setContextBorderColor(IndexedColors.BLACK)
-//            ;
+            //设置整体边框
+            sheetSet.getStyle()
+                    .setContextBorder(BorderStyle.THIN)
+                    .setContextBorderColor(IndexedColors.BLACK)
+            ;
 
 
             //小计 - 无限set写法
