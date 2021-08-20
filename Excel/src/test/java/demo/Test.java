@@ -16,7 +16,7 @@ public class Test {
     public static void main(String[] args) throws Exception {
         List<Jsb> list = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 5; i++) {
 
 
             Jsb jsb = new Jsb();
@@ -127,9 +127,9 @@ public class Test {
         sheetSet.getFunction()
                 .getSubTotal()
                 .setReferenceFieldName("姓名")
-                .setSpanFieldNames("小组")
+                .setSpanFieldNames("小组","姓名")
                 .setCalculationFieldNameAndOrder("余额", 3)
-                .setExplainAndOrder("小计：", 2)
+                .setExplainAndOrder("小计：", 8)
                 .setStyleColor(IndexedColors.CORAL)
                 .setRowExtraData(
                         Function.Builder.RowExtraData.create()
@@ -148,7 +148,7 @@ public class Test {
         sheetSet.getFunction()
                 .getTotal()
                 .setReferenceFieldName("小组")
-                .setSpanFieldNames("小组")
+                .setSpanFieldNames("小组","姓名")
                 .setCalculationFieldNameAndOrder("余额", 8)
                 .setExplainAndOrder("总计：", 7)
                 .setStyleColor(IndexedColors.SKY_BLUE)

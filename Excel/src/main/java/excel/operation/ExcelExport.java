@@ -19,11 +19,13 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -230,8 +232,6 @@ public class ExcelExport {
                         field,
                         excelField
                 );
-                //设置单元格格式
-                cell.setCellStyle(sheetSet.getSheetCache().cellStyleMap.get(field.getName()));
                 //判断是否需要赋值
                 boolean isSetValue = true;
                 if (!sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.isEmpty()) {
@@ -246,6 +246,8 @@ public class ExcelExport {
                     //赋值
                     this.setCellValue(field, excelField, cell, cellValue);
                 }
+                //设置单元格格式
+                cell.setCellStyle(sheetSet.getSheetCache().cellStyleMap.get(field.getName()));
             }
 
             //计算功能处理
@@ -260,7 +262,7 @@ public class ExcelExport {
     private void setRowCalculation(
             Sheet sheetModel,
             SheetSet sheetSet
-    ) throws IllegalAccessException {
+    ) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         //小计
         if (sheetSet.getSheetCache().subTotalReferenceField != null && sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(sheetSet.getSheetCache().subTotalReferenceField.getName()) != null) {
             if (this.calculation(
@@ -977,7 +979,7 @@ public class ExcelExport {
             Field referenceField,
             List<Field> spanFieldNames,
             List<Integer> totalColumnIndexs
-    ) throws IllegalAccessException {
+    ) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         if (referenceField != null) {
             TotalRowIndex totalRowIndex = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(referenceField.getName());
             //当前数据行
@@ -986,8 +988,20 @@ public class ExcelExport {
             int next = current + 1;
             //判断下一行不是数据最后一行
             if ((next) < sheetSet.getSheetData().size()) {
-                Object oldcv = referenceField.get(sheetSet.getSheetData().get(current));
-                Object cv = referenceField.get(sheetSet.getSheetData().get(next));
+                Object oldcv;
+                Object cv;
+                if (sheetSet.getIsGetMethodFieldValue()) {
+                    String fieldName = referenceField.getName();
+                    String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
+                    Method currentMethod = sheetSet.getSheetData().get(current).getClass().getMethod("get" + fieldNameFirstUpperCase);
+                    Method nextMethod = sheetSet.getSheetData().get(next).getClass().getMethod("get" + fieldNameFirstUpperCase);
+                    oldcv = currentMethod.invoke(sheetSet.getSheetData().get(current));
+                    cv = nextMethod.invoke(sheetSet.getSheetData().get(next));
+                } else {
+                    oldcv = referenceField.get(sheetSet.getSheetData().get(current));
+                    cv = referenceField.get(sheetSet.getSheetData().get(next));
+                }
+
                 if (oldcv != null && !oldcv.equals(cv)) {
                     if (this.calculationDispose(
                             sheetSet.getSheetCache().sheetModelCache.i,
@@ -1083,6 +1097,9 @@ public class ExcelExport {
                 if (totalColumnIndexs.contains(j + 1)) {
                     this.calculationSum(j, rowspanStart, rowspanEnd, sheetSet.getSheetCache().sheetModelCache.occupyRows, cell);
                 }
+                //设置偏移前样式
+                this.setCellStyle(sheetSet, cell, calculation);
+                //是否偏移
                 if (isDeviation) {
                     if (!calculation.getCalculationFieldNameAndOrder().containsValue(j + 1)) {
                         //创建列
@@ -1091,7 +1108,7 @@ public class ExcelExport {
                 }
                 //加入当前行额外的数据
                 this.addRowExtraData(cell, calculation, nextRow, j);
-                //设置样式
+                //设置偏移后样式
                 this.setCellStyle(sheetSet, cell, calculation);
             }
             return true;
@@ -1134,7 +1151,7 @@ public class ExcelExport {
         String sumString;
         if (sb.length() > 0) {
             sb.delete(sb.length() - 1, sb.length());
-            sumString = "SUM(" + sb.toString() + ")";
+            sumString = "SUM(" + sb + ")";
         } else {
             sumString = "SUM(" + colString + (rowspanStart + 1) + ":" + colString + (rowspanEnd + 1) + ")";
         }
@@ -1192,7 +1209,7 @@ public class ExcelExport {
             Sheet sheetModel,
             SheetSet sheetSet,
             List<Field> spanFieldNames
-    ) throws IllegalAccessException {
+    ) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         for (Field field : spanFieldNames) {
             if (field != null) {
                 //当前数据行
@@ -1201,8 +1218,19 @@ public class ExcelExport {
                 int next = current + 1;
                 //判断下一行不是数据最后一行
                 if ((next) < sheetSet.getSheetData().size()) {
-                    Object oldcv = field.get(sheetSet.getSheetData().get(current));
-                    Object cv = field.get(sheetSet.getSheetData().get(next));
+                    Object oldcv;
+                    Object cv;
+                    if (sheetSet.getIsGetMethodFieldValue()) {
+                        String fieldName = field.getName();
+                        String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
+                        Method currentMethod = sheetSet.getSheetData().get(current).getClass().getMethod("get" + fieldNameFirstUpperCase);
+                        Method nextMethod = sheetSet.getSheetData().get(next).getClass().getMethod("get" + fieldNameFirstUpperCase);
+                        oldcv = currentMethod.invoke(sheetSet.getSheetData().get(current));
+                        cv = nextMethod.invoke(sheetSet.getSheetData().get(next));
+                    } else {
+                        oldcv = field.get(sheetSet.getSheetData().get(current));
+                        cv = field.get(sheetSet.getSheetData().get(next));
+                    }
                     if (oldcv != null && !oldcv.equals(cv)) {
                         sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
                     }
@@ -1212,6 +1240,11 @@ public class ExcelExport {
                     CellRangeAddress cellAddresses = sheetModel.getMergedRegion(sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex);
                     if (cellRangeAddressList.contains(cellAddresses)) {
                         sheetModel.removeMergedRegion(cellRangeAddressList.indexOf(cellAddresses));
+                        for (Map.Entry<String, TotalRowIndex> totalRowIndexMapEntry : sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.entrySet()) {
+                            if (sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex < totalRowIndexMapEntry.getValue().regionIndex) {
+                                totalRowIndexMapEntry.getValue().regionIndex = totalRowIndexMapEntry.getValue().regionIndex - 1;
+                            }
+                        }
                     }
                     CellRangeAddress region = new CellRangeAddress(sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanStart, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo);
                     sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex = sheetModel.addMergedRegion(region);

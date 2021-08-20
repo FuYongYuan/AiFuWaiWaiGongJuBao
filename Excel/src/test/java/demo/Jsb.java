@@ -8,21 +8,21 @@ import java.util.Date;
 
 public class Jsb {
     @ExcelField(columnName = "小组", order = 1, rowspan = true)
-    public String xz;
+    private String xz;
     @ExcelField(columnName = "姓名", order = 2, rowspan = true)
-    public String xm;
+    private String xm;
     @ExcelField(columnName = "出生年月", order = 3, dateType = DateType.Year_Month_Day, columnWidth = 15)
-    public Date csny;
+    private Date csny;
     @ExcelField(columnName = "年龄", order = 4, decimalAfterDigit = 0)
-    public int nl;
+    private int nl;
     @ExcelField(columnName = "性别", order = 5, decimalAfterDigit = 0, valueLimit = "xblist")
-    public int xb;
+    private int xb;
     @ExcelField(columnName = "身高", order = 6, decimalAfterDigit = 1)
-    public double sg;
+    private double sg;
     @ExcelField(columnName = "体重", order = 7, decimalAfterDigit = 1)
-    public double tz;
+    private double tz;
     @ExcelField(columnName = "余额", order = 8, decimalAfterDigit = 2)
-    public BigDecimal ye;
+    private BigDecimal ye;
 
     public String getXz() {
         return xz;

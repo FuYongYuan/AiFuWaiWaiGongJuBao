@@ -175,9 +175,9 @@ public class ExcelImport {
                 // 判断标题列是否和字段一样
                 if (field.getAnnotation(ExcelField.class).columnName().equals(sheet.getRow(0).getCell(loadSpanCache.colSpan).getRichStringCellValue().getString())) {
                     if (isGetMethodFieldValue) {
-                        getMethodFieldValue(field, obj, loadSpanCache.value);
+                        setMethodFieldValue(field, obj, loadSpanCache.value);
                     } else {
-                        getFieldValue(field, obj, loadSpanCache.value);
+                        setFieldValue(field, obj, loadSpanCache.value);
                     }
                 }
             }
@@ -285,9 +285,9 @@ public class ExcelImport {
             }
             if (value != null && !"".equals(value.toString())) {
                 if (isGetMethodFieldValue) {
-                    getMethodFieldValue(field, obj, value);
+                    setMethodFieldValue(field, obj, value);
                 } else {
-                    getFieldValue(field, obj, value);
+                    setFieldValue(field, obj, value);
                 }
                 // 获取跨列 -1 代表忽略自身列
                 int colSpan = getColSpan(cell, sheet) - 1;
@@ -350,7 +350,7 @@ public class ExcelImport {
         }
     }
 
-    private static void getMethodFieldValue(Field field, Object obj, Object value) throws Exception {
+    private static void setMethodFieldValue(Field field, Object obj, Object value) throws Exception {
         String fieldName = field.getName();
         String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
         Method method;
@@ -417,7 +417,7 @@ public class ExcelImport {
         }
     }
 
-    private static void getFieldValue(Field field, Object obj, Object value) throws Exception {
+    private static void setFieldValue(Field field, Object obj, Object value) throws Exception {
         //判断哪个类型.读取set方法拿到结果
         if (field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue())) {
             if (TextDispose.isNumber(value.toString())) {
