@@ -68,6 +68,16 @@ public enum DateType {
     Year_Month_Day_Hour_Minute_Second_MS("yyyy-MM-dd HH:mm:ss:SSSS"),
 
     /**
+     * yyyy-MM-ddHH:mm:ss
+     */
+    Year_Month_DayHour_Minute_Second("yyyy-MM-ddHH:mm:ss"),
+
+    /**
+     * yyyy-MM-ddHH:mm:ss:SSSS
+     */
+    Year_Month_DayHour_Minute_Second_MS("yyyy-MM-ddHH:mm:ss:SSSS"),
+
+    /**
      * HH:mm:ss
      */
     Hour_Minute_Second("HH:mm:ss"),

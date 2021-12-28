@@ -431,15 +431,10 @@ public class ExcelExport {
         // 是否存在
         boolean exist;
 
-        // 数字
+        // 浮点数字
         exist = field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())
                 || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_long.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_BigInteger.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue());
+                || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue());
         if (exist) {
             if (excelField.isMoney()) {
                 DataFormat format = this.workbook.createDataFormat();
@@ -612,15 +607,10 @@ public class ExcelExport {
     ) {
         // 是否存在
         boolean exist;
-        // 数字
+        // 浮点数字
         exist = ecd.getCellType() == BigDecimal.class
                 || ecd.getCellType() == Double.class
-                || ecd.getCellType() == double.class
-                || ecd.getCellType() == Long.class
-                || ecd.getCellType() == long.class
-                || ecd.getCellType() == BigInteger.class
-                || ecd.getCellType() == Integer.class
-                || ecd.getCellType() == int.class;
+                || ecd.getCellType() == double.class;
         if (exist) {
             if (ecd.getIsMoney()) {
                 DataFormat format = this.workbook.createDataFormat();
