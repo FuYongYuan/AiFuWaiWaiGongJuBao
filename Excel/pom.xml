@@ -16,7 +16,9 @@
 
     <properties>
         <!--excel导出导入-->
-        <poi.version>4.1.2</poi.version>
+        <poi.version>5.2.2</poi.version>
+        <!--日志-->
+        <log4j.version>2.17.2</log4j.version>
     </properties>
 
     <dependencies>
@@ -31,6 +33,13 @@
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>cn.fyy</groupId>

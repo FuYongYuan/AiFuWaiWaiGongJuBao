@@ -16,7 +16,7 @@
 
     <properties>
         <!-- 验证 -->
-        <commons-codec.version>1.12</commons-codec.version>
+        <commons-codec.version>1.15</commons-codec.version>
     </properties>
 
     <dependencies>

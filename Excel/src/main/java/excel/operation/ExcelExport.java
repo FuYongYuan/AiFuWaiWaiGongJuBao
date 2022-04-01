@@ -1237,7 +1237,7 @@ public class ExcelExport {
                         }
                     }
                     CellRangeAddress region = new CellRangeAddress(sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanStart, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo);
-                    sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex = sheetModel.addMergedRegion(region);
+                    sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex = sheetModel.addMergedRegion(region) - 1;
                 }
             }
         }
