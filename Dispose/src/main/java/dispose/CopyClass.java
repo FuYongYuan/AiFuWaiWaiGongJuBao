@@ -110,8 +110,8 @@ public class CopyClass {
     /**
      * 将MAP中的值.复制至另一个Class对象 为NULL不复制
      */
-    public static <T> T copyMap(Map<String, Object> map, Class<T> clazz) throws IllegalAccessException, InstantiationException {
-        T obj = clazz.newInstance();
+    public static <T> T copyMap(Map<String, Object> map, Class<T> clazz) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        T obj = clazz.getDeclaredConstructor().newInstance();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             Object value = map.get(field.getName());
@@ -145,7 +145,7 @@ public class CopyClass {
     /**
      * 将MAP中的值.复制至另一个Class对象 为NULL不复制
      */
-    public static <T> List<T> copyMap(List<Map<String, Object>> mapList, Class<T> clazz) throws IllegalAccessException, InstantiationException {
+    public static <T> List<T> copyMap(List<Map<String, Object>> mapList, Class<T> clazz) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
         List<T> list = new ArrayList<>();
         for (Map<String, Object> map : mapList) {
             list.add(copyMap(map, clazz));
@@ -157,7 +157,7 @@ public class CopyClass {
      * 将MAP中的值.复制至另一个Class对象 为NULL不复制
      */
     public static <T> T copyMapGetSet(Map<String, Object> map, Class<T> clazz) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
-        T obj = clazz.newInstance();
+        T obj = clazz.getDeclaredConstructor().newInstance();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             String fieldName = field.getName();

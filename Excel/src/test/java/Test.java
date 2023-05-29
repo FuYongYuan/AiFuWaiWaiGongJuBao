@@ -178,7 +178,7 @@ public class Test {
             seconds = (endTime - startTime) / 1000F;
             System.out.println("工作簿生成:" + seconds + "秒.");
 
-            String FileName = "D:\\fuyy\\Desktop\\测试1.xlsx";
+            String FileName = "/Users/fyy/Downloads/测试1.xlsx";
             FileOutputStream fos = new FileOutputStream(FileName);
             xssfWorkbook.write(fos);
             fos.close();

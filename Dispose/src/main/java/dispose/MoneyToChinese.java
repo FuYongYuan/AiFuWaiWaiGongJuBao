@@ -1,6 +1,7 @@
 package dispose;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * 数字转换为人民币的大写
@@ -96,8 +97,7 @@ public class MoneyToChinese {
             return CHINESE_ZERO_FULL;
         }
         //这里会进行金额的四舍五入
-        long number = money.movePointRight(MONEY_PRECISION)
-                .setScale(0, 4).abs().longValue();
+        long number = money.movePointRight(MONEY_PRECISION).setScale(0, RoundingMode.HALF_UP).abs().longValue();
         // 得到小数点后两位值
         long scale = number % 1000;
         int numUnit;

@@ -653,6 +653,9 @@ public class ExcelExport {
         if (ecd.getIsBold()) {
             Font font = this.workbook.createFont();
             font.setBold(true);
+            if (ecd.getFontSize() > 0) {
+                font.setFontHeight(ecd.getFontSize());
+            }
             cellStyle.setFont(font);
         }
     }

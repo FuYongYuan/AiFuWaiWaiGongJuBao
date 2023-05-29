@@ -116,6 +116,10 @@ public class HttpRequestTool {
         return doGet(url, null, null, format);
     }
 
+    public static String doGet(String url, Map<String, String> params) throws IOException {
+        return doGet(url, null, params, CharsetFormat.UTF_8);
+    }
+
     public static String doGet(String url, Map<String, String> headers, Map<String, String> params) throws IOException {
         return doGet(url, headers, params, CharsetFormat.UTF_8);
     }

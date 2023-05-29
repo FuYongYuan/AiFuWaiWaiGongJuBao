@@ -687,6 +687,47 @@ public class Test {
 //
 //        System.out.println(total.divide(new BigDecimal(bizDay), 2, BigDecimal.ROUND_HALF_UP));
 
+//        System.out.println("2<<5:"+(2<<5));
+
+        String[] str1 =new String[]{
+                "铮",
+                "锦",
+                "鑫",
+                "钊",
+                "钧",
+                "锐",
+                "锡",
+                "锋",
+                "钰",
+                "铭",
+        };
+        String[] str2 =new String[]{
+                "旭",
+                "智",
+                "炎",
+                "煜",
+                "明",
+                "炳",
+                "烽",
+                "煌",
+                "景",
+                "晖",
+                "暄",
+        };
+
+
+        for (String s1 : str1){
+            for (String s2 : str2){
+                System.out.print("傅"+s1+s2+"、");
+//                System.out.println("傅"+s1+s2);
+            }
+        }
+        for (String s2 : str2){
+            for (String s1 : str1){
+                System.out.print("傅"+s2+s1+"、");
+//                System.out.println("傅"+s2+s1);
+            }
+        }
     }
 
 

@@ -2,6 +2,7 @@ package schedule.service;
 
 import schedule.Job;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -158,8 +159,9 @@ class ExecutorLoop {
             action = job.getAction();
         } else {
             try {
-                action = (Runnable) job.getActionClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
+                action = (Runnable) job.getActionClass().getDeclaredConstructor().newInstance();
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
+                     IllegalAccessException e) {
                 e.printStackTrace();
             }
         }

@@ -16,9 +16,9 @@
 
     <properties>
         <!--Http请求包-->
-        <httpclient.version>4.5.13</httpclient.version>
+        <httpclient.version>4.5.14</httpclient.version>
         <!--Html处理工具包-->
-        <jsoup.version>1.14.3</jsoup.version>
+        <jsoup.version>1.15.4</jsoup.version>
     </properties>
 
     <dependencies>

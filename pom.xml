@@ -15,9 +15,7 @@
         <module>Http</module>
         <module>Mail</module>
         <module>Project</module>
-        <module>Robot</module>
         <module>Schedule</module>
-        <module>OpenCV</module>
     </modules>
 
     <properties>

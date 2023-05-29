@@ -1,11 +1,8 @@
-import encrypt.Md5Util;
-import encrypt.RsaUtil;
-import encrypt.Sha1Util;
-import encrypt.Sha256Util;
+import encrypt.*;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-        System.out.println(Md5Util.encode("admin"));
+//        System.out.println(Md5Util.encode("admin"));
 //
 //        String privateKeyStr = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALXRNbrbGzCE9l/n" +
 //                "Vqu8ndIOLc1grc/+xmXraG1yTjmbVsLT5FNzkl/7N3IZpJCN/ETbwUXQqQQ7L/oy" +
@@ -41,10 +38,10 @@ public class Test {
 
 //        System.out.println(Md5Util.encode("1"));
 
-//        System.out.println(AesUtil.encryptString("appsetr","EBS"));
-//        System.out.println(AesUtil.decryptString("10C615A9E5E6125181F01B6D6F1AD340","EBS"));
-//
-//        System.out.println(AesUtil.encryptString("weblogic123","EBS"));
-//        System.out.println(AesUtil.decryptString("A8C709E60599D0610492B079C724674B","EBS"));
+        System.out.println(AesUtil.encryptString("appsetr","EBS"));
+        System.out.println(AesUtil.decryptString("10C615A9E5E6125181F01B6D6F1AD340","EBS"));
+
+        System.out.println(AesUtil.encryptString("weblogic123","EBS"));
+        System.out.println(AesUtil.decryptString("A8C709E60599D0610492B079C724674B","EBS"));
     }
 }

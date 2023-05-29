@@ -124,7 +124,7 @@ public class ExcelImport {
                 // 得到第j行
                 row = sheet.getRow(j);
                 // 创建类型对象
-                T obj = tClass.newInstance();
+                T obj = tClass.getDeclaredConstructor().newInstance();
                 if (row != null) {
                     // 循环列
                     for (int i = 0; i < columns; i++) {
@@ -385,7 +385,7 @@ public class ExcelImport {
                 value = DateDispose.dayCalculateString("1900-1-1", d, DateType.Year_Month_Day);
             }
             value = DateDispose.formattingDate(value.toString(), field.getAnnotation(ExcelField.class).dateType());
-            method.invoke(obj, value);
+            method.invoke(obj, (Date) value);
         } else if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Integer.class);
             if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {

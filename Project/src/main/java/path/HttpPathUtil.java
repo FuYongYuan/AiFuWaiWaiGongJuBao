@@ -1,6 +1,6 @@
 package path;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 获取http请求中信息

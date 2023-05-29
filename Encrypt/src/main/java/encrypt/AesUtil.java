@@ -26,7 +26,9 @@ public class AesUtil {
     public static byte[] encrypt(String content, String password) {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(128, new SecureRandom(password.getBytes()));
+            SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+            secureRandom.setSeed(password.getBytes());
+            keyGenerator.init(128, secureRandom);
             SecretKey secretKey = keyGenerator.generateKey();
             byte[] enCodeFormat = secretKey.getEncoded();
             SecretKeySpec key = new SecretKeySpec(enCodeFormat, "AES");
@@ -53,7 +55,9 @@ public class AesUtil {
     public static byte[] decrypt(byte[] content, String password) {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(128, new SecureRandom(password.getBytes()));
+            SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+            secureRandom.setSeed(password.getBytes());
+            keyGenerator.init(128, secureRandom);
             SecretKey secretKey = keyGenerator.generateKey();
             byte[] enCodeFormat = secretKey.getEncoded();
             SecretKeySpec key = new SecretKeySpec(enCodeFormat, "AES");

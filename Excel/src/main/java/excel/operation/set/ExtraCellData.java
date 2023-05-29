@@ -138,6 +138,11 @@ public class ExtraCellData {
     private IndexedColors borderRightColor;
 
     /**
+     * 字体大小
+     */
+    private short fontSize;
+
+    /**
      * 内部构造
      */
     private ExtraCellData() {
@@ -582,5 +587,19 @@ public class ExtraCellData {
     public ExtraCellData setBorderRightColor(IndexedColors borderRightColor) {
         this.borderRightColor = borderRightColor;
         return this;
+    }
+
+    /**
+     * 字体大小
+     */
+    public short getFontSize() {
+        return fontSize;
+    }
+
+    /**
+     * 字体大小
+     */
+    public void setFontSize(short fontSize) {
+        this.fontSize = fontSize;
     }
 }
