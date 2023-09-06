@@ -67,6 +67,15 @@ public class ExcelExport {
                 for (SheetSet sheetSet : sheetSets) {
                     //创建页签并给页签命名
                     Sheet sheetModel = this.workbook.createSheet(sheetSet.getSheetName());
+                    //冻结
+                    if (sheetSet.getFreezePane() != null) {
+                        sheetModel.createFreezePane(
+                                sheetSet.getFreezePane().getColSplit(),
+                                sheetSet.getFreezePane().getRowSplit(),
+                                sheetSet.getFreezePane().getLeftmostColumn(),
+                                sheetSet.getFreezePane().getTopRow()
+                        );
+                    }
                     //获取要执行的对象中属于Excel的字段
                     ExcelDisposeUtil.initialization(sheetSet);
                     if (sheetSet.getSheetCache().useField != null && !sheetSet.getSheetCache().useField.isEmpty()) {

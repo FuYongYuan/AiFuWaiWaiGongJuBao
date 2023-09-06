@@ -41,6 +41,11 @@ public class SheetSet {
     private Style style;
 
     /**
+     * 冻结
+     */
+    private FreezePane freezePane;
+
+    /**
      * 对应当前页功能设置对象
      */
     private Function function;
@@ -91,7 +96,7 @@ public class SheetSet {
         if (dataClass == null) {
             throw new ExcelOperateException("诊断：Excel对应关系缺失！", new NullPointerException());
         } else {
-            if (sheetData != null && sheetData.size() > 0) {
+            if (sheetData != null && !sheetData.isEmpty()) {
                 if (sheetData.get(0).getClass() != dataClass) {
                     throw new ExcelOperateException("诊断：Excel数据类型错误！", new NullPointerException());
                 }
@@ -245,5 +250,31 @@ public class SheetSet {
     public SheetSet setValueLimit(ValueLimit... valueLimit) {
         this.valueLimit = Arrays.asList(valueLimit);
         return this;
+    }
+
+    /**
+     * 冻结
+     */
+    public FreezePane getFreezePane() {
+        return freezePane;
+    }
+
+    /**
+     * 冻结
+     */
+    public void setFreezePane(FreezePane freezePane) {
+        this.freezePane = freezePane;
+    }
+
+    /**
+     * 冻结
+     */
+    public void setFreezePane(int colSplit, int rowSplit, int leftmostColumn, int topRow) {
+        this.freezePane = FreezePane.create()
+                .setColSplit(colSplit)
+                .setRowSplit(rowSplit)
+                .setLeftmostColumn(leftmostColumn)
+                .setTopRow(topRow)
+                .build();
     }
 }
