@@ -1,13 +1,12 @@
 package encrypt;
 
-import org.apache.commons.codec.binary.Base64;
-
 import javax.crypto.Cipher;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
 /**
  * RSA加密
@@ -27,7 +26,7 @@ public class RsaUtil {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, getRsaPublicKey(publicKey));
             byte[] bytes = cipher.doFinal(context.getBytes());
-            return new String(Base64.encodeBase64(bytes));
+            return java.util.Base64.getEncoder().encodeToString(bytes);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,7 +45,7 @@ public class RsaUtil {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, getRsaPrivateKey(privateKey));
             byte[] content = context.getBytes();
-            byte[] responseByte = cipher.doFinal(Base64.decodeBase64(content));
+            byte[] responseByte = cipher.doFinal(java.util.Base64.getDecoder().decode(content));
             return new String(responseByte);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,7 +60,7 @@ public class RsaUtil {
      */
     public static RSAPublicKey getRsaPublicKey(String publicKey) {
         try {
-            byte[] keyBytes = Base64.decodeBase64(publicKey.getBytes());
+            byte[] keyBytes = java.util.Base64.getDecoder().decode(publicKey.getBytes());
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return (RSAPublicKey) keyFactory.generatePublic(keySpec);
@@ -78,7 +77,7 @@ public class RsaUtil {
      */
     public static RSAPrivateKey getRsaPrivateKey(String privateKey) {
         try {
-            byte[] keyBytes = Base64.decodeBase64(privateKey.getBytes());
+            byte[] keyBytes = Base64.getDecoder().decode(privateKey.getBytes());
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
