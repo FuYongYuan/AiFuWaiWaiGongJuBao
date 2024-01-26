@@ -5,7 +5,7 @@ package enumerate;
  *
  * @author fyy
  */
-public enum CommonlyUsedType {
+public enum UsedType {
 
     /**
      * java.lang.String
@@ -82,7 +82,7 @@ public enum CommonlyUsedType {
      */
     private final String value;
 
-    CommonlyUsedType(String value) {
+    UsedType(String value) {
         this.value = value;
     }
 

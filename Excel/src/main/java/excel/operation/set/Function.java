@@ -3,10 +3,7 @@ package excel.operation.set;
 import excel.exception.ExcelOperateException;
 import org.apache.poi.ss.usermodel.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 计算方法
@@ -206,11 +203,7 @@ public class Function {
         public Function.Builder setCalculationFieldNames(String... calculationFieldNames) {
             for (String name : calculationFieldNames) {
                 Integer i = this.calculationFieldNameAndOrder.get(name);
-                if (i == null) {
-                    this.calculationFieldNameAndOrder.put(name, 0);
-                } else {
-                    this.calculationFieldNameAndOrder.put(name, i);
-                }
+                this.calculationFieldNameAndOrder.put(name, Objects.requireNonNullElse(i, 0));
             }
             return this;
         }
@@ -227,9 +220,7 @@ public class Function {
          * 多条设置计算字段名,位置
          */
         public Function.Builder setCalculationFieldNameAndOrder(Map<String, Integer> calculationFieldNameAndOrder) {
-            for (Map.Entry<String, Integer> fieldNameAndOrder : calculationFieldNameAndOrder.entrySet()) {
-                this.calculationFieldNameAndOrder.put(fieldNameAndOrder.getKey(), fieldNameAndOrder.getValue());
-            }
+            this.calculationFieldNameAndOrder.putAll(calculationFieldNameAndOrder);
             return this;
         }
 
@@ -370,9 +361,7 @@ public class Function {
             StringBuilder moneyFormat = new StringBuilder("#,##0");
             if (decimalAfterDigit > 0) {
                 moneyFormat.append(".");
-                for (int i = 0; i < decimalAfterDigit; i++) {
-                    moneyFormat.append("0");
-                }
+                moneyFormat.append("0".repeat(decimalAfterDigit));
             }
             style.setDataFormat(this.format.getFormat(moneyFormat.toString()));
             return this;
@@ -386,9 +375,7 @@ public class Function {
         public Function.Builder setStyleNumberFormat(int decimalAfterDigit) {
             StringBuilder sb = new StringBuilder("#0.");
             if (decimalAfterDigit > 0) {
-                for (int i = 0; i < decimalAfterDigit; i++) {
-                    sb.append("0");
-                }
+                sb.append("0".repeat(decimalAfterDigit));
             } else {
                 sb.append("000");
             }

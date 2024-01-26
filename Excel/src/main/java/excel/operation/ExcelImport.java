@@ -2,7 +2,7 @@ package excel.operation;
 
 import dispose.DateDispose;
 import dispose.TextDispose;
-import enumerate.CommonlyUsedType;
+import enumerate.UsedType;
 import enumerate.DateType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
@@ -354,7 +354,7 @@ public class ExcelImport {
         String fieldName = field.getName();
         String fieldNameFirstUpperCase = fieldName.replaceFirst(fieldName.substring(0, 1), fieldName.substring(0, 1).toUpperCase());
         Method method;
-        if (field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
+        if (field.getType().getName().equals(UsedType.Type_String.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, String.class);
             String s;
             if (TextDispose.isNumber(value.toString())) {
@@ -378,7 +378,7 @@ public class ExcelImport {
             } else {
                 method.invoke(obj, value.toString());
             }
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(UsedType.Type_Sql_Date.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Date.class);
             if (TextDispose.isNumber(value.toString())) {
                 int d = (int) Double.parseDouble(value.toString()) - 2;
@@ -386,7 +386,7 @@ public class ExcelImport {
             }
             value = DateDispose.formattingDate(value.toString(), field.getAnnotation(ExcelField.class).dateType());
             method.invoke(obj, (Date) value);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Integer.getValue()) || field.getType().getName().equals(UsedType.Type_int.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Integer.class);
             if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
                 double d = Double.parseDouble(value.toString());
@@ -394,7 +394,7 @@ public class ExcelImport {
             } else {
                 method.invoke(obj, Integer.parseInt(value.toString()));
             }
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_long.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Long.getValue()) || field.getType().getName().equals(UsedType.Type_long.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Long.class);
             if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
                 double d = Double.parseDouble(value.toString());
@@ -402,13 +402,13 @@ public class ExcelImport {
             } else {
                 method.invoke(obj, Long.parseLong(value.toString()));
             }
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Double.getValue()) || field.getType().getName().equals(UsedType.Type_double.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Double.class);
             method.invoke(obj, Double.parseDouble(value.toString()));
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Boolean.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_boolean.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Boolean.getValue()) || field.getType().getName().equals(UsedType.Type_boolean.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Boolean.class);
             method.invoke(obj, Boolean.parseBoolean(value.toString()));
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, BigDecimal.class);
             method.invoke(obj, new BigDecimal(value.toString()));
         } else {
@@ -419,32 +419,32 @@ public class ExcelImport {
 
     private static void setFieldValue(Field field, Object obj, Object value) throws Exception {
         //判断哪个类型.读取set方法拿到结果
-        if (field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue())) {
+        if (field.getType().getName().equals(UsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(UsedType.Type_Sql_Date.getValue())) {
             if (TextDispose.isNumber(value.toString())) {
                 int d = (int) Double.parseDouble(value.toString()) - 2;
                 value = DateDispose.dayCalculateString("1900-1-1", d, DateType.Year_Month_Day);
             }
             value = DateDispose.formattingDate(value.toString(), field.getAnnotation(ExcelField.class).dateType());
             field.set(obj, value);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_int.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_int.getValue()) || field.getType().getName().equals(UsedType.Type_Integer.getValue())) {
             if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
                 double d = Double.parseDouble(value.toString());
                 field.set(obj, (int) d);
             } else {
                 field.set(obj, Integer.parseInt(value.toString()));
             }
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_long.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_long.getValue()) || field.getType().getName().equals(UsedType.Type_Long.getValue())) {
             if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
                 double d = Double.parseDouble(value.toString());
                 field.set(obj, (long) d);
             } else {
                 field.set(obj, Long.parseLong(value.toString()));
             }
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_double.getValue()) || field.getType().getName().equals(UsedType.Type_Double.getValue())) {
             field.set(obj, Double.parseDouble(value.toString()));
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_boolean.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Boolean.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_boolean.getValue()) || field.getType().getName().equals(UsedType.Type_Boolean.getValue())) {
             field.set(obj, Boolean.parseBoolean(value.toString()));
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_String.getValue())) {
             String s;
             if (TextDispose.isNumber(value.toString())) {
                 if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0 && value.toString().indexOf(ExcelDisposeConstant.E) > 0) {
@@ -467,7 +467,7 @@ public class ExcelImport {
             } else {
                 field.set(obj, value);
             }
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())) {
             field.set(obj, new BigDecimal(value.toString()));
         } else {
             field.set(obj, value);

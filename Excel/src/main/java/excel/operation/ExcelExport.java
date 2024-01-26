@@ -1,8 +1,9 @@
 package excel.operation;
 
 import dispose.DateDispose;
+import dispose.MoneyToChinese;
 import dispose.TextDispose;
-import enumerate.CommonlyUsedType;
+import enumerate.UsedType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.cache.ReferenceFieldCache;
@@ -23,6 +24,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -314,7 +316,7 @@ public class ExcelExport {
     ) {
         if (
                 sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder() != null &&
-                        sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().size() > 0
+                        !sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().isEmpty()
         ) {
             sheetSet.getSheetCache().sheetModelCache.occupyRows.add(sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extraRow + 1);
             this.calculationDispose(
@@ -388,19 +390,39 @@ public class ExcelExport {
         //结果转换
         if (cellValue != null) {
             if (TextDispose.isNumber(cellValue)) {
-                //结果转换
-                if (field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())) {
-                    cell.setCellValue(Double.parseDouble(cellValue));
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_BigInteger.getValue())) {
-                    cell.setCellValue(Integer.parseInt(cellValue));
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_long.getValue())) {
-                    cell.setCellValue(Long.parseLong(cellValue));
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())) {
-                    cell.setCellValue(new BigDecimal(cellValue).doubleValue());
+                if (excelField.isChinaMoney()) {
+                    // 是否浮点数字
+                    boolean exist = field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())
+                            || field.getType().getName().equals(UsedType.Type_Double.getValue())
+                            || field.getType().getName().equals(UsedType.Type_double.getValue());
+                    if (exist) {
+                        if (excelField.decimalAfterDigit() > 0) {
+                            StringBuilder sb = new StringBuilder("#0.");
+                            int decimalAfterDigit = excelField.decimalAfterDigit();
+                            sb.append("0".repeat(Math.max(0, decimalAfterDigit)));
+                            DecimalFormat format = new DecimalFormat(sb.toString());
+                            cell.setCellValue(MoneyToChinese.to(format.format(cellValue)));
+                        } else {
+                            cell.setCellValue(MoneyToChinese.to(cellValue));
+                        }
+                    } else {
+                        cell.setCellValue(MoneyToChinese.to(cellValue));
+                    }
                 } else {
-                    cell.setCellValue(cellValue);
+                    //结果转换
+                    if (field.getType().getName().equals(UsedType.Type_Double.getValue()) || field.getType().getName().equals(UsedType.Type_double.getValue())) {
+                        cell.setCellValue(Double.parseDouble(cellValue));
+                    } else if (field.getType().getName().equals(UsedType.Type_Integer.getValue()) || field.getType().getName().equals(UsedType.Type_int.getValue()) || field.getType().getName().equals(UsedType.Type_BigInteger.getValue())) {
+                        cell.setCellValue(Integer.parseInt(cellValue));
+                    } else if (field.getType().getName().equals(UsedType.Type_Long.getValue()) || field.getType().getName().equals(UsedType.Type_long.getValue())) {
+                        cell.setCellValue(Long.parseLong(cellValue));
+                    } else if (field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())) {
+                        cell.setCellValue(new BigDecimal(cellValue).doubleValue());
+                    } else {
+                        cell.setCellValue(cellValue);
+                    }
                 }
-            } else if (field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Timestamp.getValue())) {
+            } else if (field.getType().getName().equals(UsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(UsedType.Type_Sql_Date.getValue()) || field.getType().getName().equals(UsedType.Type_Timestamp.getValue())) {
                 cell.setCellValue(DateDispose.formattingDate(cellValue, excelField.dateType()));
             } else {
                 cell.setCellValue(cellValue);
@@ -441,9 +463,9 @@ public class ExcelExport {
         boolean exist;
 
         // 浮点数字
-        exist = field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue());
+        exist = field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())
+                || field.getType().getName().equals(UsedType.Type_Double.getValue())
+                || field.getType().getName().equals(UsedType.Type_double.getValue());
         if (exist) {
             if (excelField.isMoney()) {
                 DataFormat format = this.workbook.createDataFormat();
@@ -452,25 +474,21 @@ public class ExcelExport {
                 if (excelField.decimalAfterDigit() > 0) {
                     moneyFormat.append(".");
                     int decimalAfterDigit = excelField.decimalAfterDigit();
-                    for (int i = 0; i < decimalAfterDigit; i++) {
-                        moneyFormat.append("0");
-                    }
+                    moneyFormat.append("0".repeat(Math.max(0, decimalAfterDigit)));
                 }
                 cellStyle.setDataFormat(format.getFormat(moneyFormat.toString()));
             } else if (excelField.decimalAfterDigit() > 0) {
                 DataFormat format = this.workbook.createDataFormat();
                 StringBuilder sb = new StringBuilder("#0.");
                 int decimalAfterDigit = excelField.decimalAfterDigit();
-                for (int i = 0; i < decimalAfterDigit; i++) {
-                    sb.append("0");
-                }
+                sb.append("0".repeat(Math.max(0, decimalAfterDigit)));
                 cellStyle.setDataFormat(format.getFormat(sb.toString()));
             }
         }
         // 时间
-        exist = field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue())
-                || field.getType().getName().equals(CommonlyUsedType.Type_Timestamp.getValue());
+        exist = field.getType().getName().equals(UsedType.Type_Util_Date.getValue())
+                || field.getType().getName().equals(UsedType.Type_Sql_Date.getValue())
+                || field.getType().getName().equals(UsedType.Type_Timestamp.getValue());
         if (exist) {
             DataFormat format = this.workbook.createDataFormat();
             cellStyle.setDataFormat(format.getFormat(excelField.dateType().getValue()));
@@ -566,14 +584,48 @@ public class ExcelExport {
         if (ecd != null) {
             if (ecd.getCellValue() != null) {
                 //结果转换
-                if (ecd.getCellType() == Double.class || ecd.getCellType() == double.class) {
-                    cell.setCellValue(Double.parseDouble(ecd.getCellValue().toString()));
-                } else if (ecd.getCellType() == Integer.class || ecd.getCellType() == int.class || ecd.getCellType() == BigInteger.class) {
-                    cell.setCellValue(Integer.parseInt(ecd.getCellValue().toString()));
-                } else if (ecd.getCellType() == Long.class || ecd.getCellType() == long.class) {
-                    cell.setCellValue(Long.parseLong(ecd.getCellValue().toString()));
-                } else if (ecd.getCellType() == BigDecimal.class) {
-                    cell.setCellValue(new BigDecimal(ecd.getCellValue().toString()).doubleValue());
+                if (
+                        ecd.getCellType() == Double.class ||
+                                ecd.getCellType() == double.class ||
+                                ecd.getCellType() == Integer.class ||
+                                ecd.getCellType() == int.class ||
+                                ecd.getCellType() == BigInteger.class ||
+                                ecd.getCellType() == Long.class ||
+                                ecd.getCellType() == long.class ||
+                                ecd.getCellType() == BigDecimal.class
+                ) {
+                    if (ecd.getIsChinaMoney()) {
+                        // 是否浮点数字
+                        boolean exist = ecd.getCellType() == BigDecimal.class ||
+                                ecd.getCellType() == Double.class ||
+                                ecd.getCellType() == double.class;
+                        if (exist) {
+                            if (ecd.getDecimalAfterDigit() > 0) {
+                                StringBuilder sb = new StringBuilder("#0.");
+                                int decimalAfterDigit = ecd.getDecimalAfterDigit();
+                                sb.append("0".repeat(Math.max(0, decimalAfterDigit)));
+                                DecimalFormat format = new DecimalFormat(sb.toString());
+                                cell.setCellValue(MoneyToChinese.to(format.format(ecd.getCellValue())));
+                            } else {
+                                cell.setCellValue(MoneyToChinese.to(ecd.getCellValue().toString()));
+                            }
+                        } else {
+                            cell.setCellValue(MoneyToChinese.to(ecd.getCellValue().toString()));
+                        }
+                    } else {
+                        //结果转换
+                        if (ecd.getCellType() == Double.class || ecd.getCellType() == double.class) {
+                            cell.setCellValue(Double.parseDouble(ecd.getCellValue().toString()));
+                        } else if (ecd.getCellType() == Integer.class || ecd.getCellType() == int.class || ecd.getCellType() == BigInteger.class) {
+                            cell.setCellValue(Integer.parseInt(ecd.getCellValue().toString()));
+                        } else if (ecd.getCellType() == Long.class || ecd.getCellType() == long.class) {
+                            cell.setCellValue(Long.parseLong(ecd.getCellValue().toString()));
+                        } else if (ecd.getCellType() == BigDecimal.class) {
+                            cell.setCellValue(new BigDecimal(ecd.getCellValue().toString()).doubleValue());
+                        } else {
+                            cell.setCellValue(ecd.getCellValue().toString());
+                        }
+                    }
                 } else if (ecd.getCellType() == Date.class || ecd.getCellType() == java.sql.Date.class || ecd.getCellType() == Timestamp.class) {
                     cell.setCellValue((Date) ecd.getCellValue());
                 } else {
@@ -627,18 +679,14 @@ public class ExcelExport {
                 if (ecd.getDecimalAfterDigit() > 0) {
                     moneyFormat.append(".");
                     int decimalAfterDigit = ecd.getDecimalAfterDigit();
-                    for (int i = 0; i < decimalAfterDigit; i++) {
-                        moneyFormat.append("0");
-                    }
+                    moneyFormat.append("0".repeat(Math.max(0, decimalAfterDigit)));
                 }
                 cellStyle.setDataFormat(format.getFormat(moneyFormat.toString()));
             } else if (ecd.getDecimalAfterDigit() > 0) {
                 DataFormat format = this.workbook.createDataFormat();
                 StringBuilder sb = new StringBuilder("#0.");
                 int decimalAfterDigit = ecd.getDecimalAfterDigit();
-                for (int i = 0; i < decimalAfterDigit; i++) {
-                    sb.append("0");
-                }
+                sb.append("0".repeat(Math.max(0, decimalAfterDigit)));
                 cellStyle.setDataFormat(format.getFormat(sb.toString()));
             }
         }
@@ -797,6 +845,28 @@ public class ExcelExport {
                 }
             }
         }
+
+        // 设置列宽
+        if (ecd.getColumnWidth() > 0) {
+            //设置列宽
+            sheetModel.setColumnWidth(ecd.getCellNumber(), ecd.getColumnWidth() * 256);
+        } else if (ecd.getColumnWidth() == 0) {
+            //是否隐藏当前列
+            sheetModel.setColumnHidden(ecd.getCellNumber(), true);
+        } else {
+            if (ecd.getIsHidden()) {
+                //是否隐藏当前列
+                sheetModel.setColumnHidden(ecd.getCellNumber(), true);
+            }
+            if (ecd.getIsAutoSize()) {
+                //自动适应时要先跟踪
+                if (this.workbook instanceof SXSSFWorkbook) {
+                    ((SXSSFSheet) sheetModel).trackAllColumnsForAutoSizing();
+                }
+                //是否自动适应列宽
+                sheetModel.autoSizeColumn(ecd.getCellNumber(), true);
+            }
+        }
     }
 
     /**
@@ -808,29 +878,29 @@ public class ExcelExport {
             Field field,
             ExcelField excelField
     ) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        //当前数据行
+        // 当前数据行
         int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extraRow;
-        //当前的字段值
+        // 当前的字段值
         String cellValue = ExcelDisposeUtil.correspondingValue(field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(), excelField.dateType(), excelField.decimalAfterDigit(), excelField.roundingMode());
-        //获取转换值集中对应值
+        // 获取转换值集中对应值
         cellValue = ExcelDisposeUtil.getValueLimit(sheetSet, cellValue, excelField);
-        //跨行处理
+        // 跨行处理
         if (excelField.rowspan()) {
-            //上一数据行
+            // 上一数据行
             int previous = current - 1;
-            //下一数据行
+            // 下一数据行
             int next = current + 1;
-            //是否是最后一行
+            // 是否是最后一行
             boolean isLast = (sheetSet.getSheetCache().sheetModelCache.i == sheetSet.getSheetData().size() + sheetSet.getSheetCache().sheetModelCache.initRow + sheetSet.getSheetCache().sheetModelCache.extraRow - 1);
-            //获取参考字段
+            // 获取参考字段
             ReferenceFieldCache referenceFieldCache = new ReferenceFieldCache();
-            //参考列值
+            // 参考列值
             referenceFieldCache.rowspanAlignCellValue = cellValue;
-            //计算参考字段
+            // 计算参考字段
             this.getReferenceField(current, sheetSet, excelField, referenceFieldCache);
-            //对比列下一行值
+            // 对比列下一行值
             this.getNextCellValue(previous, next, isLast, sheetSet, field, excelField, referenceFieldCache);
-            //开始计算合并
+            // 开始计算合并
             TotalRowIndex totalRowIndex = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName());
             if (totalRowIndex == null) {
                 totalRowIndex = new TotalRowIndex();
@@ -838,21 +908,21 @@ public class ExcelExport {
                 totalRowIndex.columnNo = sheetSet.getSheetCache().sheetModelCache.j;
             }
             this.addMergedRegion(isLast, sheetModel, sheetSet, totalRowIndex, referenceFieldCache);
-            //小计、总计、全部总计
+            // 小计、总计、全部总计
             boolean existTotal = sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null
                     || sheetSet.getFunction().getSubTotal().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null
                     || sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder().get(field.getName()) != null
                     || sheetSet.getFunction().getTotal().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null
                     || sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(field.getName()) != null
                     || sheetSet.getFunction().getTotalAll().getCalculationFieldNameAndOrder().get(excelField.columnName()) != null;
-            //判断当前的内容和下一行内容不一致 并且是最后一行
+            // 判断当前的内容和下一行内容不一致 并且是最后一行
             boolean exist = (totalRowIndex.oldCellValue != null
                     && !totalRowIndex.oldCellValue.equals(referenceFieldCache.cellValue)
                     && existTotal && totalRowIndex.nextRowspan)
                     || (totalRowIndex.oldCellValue != null
                     && totalRowIndex.oldCellValue.equals(referenceFieldCache.cellValue)
                     && existTotal && isLast);
-            //判断当前的内容和下一行内容是一致 接下来是否会合并
+            // 判断当前的内容和下一行内容是否一致 接下来是否会合并
             if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(referenceFieldCache.cellValue) && existTotal && totalRowIndex.nextRowspan) {
                 cellValue = null;
             } else if (exist) {
@@ -875,7 +945,7 @@ public class ExcelExport {
             ReferenceFieldCache referenceFieldCache
     ) {
         if (excelField.rowspanAlignOrder() > 0) {
-            //参考数据行
+            // 参考数据行
             int reference = excelField.rowspanAlignOrder() - 1;
             referenceFieldCache.referenceField = sheetSet.getSheetCache().useField.get(reference);
             referenceFieldCache.referenceExcelField = referenceFieldCache.referenceField.getAnnotation(ExcelField.class);
@@ -1151,7 +1221,7 @@ public class ExcelExport {
             }
         }
         String sumString;
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             sb.delete(sb.length() - 1, sb.length());
             sumString = "SUM(" + sb + ")";
         } else {

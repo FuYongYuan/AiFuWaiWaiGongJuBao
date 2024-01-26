@@ -23,7 +23,7 @@ public class StockCalculation {
             BigDecimal cost = current.multiply(i);
             BigDecimal average = (buy.multiply(hold).add(current.multiply(i))).divide(number, RoundingMode.HALF_UP);
             System.out.println(
-                    "在购买：" + i + "股，" + "买共：" + number + "股，购入后总数:持有数：" + (number.divide(hold, 2, RoundingMode.HALF_UP)) + "倍，均价：" + average + "元，花共：" + cost + "," + TextDispose.arabNumberToChinese(cost.doubleValue()) + "元在买入"
+                    "在购买：" + i + "股，" + "买共：" + number + "股，购入后总数:持有数：" + (number.divide(hold, 2, RoundingMode.HALF_UP)) + "倍，均价：" + average + "元，花共：" + cost + "," + MoneyToChinese.to(cost.doubleValue()) + "元在买入"
             );
             if (average.compareTo(current) <= 0) {
                 b = false;

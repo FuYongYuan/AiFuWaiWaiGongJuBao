@@ -1,7 +1,7 @@
 package dispose;
 
 
-import enumerate.CommonlyUsedType;
+import enumerate.UsedType;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -57,43 +57,43 @@ public class CopyClass {
             Object value = field.get(object1);
             boolean exist = (value != null && !"".equals(value)) || getNull;
             if (exist) {
-                if (field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
+                if (field.getType().getName().equals(UsedType.Type_String.getValue())) {
                     if (value != null) {
                         field.set(object2, value.toString());
                     }
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(UsedType.Type_Sql_Date.getValue())) {
                     if (value instanceof Date) {
                         field.set(object2, value);
                     }
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Integer.getValue()) || field.getType().getName().equals(UsedType.Type_int.getValue())) {
                     Integer v = null;
                     if (value != null) {
                         v = Integer.parseInt(value.toString());
                     }
                     field.set(object2, v);
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Double.getValue()) || field.getType().getName().equals(UsedType.Type_double.getValue())) {
                     Double d = null;
                     if (value != null) {
                         d = Double.parseDouble(value.toString());
                     }
                     field.set(object2, d);
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Boolean.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_boolean.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Boolean.getValue()) || field.getType().getName().equals(UsedType.Type_boolean.getValue())) {
                     field.set(object2, value);
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Timestamp.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Timestamp.getValue())) {
                     if (value instanceof Timestamp) {
                         field.set(object2, value);
                     }
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())) {
                     if (value instanceof BigDecimal) {
                         field.set(object2, value);
                     }
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Long.getValue())) {
                     Long d = null;
                     if (value != null) {
                         d = Long.parseLong(value.toString());
                     }
                     field.set(object2, d);
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigInteger.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_BigInteger.getValue())) {
                     BigInteger d = null;
                     if (value != null) {
                         d = new BigInteger(value.toString());
@@ -116,23 +116,23 @@ public class CopyClass {
         for (Field field : fields) {
             Object value = map.get(field.getName());
             if ((value != null && !"".equals(value))) {
-                if (field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
+                if (field.getType().getName().equals(UsedType.Type_String.getValue())) {
                     field.set(obj, value.toString());
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(UsedType.Type_Sql_Date.getValue())) {
                     field.set(obj, value);
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Integer.getValue()) || field.getType().getName().equals(UsedType.Type_int.getValue())) {
                     field.set(obj, Integer.parseInt(value.toString()));
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Double.getValue()) || field.getType().getName().equals(UsedType.Type_double.getValue())) {
                     field.set(obj, Double.parseDouble(value.toString()));
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Boolean.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_boolean.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Boolean.getValue()) || field.getType().getName().equals(UsedType.Type_boolean.getValue())) {
                     field.set(obj, value);
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Timestamp.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Timestamp.getValue())) {
                     field.set(obj, value);
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())) {
                     field.set(obj, new BigDecimal(value.toString()));
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_Long.getValue())) {
                     field.set(obj, Long.parseLong(value.toString()));
-                } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigInteger.getValue())) {
+                } else if (field.getType().getName().equals(UsedType.Type_BigInteger.getValue())) {
                     field.set(obj, new BigInteger(value.toString()));
                 } else {
                     field.set(obj, value);
@@ -170,15 +170,15 @@ public class CopyClass {
                 Object value = value1 != null ? value1 : value2;
                 if (!"".equals(value)) {
                     method = getMethod(clazz, field, fieldNameFirstUpperCase);
-                    if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue())) {
+                    if (field.getType().getName().equals(UsedType.Type_Integer.getValue()) || field.getType().getName().equals(UsedType.Type_int.getValue())) {
                         value = Integer.parseInt(value.toString());
-                    } else if (field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())) {
+                    } else if (field.getType().getName().equals(UsedType.Type_Double.getValue()) || field.getType().getName().equals(UsedType.Type_double.getValue())) {
                         value = Double.parseDouble(value.toString());
-                    } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())) {
+                    } else if (field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())) {
                         value = new BigDecimal(value.toString());
-                    } else if (field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue())) {
+                    } else if (field.getType().getName().equals(UsedType.Type_Long.getValue())) {
                         value = Long.parseLong(value.toString());
-                    } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigInteger.getValue())) {
+                    } else if (field.getType().getName().equals(UsedType.Type_BigInteger.getValue())) {
                         value = new BigInteger(value.toString());
                     }
                     method.invoke(obj, value);
@@ -201,23 +201,23 @@ public class CopyClass {
 
     private static <T> Method getMethod(Class<T> clazz, Field field, String fieldNameFirstUpperCase) throws NoSuchMethodException {
         Method method;
-        if (field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
+        if (field.getType().getName().equals(UsedType.Type_String.getValue())) {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, String.class);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_Sql_Date.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(UsedType.Type_Sql_Date.getValue())) {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, Date.class);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Integer.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_int.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Integer.getValue()) || field.getType().getName().equals(UsedType.Type_int.getValue())) {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, Integer.class);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Double.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_double.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Double.getValue()) || field.getType().getName().equals(UsedType.Type_double.getValue())) {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, Double.class);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Boolean.getValue()) || field.getType().getName().equals(CommonlyUsedType.Type_boolean.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Boolean.getValue()) || field.getType().getName().equals(UsedType.Type_boolean.getValue())) {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, Boolean.class);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigDecimal.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())) {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, BigDecimal.class);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Timestamp.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Timestamp.getValue())) {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, Timestamp.class);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_Long.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_Long.getValue())) {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, Long.class);
-        } else if (field.getType().getName().equals(CommonlyUsedType.Type_BigInteger.getValue())) {
+        } else if (field.getType().getName().equals(UsedType.Type_BigInteger.getValue())) {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, BigInteger.class);
         } else {
             method = clazz.getMethod("set" + fieldNameFirstUpperCase, Object.class);

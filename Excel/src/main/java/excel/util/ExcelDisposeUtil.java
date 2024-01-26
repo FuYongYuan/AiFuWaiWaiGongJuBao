@@ -2,7 +2,7 @@ package excel.util;
 
 import dispose.DateDispose;
 import dispose.TextDispose;
-import enumerate.CommonlyUsedType;
+import enumerate.UsedType;
 import enumerate.DateType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
@@ -131,14 +131,12 @@ public class ExcelDisposeUtil {
             String value;
             if (objectValue == null) {
                 value = null;
-            } else if (objectValue instanceof Date && !field.getType().getName().equals(CommonlyUsedType.Type_String.getValue())) {
+            } else if (objectValue instanceof Date && !field.getType().getName().equals(UsedType.Type_String.getValue())) {
                 value = DateDispose.formattingDate((Date) objectValue, dateType);
             } else if (TextDispose.isDouble(objectValue.toString())) {
                 StringBuilder sb = new StringBuilder("#0.");
                 if (decimalAfterDigit > 0) {
-                    for (int i = 0; i < decimalAfterDigit; i++) {
-                        sb.append("0");
-                    }
+                    sb.append("0".repeat(decimalAfterDigit));
                 } else {
                     sb.append("000");
                 }
@@ -172,11 +170,9 @@ public class ExcelDisposeUtil {
                     excelFields[field.getAnnotation(ExcelField.class).order() - 1] = field;
                 }
             }
-            if (excelFields.length > 0) {
-                for (Field field : excelFields) {
-                    if (field != null) {
-                        fieldList.add(field);
-                    }
+            for (Field field : excelFields) {
+                if (field != null) {
+                    fieldList.add(field);
                 }
             }
         } catch (Exception e) {
@@ -260,7 +256,7 @@ public class ExcelDisposeUtil {
         for (int i = 0; i < colString.length(); i++) {
             char ch = colString.charAt(colString.length() - i - 1);
             num = ch - 'A' + 1;
-            num *= Math.pow(26, i);
+            num *= (int) Math.pow(26, i);
             result += num;
         }
         return result;

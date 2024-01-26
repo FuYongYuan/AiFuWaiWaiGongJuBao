@@ -88,6 +88,11 @@ public class ExtraCellData {
     private boolean isAutoSize;
 
     /**
+     * 是否隐藏列
+     */
+    private boolean isHidden;
+
+    /**
      * 边框
      */
     private BorderStyle border;
@@ -437,6 +442,21 @@ public class ExtraCellData {
     public ExtraCellData setIsAutoSize(boolean isAutoSize) {
         this.isAutoSize = isAutoSize;
         return this;
+    }
+
+    /**
+     * 是否隐藏列
+     */
+    public ExtraCellData setIsHidden(boolean isHidden) {
+        this.isHidden = isHidden;
+        return this;
+    }
+
+    /**
+     * 是否隐藏列
+     */
+    public boolean getIsHidden() {
+        return isHidden;
     }
 
     /**
