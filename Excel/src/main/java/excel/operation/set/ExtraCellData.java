@@ -23,6 +23,11 @@ public class ExtraCellData {
     private Integer colspan;
 
     /**
+     * 跨列数量 包含自身 默认1
+     */
+    private Integer rowspan;
+
+    /**
      * 列值
      */
     private Object cellValue;
@@ -154,11 +159,12 @@ public class ExtraCellData {
     }
 
     /**
-     * 创建
+     * 创建基础属性-不含值和类型
      */
     public static ExtraCellData create() {
         return new ExtraCellData()
                 .setColspan(1)
+                .setRowspan(1)
                 .setDecimalAfterDigit(3)
                 .setDateType(DateType.Year_Month_Day_Hour_Minute_Second)
                 .setFillPattern(FillPatternType.NO_FILL)
@@ -167,7 +173,7 @@ public class ExtraCellData {
                 .setVerticalAlignment(VerticalAlignment.CENTER)
                 .setIsBold(false)
                 .setIsMoney(false)
-                .setChinaIsMoney(false)
+                .setIsChinaMoney(false)
                 .setColumnWidth(-1)
                 .setIsAutoSize(false)
                 .setBorder(BorderStyle.NONE)
@@ -220,6 +226,21 @@ public class ExtraCellData {
      */
     public ExtraCellData setColspan(Integer colspan) {
         this.colspan = colspan;
+        return this;
+    }
+
+    /**
+     * 夸列数量
+     */
+    public Integer getRowspan() {
+        return colspan;
+    }
+
+    /**
+     * 跨列数量
+     */
+    public ExtraCellData setRowspan(Integer rowspan) {
+        this.rowspan = rowspan;
         return this;
     }
 
@@ -405,11 +426,10 @@ public class ExtraCellData {
     public boolean getIsChinaMoney() {
         return isChinaMoney;
     }
-
     /**
      * 是否是中国大写钱类型
      */
-    public ExtraCellData setChinaIsMoney(boolean isChinaMoney) {
+    public ExtraCellData setIsChinaMoney(boolean isChinaMoney) {
         this.isChinaMoney = isChinaMoney;
         return this;
     }
@@ -619,7 +639,8 @@ public class ExtraCellData {
     /**
      * 字体大小
      */
-    public void setFontSize(short fontSize) {
+    public ExtraCellData setFontSize(short fontSize) {
         this.fontSize = fontSize;
+        return this;
     }
 }

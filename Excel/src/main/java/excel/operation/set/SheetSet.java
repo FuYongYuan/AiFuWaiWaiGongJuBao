@@ -1,10 +1,12 @@
 package excel.operation.set;
 
 import dispose.TextDispose;
+import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.cache.SheetCache;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -107,6 +109,50 @@ public class SheetSet {
 
         if (this.isGetMethodFieldValue == null) {
             this.isGetMethodFieldValue = true;
+        }
+
+        if (this.extraRowData != null && !this.extraRowData.isEmpty()) {
+            int topMax = 0;
+            int endMax = 0;
+            int occupyTop = 0;
+            int occupyEnd = 0;
+            for (ExtraRowData row : this.extraRowData) {
+                if (row.getIsMaxRowNumber()) {
+                    occupyEnd = occupyEnd + 1;
+                    for (ExtraCellData cell : row.getExtraCellData()) {
+                        if (cell.getRowspan() != null && cell.getRowspan() > 1) {
+                            endMax = Math.max(endMax, cell.getRowspan());
+                        }
+                    }
+                } else {
+                    occupyTop = occupyTop + 1;
+                    for (ExtraCellData cell : row.getExtraCellData()) {
+                        if (cell.getRowspan() != null && cell.getRowspan() > 1) {
+                            topMax = Math.max(topMax, cell.getRowspan());
+                            // 处理合并后想与标题相同值
+                            if ("@ExcelField.columnName".equals(cell.getCellValue())) {
+                                Field[] fields = this.dataClass.getDeclaredFields();
+                                for (Field field : fields) {
+                                    if (field.getAnnotation(ExcelField.class) != null) {
+                                        if ((field.getAnnotation(ExcelField.class).order() - 1) == cell.getCellNumber()) {
+                                            cell.setCellValue(field.getAnnotation(ExcelField.class).columnName()).setCellType(String.class);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            boolean isRepeat;
+            isRepeat = occupyTop + 1 < topMax;
+            if (isRepeat) {
+                throw new ExcelOperateException("诊断：存在夸行重叠请检查行号及夸行数设置！", new IndexOutOfBoundsException());
+            }
+            isRepeat = occupyEnd < endMax;
+            if (isRepeat) {
+                throw new ExcelOperateException("诊断：存在尾行额外行夸行重叠请检查行号及夸行数设置！", new IndexOutOfBoundsException());
+            }
         }
 
         return this;

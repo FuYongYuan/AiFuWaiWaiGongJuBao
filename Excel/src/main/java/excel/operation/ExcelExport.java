@@ -141,7 +141,13 @@ public class ExcelExport {
                     cell = row.createCell(ecd.getCellNumber());
                 }
                 CellRangeAddress cellAddresses = null;
-                if (ecd.getColspan() != null && ecd.getColspan() > 1) {
+                if ((ecd.getRowspan() != null && ecd.getRowspan() > 1) && (ecd.getColspan() != null && ecd.getColspan() > 1)) {
+                    cellAddresses = new CellRangeAddress(sheetSet.getSheetCache().sheetModelCache.initRow, sheetSet.getSheetCache().sheetModelCache.initRow + (ecd.getRowspan() - 1), ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
+                    sheetModel.addMergedRegion(cellAddresses);
+                } else if (ecd.getRowspan() != null && ecd.getRowspan() > 1) {
+                    cellAddresses = new CellRangeAddress(sheetSet.getSheetCache().sheetModelCache.initRow, sheetSet.getSheetCache().sheetModelCache.initRow + (ecd.getRowspan() - 1), ecd.getCellNumber(), ecd.getCellNumber());
+                    sheetModel.addMergedRegion(cellAddresses);
+                } else if (ecd.getColspan() != null && ecd.getColspan() > 1) {
                     cellAddresses = new CellRangeAddress(sheetSet.getSheetCache().sheetModelCache.initRow, sheetSet.getSheetCache().sheetModelCache.initRow, ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
                     sheetModel.addMergedRegion(cellAddresses);
                 }
@@ -370,7 +376,13 @@ public class ExcelExport {
                 cell = row.createCell(ecd.getCellNumber());
             }
             CellRangeAddress cellAddresses = null;
-            if (ecd.getColspan() != null && ecd.getColspan() > 1) {
+            if ((ecd.getRowspan() != null && ecd.getRowspan() > 1) && (ecd.getColspan() != null && ecd.getColspan() > 1)) {
+                cellAddresses = new CellRangeAddress(erd.getRowNumber(), erd.getRowNumber() + (ecd.getRowspan() - 1), ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
+                sheetModel.addMergedRegion(cellAddresses);
+            } else if (ecd.getRowspan() != null && ecd.getRowspan() > 1) {
+                cellAddresses = new CellRangeAddress(erd.getRowNumber(), erd.getRowNumber() + (ecd.getRowspan() - 1), ecd.getCellNumber(), ecd.getCellNumber());
+                sheetModel.addMergedRegion(cellAddresses);
+            } else if (ecd.getColspan() != null && ecd.getColspan() > 1) {
                 cellAddresses = new CellRangeAddress(erd.getRowNumber(), erd.getRowNumber(), ecd.getCellNumber(), ecd.getCellNumber() + (ecd.getColspan() - 1));
                 sheetModel.addMergedRegion(cellAddresses);
             }
@@ -379,7 +391,7 @@ public class ExcelExport {
     }
 
     /**
-     * 赋值
+     * 内容赋值
      */
     private void setCellValue(
             Field field,
@@ -571,7 +583,7 @@ public class ExcelExport {
     }
 
     /**
-     * 赋值
+     * 额外列赋值
      */
     private void setCellValue(
             Sheet sheetModel,
