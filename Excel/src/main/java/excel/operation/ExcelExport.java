@@ -9,8 +9,8 @@ import excel.exception.ExcelOperateException;
 import excel.operation.cache.ReferenceFieldCache;
 import excel.operation.cache.TotalRowIndex;
 import excel.operation.set.*;
-import excel.util.ExcelDisposeConstant;
-import excel.util.ExcelDisposeUtil;
+import excel.util.ExcelConstant;
+import excel.util.ExcelDispose;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
@@ -79,7 +79,7 @@ public class ExcelExport {
                         );
                     }
                     //获取要执行的对象中属于Excel的字段
-                    ExcelDisposeUtil.initialization(sheetSet);
+                    ExcelDispose.initialization(sheetSet);
                     if (sheetSet.getSheetCache().useField != null && !sheetSet.getSheetCache().useField.isEmpty()) {
                         //初始化行数
                         if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
@@ -881,9 +881,9 @@ public class ExcelExport {
         // 当前数据行
         int current = sheetSet.getSheetCache().sheetModelCache.i - sheetSet.getSheetCache().sheetModelCache.initRow - sheetSet.getSheetCache().sheetModelCache.extraRow;
         // 当前的字段值
-        String cellValue = ExcelDisposeUtil.correspondingValue(field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(), excelField.dateType(), excelField.decimalAfterDigit(), excelField.roundingMode());
+        String cellValue = ExcelDispose.correspondingValue(field, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(), excelField.dateType(), excelField.decimalAfterDigit(), excelField.roundingMode());
         // 获取转换值集中对应值
-        cellValue = ExcelDisposeUtil.getValueLimit(sheetSet, cellValue, excelField);
+        cellValue = ExcelDispose.getValueLimit(sheetSet, cellValue, excelField);
         // 跨行处理
         if (excelField.rowspan()) {
             // 上一数据行
@@ -952,7 +952,7 @@ public class ExcelExport {
         }
 
         if (referenceFieldCache.referenceField != null && referenceFieldCache.referenceExcelField != null) {
-            referenceFieldCache.rowspanAlignCellValue = ExcelDisposeUtil.correspondingValue(
+            referenceFieldCache.rowspanAlignCellValue = ExcelDispose.correspondingValue(
                     referenceFieldCache.referenceField, sheetSet.getSheetData().get(current), sheetSet.getIsGetMethodFieldValue(),
                     referenceFieldCache.referenceExcelField.dateType(),
                     referenceFieldCache.referenceExcelField.decimalAfterDigit(),
@@ -985,7 +985,7 @@ public class ExcelExport {
      */
     private void getReferenceFieldCellValue(int current, SheetSet sheetSet, Field field, ExcelField excelField, ReferenceFieldCache referenceFieldCache) {
         if (excelField.rowspanAlignOrder() == 0) {
-            referenceFieldCache.cellValue = ExcelDisposeUtil.correspondingValue(
+            referenceFieldCache.cellValue = ExcelDispose.correspondingValue(
                     field,
                     sheetSet.getSheetData().get(current),
                     sheetSet.getIsGetMethodFieldValue(),
@@ -994,7 +994,7 @@ public class ExcelExport {
                     excelField.roundingMode()
             );
         } else if (referenceFieldCache.referenceField != null && referenceFieldCache.referenceExcelField != null) {
-            referenceFieldCache.cellValue = ExcelDisposeUtil.correspondingValue(
+            referenceFieldCache.cellValue = ExcelDispose.correspondingValue(
                     referenceFieldCache.referenceField,
                     sheetSet.getSheetData().get(current),
                     sheetSet.getIsGetMethodFieldValue(),
@@ -1243,7 +1243,7 @@ public class ExcelExport {
         if (rowExtraData != null) {
             if (rowExtraData.getIsFormula()) {
                 String cfv = rowExtraData.getValue();
-                while (cfv.contains(ExcelDisposeConstant.LEFT_BRACKET) && cfv.contains(ExcelDisposeConstant.RIGHT_BRACKET) && cfv.contains(ExcelDisposeConstant.THIS_DOT)) {
+                while (cfv.contains(ExcelConstant.LEFT_BRACKET) && cfv.contains(ExcelConstant.RIGHT_BRACKET) && cfv.contains(ExcelConstant.THIS_DOT)) {
                     String cf = cfv.substring(cfv.indexOf("[") + 1, cfv.indexOf("]"));
                     int cellNumber = Integer.parseInt(cf.replaceAll("this.", "")) - 1;
                     //长度转成ABC列

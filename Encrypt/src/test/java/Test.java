@@ -2,6 +2,7 @@ import encrypt.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Random;
 
 public class Test {
     public static void main(String[] args) throws Exception {
@@ -45,12 +46,14 @@ public class Test {
 //        System.out.println(AesUtil.encryptString("weblogic123","EBS"));
 //        System.out.println(AesUtil.decryptString("A8C709E60599D0610492B079C724674B","EBS"));
 
-        System.out.println("SecretKeyfyyfyyain77Ifssfyyainss".length());
-
-        System.out.println(Base64.getEncoder().encodeToString("SecretKeyfyyfyyain77Ifssfyyainss".getBytes(StandardCharsets.UTF_8)));
+//        System.out.println("SecretKeyfyyfyyain77Ifssfyyainss".length());
+//
+//        System.out.println(Base64.getEncoder().encodeToString("SecretKeyfyyfyyain77Ifssfyyainss".getBytes(StandardCharsets.UTF_8)));
 //
 //        System.out.println(org.apache.commons.codec.binary.Base64.encodeBase64("nacos".getBytes("utf8")));
 //
 //        System.out.println(Base64.getDecoder().decode("VGhpc0lzTXlDdXN0b21TZWNyZXRLZXkwMTIzNDU2Nzg="));
+
+        System.out.println(RandomUtil.randomAlphabet(64));
     }
 }

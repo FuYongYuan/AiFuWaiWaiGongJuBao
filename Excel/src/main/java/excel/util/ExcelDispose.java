@@ -8,8 +8,14 @@ import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.set.SheetSet;
 import excel.operation.set.ValueLimit;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,7 +32,7 @@ import java.util.Map;
  *
  * @author fyy
  */
-public class ExcelDisposeUtil {
+public class ExcelDispose {
     /**
      * 对象和Excel有关的属性List获取
      */
@@ -192,7 +198,7 @@ public class ExcelDisposeUtil {
     public static String getValueLimit(SheetSet sheetSet, String cellValue, ExcelField excelField) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         //获取转换值集中对应值
         if (!excelField.valueLimit().isEmpty()) {
-            if (excelField.valueLimit().contains(ExcelDisposeConstant.EQUAL)) {
+            if (excelField.valueLimit().contains(ExcelConstant.EQUAL)) {
                 String[] valueLimits = excelField.valueLimit().split(";");
                 for (String valueLimit : valueLimits) {
                     String[] vl = valueLimit.split("=");
@@ -269,5 +275,33 @@ public class ExcelDisposeUtil {
      */
     public static String convertNumToColString(int num) {
         return CellReference.convertNumToColString(num);
+    }
+
+    /**
+     * 将CSV文件转换为Excel文件
+     * @param csvFilePath csv文件路径
+     * @param excelFilePath excel文件路径
+     * @throws IOException IO异常
+     */
+    public static void convertCsvToExcel(String csvFilePath, String excelFilePath) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet();
+            try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath));
+                 OutputStream outStream = new FileOutputStream(excelFilePath)) {
+
+                String line;
+                int rowIndex = 0;
+                while ((line = br.readLine()) != null) {
+                    String[] columns = line.split(",");
+                    Row row = sheet.createRow(rowIndex++);
+                    for (int i = 0; i < columns.length; i++) {
+                        Cell cell = row.createCell(i);
+                        cell.setCellValue(columns[i]);
+                    }
+                }
+
+                workbook.write(outStream);
+            }
+        }
     }
 }

@@ -5,7 +5,7 @@ package excel.util;
  *
  * @author fyy
  */
-public class ExcelDisposeConstant {
+public class ExcelConstant {
     /**
      * =
      */

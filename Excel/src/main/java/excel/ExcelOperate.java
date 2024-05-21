@@ -3,8 +3,8 @@ package excel;
 import dispose.TextDispose;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
-import excel.util.ExcelDisposeConstant;
-import excel.util.ExcelDisposeUtil;
+import excel.util.ExcelConstant;
+import excel.util.ExcelDispose;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -50,9 +50,9 @@ public class ExcelOperate {
         if (TextDispose.isNotEmpty(this.path)) {
             String prefix = this.path.substring(this.path.lastIndexOf(".") + 1);
             this.isGetMethodFieldValue = isGetMethodFieldValue;
-            if (ExcelDisposeConstant.XLSX.equals(prefix)) {
+            if (ExcelConstant.XLSX.equals(prefix)) {
                 this.workbook = new XSSFWorkbook(new FileInputStream(this.path));
-            } else if (ExcelDisposeConstant.XLS.equals(prefix)) {
+            } else if (ExcelConstant.XLS.equals(prefix)) {
                 this.workbook = new HSSFWorkbook(new FileInputStream(this.path));
             } else {
                 throw new ExcelOperateException("诊断：传入文档格式不正确！", new IOException());
@@ -72,13 +72,13 @@ public class ExcelOperate {
     public int addRow(String sheetName, Object obj) {
         int result = 0;
         if (TextDispose.isNotEmpty(sheetName)) {
-            List<Field> fieldList = ExcelDisposeUtil.getFieldList(obj.getClass());
+            List<Field> fieldList = ExcelDispose.getFieldList(obj.getClass());
             if (!fieldList.isEmpty()) {
                 Sheet sheet = workbook.getSheet(sheetName);
                 result = sheet.getLastRowNum() + 1;
                 Row row = sheet.createRow(result);
                 for (int i = 0; i < fieldList.size(); i++) {
-                    row.createCell(i).setCellValue(ExcelDisposeUtil.correspondingValue(
+                    row.createCell(i).setCellValue(ExcelDispose.correspondingValue(
                             fieldList.get(i), obj, this.isGetMethodFieldValue,
                             fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
                             fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit(),
@@ -109,13 +109,13 @@ public class ExcelOperate {
     public boolean updateRow(String sheetName, int rowNumber, Object obj) {
         boolean result;
         if (TextDispose.isNotEmpty(sheetName)) {
-            List<Field> fieldList = ExcelDisposeUtil.getFieldList(obj.getClass());
+            List<Field> fieldList = ExcelDispose.getFieldList(obj.getClass());
             if (!fieldList.isEmpty()) {
                 Sheet sheet = workbook.getSheet(sheetName);
                 if (rowNumber >= 0 && rowNumber <= sheet.getLastRowNum()) {
                     Row row = sheet.getRow(rowNumber);
                     for (int i = 0; i < fieldList.size(); i++) {
-                        String value = ExcelDisposeUtil.correspondingValue(
+                        String value = ExcelDispose.correspondingValue(
                                 fieldList.get(i), obj, this.isGetMethodFieldValue,
                                 fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
                                 fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit(),

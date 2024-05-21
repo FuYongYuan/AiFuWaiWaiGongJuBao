@@ -7,8 +7,8 @@ import enumerate.DateType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.cache.LoadSpanCache;
-import excel.util.ExcelDisposeConstant;
-import excel.util.ExcelDisposeUtil;
+import excel.util.ExcelConstant;
+import excel.util.ExcelDispose;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -116,7 +116,7 @@ public class ExcelImport {
             // 公共标题列对象
             Cell cellf = null;
             // 获取正确的字段顺序
-            List<Field> fieldList = ExcelDisposeUtil.getFieldList(tClass);
+            List<Field> fieldList = ExcelDispose.getFieldList(tClass);
             // 跨行跨列缓存
             List<LoadSpanCache> loadSpanCacheList = new ArrayList<>();
             // 循环之后的行数据
@@ -358,12 +358,12 @@ public class ExcelImport {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, String.class);
             String s;
             if (TextDispose.isNumber(value.toString())) {
-                if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0 && value.toString().indexOf(ExcelDisposeConstant.E) > 0) {
+                if (value.toString().indexOf(ExcelConstant.DOT) > 0 && value.toString().indexOf(ExcelConstant.E) > 0) {
                     DecimalFormat df = new DecimalFormat("#");
                     s = df.format(value);
                     method.invoke(obj, s);
-                } else if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
-                    s = value.toString().substring(value.toString().indexOf(ExcelDisposeConstant.DOT) + 1);
+                } else if (value.toString().indexOf(ExcelConstant.DOT) > 0) {
+                    s = value.toString().substring(value.toString().indexOf(ExcelConstant.DOT) + 1);
                     int ints = Integer.parseInt(s);
                     if (ints == 0) {
                         DecimalFormat df = new DecimalFormat("#");
@@ -388,7 +388,7 @@ public class ExcelImport {
             method.invoke(obj, (Date) value);
         } else if (field.getType().getName().equals(UsedType.Type_Integer.getValue()) || field.getType().getName().equals(UsedType.Type_int.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Integer.class);
-            if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
+            if (value.toString().indexOf(ExcelConstant.DOT) > 0) {
                 double d = Double.parseDouble(value.toString());
                 method.invoke(obj, (int) d);
             } else {
@@ -396,7 +396,7 @@ public class ExcelImport {
             }
         } else if (field.getType().getName().equals(UsedType.Type_Long.getValue()) || field.getType().getName().equals(UsedType.Type_long.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Long.class);
-            if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
+            if (value.toString().indexOf(ExcelConstant.DOT) > 0) {
                 double d = Double.parseDouble(value.toString());
                 method.invoke(obj, (long) d);
             } else {
@@ -427,14 +427,14 @@ public class ExcelImport {
             value = DateDispose.formattingDate(value.toString(), field.getAnnotation(ExcelField.class).dateType());
             field.set(obj, value);
         } else if (field.getType().getName().equals(UsedType.Type_int.getValue()) || field.getType().getName().equals(UsedType.Type_Integer.getValue())) {
-            if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
+            if (value.toString().indexOf(ExcelConstant.DOT) > 0) {
                 double d = Double.parseDouble(value.toString());
                 field.set(obj, (int) d);
             } else {
                 field.set(obj, Integer.parseInt(value.toString()));
             }
         } else if (field.getType().getName().equals(UsedType.Type_long.getValue()) || field.getType().getName().equals(UsedType.Type_Long.getValue())) {
-            if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
+            if (value.toString().indexOf(ExcelConstant.DOT) > 0) {
                 double d = Double.parseDouble(value.toString());
                 field.set(obj, (long) d);
             } else {
@@ -447,11 +447,11 @@ public class ExcelImport {
         } else if (field.getType().getName().equals(UsedType.Type_String.getValue())) {
             String s;
             if (TextDispose.isNumber(value.toString())) {
-                if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0 && value.toString().indexOf(ExcelDisposeConstant.E) > 0) {
+                if (value.toString().indexOf(ExcelConstant.DOT) > 0 && value.toString().indexOf(ExcelConstant.E) > 0) {
                     DecimalFormat df = new DecimalFormat("#");
                     s = df.format(value);
                     field.set(obj, s);
-                } else if (value.toString().indexOf(ExcelDisposeConstant.DOT) > 0) {
+                } else if (value.toString().indexOf(ExcelConstant.DOT) > 0) {
                     s = value.toString().substring(value.toString().indexOf(".") + 1);
                     int ints = Integer.parseInt(s);
                     if (ints == 0) {

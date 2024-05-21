@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author fyy
  */
-public class ExcelValidationUtil {
+public class ExcelValidation {
 
     /**
      * 验证

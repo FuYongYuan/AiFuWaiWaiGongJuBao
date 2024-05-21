@@ -91,6 +91,11 @@ public class Test {
                                     ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
                                     ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build()
                             ).setIsNewRow(true).build()
+                            , ExtraRowData.create().setIsMaxRowNumber(true).setExtraCellData(
+                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试").setCellType(String.class).build(),
+                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
+                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build()
+                            ).setIsNewRow(true).build()
                     )
                     .build(excelExport.getWorkbook());
 
