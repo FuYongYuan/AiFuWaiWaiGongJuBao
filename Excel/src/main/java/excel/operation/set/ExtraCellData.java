@@ -73,6 +73,11 @@ public class ExtraCellData {
     private Boolean isBold;
 
     /**
+     * 公式
+     */
+    private boolean isFormula;
+
+    /**
      * 是否是钱类型
      */
     private boolean isMoney;
@@ -406,6 +411,21 @@ public class ExtraCellData {
     }
 
     /**
+     * 是否公式
+     */
+    public ExtraCellData setIsFormula(boolean isFormula) {
+        this.isFormula = isFormula;
+        return this;
+    }
+
+    /**
+     * 是否公式
+     */
+    public boolean getIsFormula() {
+        return isFormula;
+    }
+
+    /**
      * 是否是钱类型
      */
     public boolean getIsMoney() {
@@ -426,6 +446,7 @@ public class ExtraCellData {
     public boolean getIsChinaMoney() {
         return isChinaMoney;
     }
+
     /**
      * 是否是中国大写钱类型
      */

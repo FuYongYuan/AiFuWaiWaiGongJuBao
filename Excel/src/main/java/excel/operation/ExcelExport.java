@@ -401,7 +401,43 @@ public class ExcelExport {
     ) {
         //结果转换
         if (cellValue != null) {
-            if (TextDispose.isNumber(cellValue)) {
+            if (excelField.isFormula() && field.getType().getName().equals(UsedType.Type_String.getValue()) &&
+                    cellValue.charAt(0) == '='
+            ) {
+                // 获取等号后的表达式
+                cellValue = cellValue.substring(1);
+                while (
+                        cellValue.contains(ExcelConstant.LEFT_BRACKET) && cellValue.contains(ExcelConstant.RIGHT_BRACKET) &&
+                                cellValue.contains(ExcelConstant.CELL_DOT) && cellValue.contains(ExcelConstant.ROW_DOT)
+                ) {
+                    StringBuilder cellfFormula = new StringBuilder();
+                    // 获取等号中的表达式
+                    String cf = cellValue.substring(cellValue.indexOf(ExcelConstant.LEFT_BRACKET) + 1, cellValue.indexOf(ExcelConstant.RIGHT_BRACKET));
+
+                    // 在cf中以,分割取前半段
+                    String cv = cf.substring(0, cf.indexOf(","));
+                    // 在cf中以,分割取后半段
+                    String rv = cf.substring(cf.indexOf(",") + 1);
+                    // 列值
+                    int cellNumber = Integer.parseInt(cv.replaceAll(ExcelConstant.CELL_DOT, "")) - 1;
+                    // 行值
+                    String rvr = rv.replaceAll(ExcelConstant.ROW_DOT, "");
+                    int rowNumber = 0;
+                    if ("this".equals(rvr)) {
+                        rowNumber = cell.getRowIndex() + 1;
+                    } else {
+                        rowNumber = Integer.parseInt(rv.replaceAll(ExcelConstant.ROW_DOT, "")) - 1;
+                    }
+                    //长度转成ABC列
+                    String colString = CellReference.convertNumToColString(cellNumber);
+                    // 赋值
+                    cellfFormula.append(colString).append(rowNumber);
+                    // 在cellValue中减去cf内容
+                    cellValue = cellValue.replace(ExcelConstant.LEFT_BRACKET + cf + ExcelConstant.RIGHT_BRACKET, cellfFormula.toString());
+                }
+                // 赋值公式
+                cell.setCellFormula(cellValue);
+            } else if (TextDispose.isNumber(cellValue)) {
                 if (excelField.isChinaMoney()) {
                     // 是否浮点数字
                     boolean exist = field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())
@@ -596,7 +632,43 @@ public class ExcelExport {
         if (ecd != null) {
             if (ecd.getCellValue() != null) {
                 //结果转换
-                if (
+                if (ecd.getIsFormula() &&
+                        (ecd.getCellType() == String.class && ecd.getCellValue().toString().charAt(0) == '=')
+                ) {
+                    // 获取等号后的表达式
+                    ecd.setCellValue(ecd.getCellValue().toString().substring(1));
+                    while (
+                            ecd.getCellValue().toString().contains(ExcelConstant.LEFT_BRACKET) && ecd.getCellValue().toString().contains(ExcelConstant.RIGHT_BRACKET) &&
+                                    ecd.getCellValue().toString().contains(ExcelConstant.CELL_DOT) && ecd.getCellValue().toString().contains(ExcelConstant.ROW_DOT)
+                    ) {
+                        StringBuilder cellfFormula = new StringBuilder();
+                        // 获取等号中的表达式
+                        String cf = ecd.getCellValue().toString().substring(ecd.getCellValue().toString().indexOf(ExcelConstant.LEFT_BRACKET) + 1, ecd.getCellValue().toString().indexOf(ExcelConstant.RIGHT_BRACKET));
+
+                        // 在cf中以,分割取前半段
+                        String cv = cf.substring(0, cf.indexOf(","));
+                        // 在cf中以,分割取后半段
+                        String rv = cf.substring(cf.indexOf(",") + 1);
+                        // 列值
+                        int cellNumber = Integer.parseInt(cv.replaceAll(ExcelConstant.CELL_DOT, "")) - 1;
+                        // 行值
+                        String rvr = rv.replaceAll(ExcelConstant.ROW_DOT, "");
+                        int rowNumber = 0;
+                        if ("this".equals(rvr)) {
+                            rowNumber = cell.getRowIndex() + 1;
+                        } else {
+                            rowNumber = Integer.parseInt(rv.replaceAll(ExcelConstant.ROW_DOT, "")) - 1;
+                        }
+                        //长度转成ABC列
+                        String colString = CellReference.convertNumToColString(cellNumber);
+                        // 赋值
+                        cellfFormula.append(colString).append(rowNumber);
+                        // 在cellValue中减去cf内容
+                        ecd.setCellValue(ecd.getCellValue().toString().replace(ExcelConstant.LEFT_BRACKET + cf + ExcelConstant.RIGHT_BRACKET, cellfFormula.toString()));
+                    }
+                    // 赋值公式
+                    cell.setCellFormula(ecd.getCellValue().toString());
+                } else if (
                         ecd.getCellType() == Double.class ||
                                 ecd.getCellType() == double.class ||
                                 ecd.getCellType() == Integer.class ||
@@ -1321,17 +1393,19 @@ public class ExcelExport {
                 } else {
                     sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd = sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd + 1;
                     List<CellRangeAddress> cellRangeAddressList = sheetModel.getMergedRegions();
-                    CellRangeAddress cellAddresses = sheetModel.getMergedRegion(sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex);
-                    if (cellRangeAddressList.contains(cellAddresses)) {
-                        sheetModel.removeMergedRegion(cellRangeAddressList.indexOf(cellAddresses));
-                        for (Map.Entry<String, TotalRowIndex> totalRowIndexMapEntry : sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.entrySet()) {
-                            if (sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex < totalRowIndexMapEntry.getValue().regionIndex) {
-                                totalRowIndexMapEntry.getValue().regionIndex = totalRowIndexMapEntry.getValue().regionIndex - 1;
+                    if (sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex != null) {
+                        CellRangeAddress cellAddresses = sheetModel.getMergedRegion(sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex);
+                        if (cellRangeAddressList.contains(cellAddresses)) {
+                            sheetModel.removeMergedRegion(cellRangeAddressList.indexOf(cellAddresses));
+                            for (Map.Entry<String, TotalRowIndex> totalRowIndexMapEntry : sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.entrySet()) {
+                                if (sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex < totalRowIndexMapEntry.getValue().regionIndex) {
+                                    totalRowIndexMapEntry.getValue().regionIndex = totalRowIndexMapEntry.getValue().regionIndex - 1;
+                                }
                             }
                         }
+                        CellRangeAddress region = new CellRangeAddress(sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanStart, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo);
+                        sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex = sheetModel.addMergedRegion(region) - 1;
                     }
-                    CellRangeAddress region = new CellRangeAddress(sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanStart, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).rowspanEnd, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo, sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).columnNo);
-                    sheetSet.getSheetCache().sheetModelCache.totalRowIndexMap.get(field.getName()).regionIndex = sheetModel.addMergedRegion(region) - 1;
                 }
             }
         }

@@ -130,7 +130,7 @@ public class SheetSet {
                         if (cell.getRowspan() != null && cell.getRowspan() > 1) {
                             topMax = Math.max(topMax, cell.getRowspan());
                             // 处理合并后想与标题相同值
-                            if ("@ExcelField.columnName".equals(cell.getCellValue())) {
+                            if ("[@ExcelField.columnName]".equals(cell.getCellValue())) {
                                 Field[] fields = this.dataClass.getDeclaredFields();
                                 for (Field field : fields) {
                                     if (field.getAnnotation(ExcelField.class) != null) {
@@ -308,19 +308,21 @@ public class SheetSet {
     /**
      * 冻结
      */
-    public void setFreezePane(FreezePane freezePane) {
+    public SheetSet setFreezePane(FreezePane freezePane) {
         this.freezePane = freezePane;
+        return this;
     }
 
     /**
      * 冻结
      */
-    public void setFreezePane(int colSplit, int rowSplit, int leftmostColumn, int topRow) {
+    public SheetSet setFreezePane(int colSplit, int rowSplit, int leftmostColumn, int topRow) {
         this.freezePane = FreezePane.create()
                 .setColSplit(colSplit)
                 .setRowSplit(rowSplit)
                 .setLeftmostColumn(leftmostColumn)
                 .setTopRow(topRow)
                 .build();
+        return this;
     }
 }

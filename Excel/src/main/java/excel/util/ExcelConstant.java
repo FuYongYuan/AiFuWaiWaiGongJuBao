@@ -46,5 +46,13 @@ public class ExcelConstant {
      */
     public static final String THIS_DOT = "this.";
 
+    /**
+     * cell.
+     */
+    public static final String CELL_DOT = "cell.";
 
+    /**
+     * row.
+     */
+    public static final String ROW_DOT = "row.";
 }

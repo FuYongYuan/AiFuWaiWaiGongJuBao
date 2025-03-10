@@ -46,6 +46,11 @@ public @interface ExcelField {
     DateType dateType() default DateType.Year_Month_Day_Hour_Minute_Second;
 
     /**
+     * 公式
+     */
+    boolean isFormula() default false;
+
+    /**
      * 替换值集
      */
     String valueLimit() default "";
