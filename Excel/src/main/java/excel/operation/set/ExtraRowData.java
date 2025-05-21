@@ -1,6 +1,7 @@
 package excel.operation.set;
 
 import excel.exception.ExcelOperateException;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.List;
  *
  * @author fyy
  */
+@Getter
 public class ExtraRowData {
     /**
      * 行号
@@ -32,6 +34,12 @@ public class ExtraRowData {
      * 列集合
      */
     private List<ExtraCellData> extraCellData;
+
+    /**
+     * 行高
+     */
+    private int height;
+
 
     /**
      * 内部构造
@@ -75,23 +83,9 @@ public class ExtraRowData {
     /**
      * 行号
      */
-    public Integer getRowNumber() {
-        return rowNumber;
-    }
-
-    /**
-     * 行号
-     */
     public ExtraRowData setRowNumber(Integer rowNumber) {
         this.rowNumber = rowNumber - 1;
         return this;
-    }
-
-    /**
-     * 是否取最后一行做为行号
-     */
-    public Boolean getIsMaxRowNumber() {
-        return isMaxRowNumber;
     }
 
     /**
@@ -105,23 +99,9 @@ public class ExtraRowData {
     /**
      * 是否新增行
      */
-    public Boolean getIsNewRow() {
-        return isNewRow;
-    }
-
-    /**
-     * 是否新增行
-     */
     public ExtraRowData setIsNewRow(Boolean isNewRow) {
         this.isNewRow = isNewRow;
         return this;
-    }
-
-    /**
-     * 列集合
-     */
-    public List<ExtraCellData> getExtraCellData() {
-        return extraCellData;
     }
 
     /**
@@ -139,5 +119,12 @@ public class ExtraRowData {
         this.extraCellData = Arrays.asList(extraCellData);
         return this;
     }
-}
 
+    /**
+     * 行高
+     */
+    public ExtraRowData setHeight(int height) {
+        this.height = height;
+        return this;
+    }
+}

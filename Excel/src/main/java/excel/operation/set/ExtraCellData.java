@@ -2,6 +2,7 @@ package excel.operation.set;
 
 import enumerate.DateType;
 import excel.exception.ExcelOperateException;
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Type;
@@ -11,6 +12,7 @@ import java.lang.reflect.Type;
  *
  * @author fyy
  */
+@Getter
 public class ExtraCellData {
     /**
      * 列号
@@ -101,6 +103,11 @@ public class ExtraCellData {
      * 是否隐藏列
      */
     private boolean isHidden;
+
+    /**
+     * 自动换行
+     */
+    private boolean isWrapText;
 
     /**
      * 边框
@@ -207,13 +214,6 @@ public class ExtraCellData {
     /**
      * 列号
      */
-    public Integer getCellNumber() {
-        return cellNumber;
-    }
-
-    /**
-     * 列号
-     */
     public ExtraCellData setCellNumber(Integer cellNumber) {
         this.cellNumber = cellNumber - 1;
         return this;
@@ -222,23 +222,9 @@ public class ExtraCellData {
     /**
      * 夸列数量
      */
-    public Integer getColspan() {
-        return colspan;
-    }
-
-    /**
-     * 夸列数量
-     */
     public ExtraCellData setColspan(Integer colspan) {
         this.colspan = colspan;
         return this;
-    }
-
-    /**
-     * 夸列数量
-     */
-    public Integer getRowspan() {
-        return colspan;
     }
 
     /**
@@ -252,23 +238,9 @@ public class ExtraCellData {
     /**
      * 列值
      */
-    public Object getCellValue() {
-        return cellValue;
-    }
-
-    /**
-     * 列值
-     */
     public ExtraCellData setCellValue(Object cellValue) {
         this.cellValue = cellValue;
         return this;
-    }
-
-    /**
-     * 列类型
-     */
-    public Type getCellType() {
-        return cellType;
     }
 
     /**
@@ -282,23 +254,9 @@ public class ExtraCellData {
     /**
      * 保留位数
      */
-    public int getDecimalAfterDigit() {
-        return decimalAfterDigit;
-    }
-
-    /**
-     * 保留位数
-     */
     public ExtraCellData setDecimalAfterDigit(int decimalAfterDigit) {
         this.decimalAfterDigit = decimalAfterDigit;
         return this;
-    }
-
-    /**
-     * 日期格式
-     */
-    public DateType getDateType() {
-        return dateType;
     }
 
     /**
@@ -312,23 +270,9 @@ public class ExtraCellData {
     /**
      * 填充颜色类型
      */
-    public FillPatternType getFillPattern() {
-        return fillPattern;
-    }
-
-    /**
-     * 填充颜色类型
-     */
     public ExtraCellData setFillPattern(FillPatternType fillPattern) {
         this.fillPattern = fillPattern;
         return this;
-    }
-
-    /**
-     * 填充颜色
-     */
-    public short getFillForegroundColor() {
-        return fillForegroundColor;
     }
 
     /**
@@ -368,13 +312,6 @@ public class ExtraCellData {
     /**
      * 水平位置
      */
-    public HorizontalAlignment getHorizontalAlignment() {
-        return horizontalAlignment;
-    }
-
-    /**
-     * 水平位置
-     */
     public ExtraCellData setHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
         this.horizontalAlignment = horizontalAlignment;
         return this;
@@ -383,23 +320,9 @@ public class ExtraCellData {
     /**
      * 上下位置
      */
-    public VerticalAlignment getVerticalAlignment() {
-        return verticalAlignment;
-    }
-
-    /**
-     * 上下位置
-     */
     public ExtraCellData setVerticalAlignment(VerticalAlignment verticalAlignment) {
         this.verticalAlignment = verticalAlignment;
         return this;
-    }
-
-    /**
-     * 是否加粗
-     */
-    public Boolean getIsBold() {
-        return isBold;
     }
 
     /**
@@ -419,32 +342,11 @@ public class ExtraCellData {
     }
 
     /**
-     * 是否公式
-     */
-    public boolean getIsFormula() {
-        return isFormula;
-    }
-
-    /**
-     * 是否是钱类型
-     */
-    public boolean getIsMoney() {
-        return isMoney;
-    }
-
-    /**
      * 是否是钱类型
      */
     public ExtraCellData setIsMoney(boolean isMoney) {
         this.isMoney = isMoney;
         return this;
-    }
-
-    /**
-     * 是否是中国大写钱类型
-     */
-    public boolean getIsChinaMoney() {
-        return isChinaMoney;
     }
 
     /**
@@ -458,23 +360,9 @@ public class ExtraCellData {
     /**
      * 列宽
      */
-    public int getColumnWidth() {
-        return columnWidth;
-    }
-
-    /**
-     * 列宽
-     */
     public ExtraCellData setColumnWidth(int columnWidth) {
         this.columnWidth = columnWidth;
         return this;
-    }
-
-    /**
-     * 是否自动调整列宽
-     */
-    public boolean getIsAutoSize() {
-        return isAutoSize;
     }
 
     /**
@@ -494,17 +382,11 @@ public class ExtraCellData {
     }
 
     /**
-     * 是否隐藏列
+     * 自动换行
      */
-    public boolean getIsHidden() {
-        return isHidden;
-    }
-
-    /**
-     * 边框
-     */
-    public BorderStyle getBorder() {
-        return border;
+    public ExtraCellData setIsWrapText(boolean isWrapText) {
+        this.isWrapText = isWrapText;
+        return this;
     }
 
     /**
@@ -518,23 +400,9 @@ public class ExtraCellData {
     /**
      * 边框颜色
      */
-    public IndexedColors getBorderColor() {
-        return borderColor;
-    }
-
-    /**
-     * 边框颜色
-     */
     public ExtraCellData setBorderColor(IndexedColors borderColor) {
         this.borderColor = borderColor;
         return this;
-    }
-
-    /**
-     * 上边框
-     */
-    public BorderStyle getBorderTop() {
-        return borderTop;
     }
 
     /**
@@ -548,23 +416,9 @@ public class ExtraCellData {
     /**
      * 上边框颜色
      */
-    public IndexedColors getBorderTopColor() {
-        return borderTopColor;
-    }
-
-    /**
-     * 上边框颜色
-     */
     public ExtraCellData setBorderTopColor(IndexedColors borderTopColor) {
         this.borderTopColor = borderTopColor;
         return this;
-    }
-
-    /**
-     * 下边框
-     */
-    public BorderStyle getBorderBottom() {
-        return borderBottom;
     }
 
     /**
@@ -578,23 +432,9 @@ public class ExtraCellData {
     /**
      * 下边框颜色
      */
-    public IndexedColors getBorderBottomColor() {
-        return borderBottomColor;
-    }
-
-    /**
-     * 下边框颜色
-     */
     public ExtraCellData setBorderBottomColor(IndexedColors borderBottomColor) {
         this.borderBottomColor = borderBottomColor;
         return this;
-    }
-
-    /**
-     * 左边框
-     */
-    public BorderStyle getBorderLeft() {
-        return borderLeft;
     }
 
     /**
@@ -608,23 +448,9 @@ public class ExtraCellData {
     /**
      * 左边框颜色
      */
-    public IndexedColors getBorderLeftColor() {
-        return borderLeftColor;
-    }
-
-    /**
-     * 左边框颜色
-     */
     public ExtraCellData setBorderLeftColor(IndexedColors borderLeftColor) {
         this.borderLeftColor = borderLeftColor;
         return this;
-    }
-
-    /**
-     * 右边框
-     */
-    public BorderStyle getBorderRight() {
-        return borderRight;
     }
 
     /**
@@ -638,13 +464,6 @@ public class ExtraCellData {
     /**
      * 右边框颜色
      */
-    public IndexedColors getBorderRightColor() {
-        return borderRightColor;
-    }
-
-    /**
-     * 右边框颜色
-     */
     public ExtraCellData setBorderRightColor(IndexedColors borderRightColor) {
         this.borderRightColor = borderRightColor;
         return this;
@@ -653,15 +472,52 @@ public class ExtraCellData {
     /**
      * 字体大小
      */
-    public short getFontSize() {
-        return fontSize;
-    }
-
-    /**
-     * 字体大小
-     */
     public ExtraCellData setFontSize(short fontSize) {
         this.fontSize = fontSize;
         return this;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------规范get命名
+
+    /**
+     * 是否自动调整列宽
+     */
+    public boolean getIsAutoSize() {
+        return isAutoSize;
+    }
+
+    /**
+     * 是否隐藏列
+     */
+    public boolean getIsHidden() {
+        return isHidden;
+    }
+
+    /**
+     * 自动换行
+     */
+    public boolean getIsWrapText() {
+        return isWrapText;
+    }
+
+    /**
+     * 是否是钱类型
+     */
+    public boolean getIsMoney() {
+        return this.isMoney;
+    }
+
+    /**
+     * 是否是中国大写钱类型
+     */
+    public boolean getIsChinaMoney() {
+        return this.isChinaMoney;
+    }
+
+    /**
+     * 是否公式
+     */
+    public boolean getIsFormula() {
+        return isFormula;
     }
 }

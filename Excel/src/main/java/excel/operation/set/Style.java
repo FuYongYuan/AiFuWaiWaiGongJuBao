@@ -1,5 +1,6 @@
 package excel.operation.set;
 
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.*;
 
 /**
@@ -7,6 +8,7 @@ import org.apache.poi.ss.usermodel.*;
  *
  * @author fyy
  */
+@Getter
 public class Style {
     /**
      * 标题样式
@@ -42,13 +44,6 @@ public class Style {
     }
 
     //------------------------------------------------------------------------------------------------------------------GetSet
-
-    /**
-     * 标题样式
-     */
-    public CellStyle getTitle() {
-        return title;
-    }
 
     /**
      * 标题样式
@@ -199,23 +194,9 @@ public class Style {
     /**
      * 全局数据是否加边框
      */
-    public BorderStyle getContextBorder() {
-        return contextBorder;
-    }
-
-    /**
-     * 全局数据是否加边框
-     */
     public Style setContextBorder(BorderStyle contextBorder) {
         this.contextBorder = contextBorder;
         return this;
-    }
-
-    /**
-     * 全局数据是否加边框颜色
-     */
-    public IndexedColors getContextBorderColor() {
-        return contextBorderColor;
     }
 
     /**

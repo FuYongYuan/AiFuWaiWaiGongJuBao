@@ -29,7 +29,7 @@ public class TotalRowIndex {
     public String oldCellValue;
 
     /**
-     * 合并ID
+     * 合并ID-为空可能是合并列名称错误
      */
     public Integer regionIndex;
 

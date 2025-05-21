@@ -27,6 +27,11 @@ public class ExcelConstant {
     public static final String DOT = ".";
 
     /**
+     * ,
+     */
+    public static final String COMMA = ",";
+
+    /**
      * E
      */
     public static final String E = "E";
@@ -45,6 +50,11 @@ public class ExcelConstant {
      * this.
      */
     public static final String THIS_DOT = "this.";
+
+    /**
+     * this
+     */
+    public static final String THIS = "this";
 
     /**
      * cell.

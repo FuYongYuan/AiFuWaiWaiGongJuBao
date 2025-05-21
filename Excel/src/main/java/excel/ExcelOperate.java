@@ -1,6 +1,6 @@
 package excel;
 
-import dispose.TextDispose;
+
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.util.ExcelConstant;
@@ -47,7 +47,7 @@ public class ExcelOperate {
 
     public ExcelOperate(String documentPath, boolean isGetMethodFieldValue) throws ExcelOperateException, IOException {
         this.path = documentPath;
-        if (TextDispose.isNotEmpty(this.path)) {
+        if (this.path != null && !this.path.isEmpty()) {
             String prefix = this.path.substring(this.path.lastIndexOf(".") + 1);
             this.isGetMethodFieldValue = isGetMethodFieldValue;
             if (ExcelConstant.XLSX.equals(prefix)) {
@@ -71,7 +71,7 @@ public class ExcelOperate {
      */
     public int addRow(String sheetName, Object obj) {
         int result = 0;
-        if (TextDispose.isNotEmpty(sheetName)) {
+        if (sheetName != null && !sheetName.isEmpty()) {
             List<Field> fieldList = ExcelDispose.getFieldList(obj.getClass());
             if (!fieldList.isEmpty()) {
                 Sheet sheet = workbook.getSheet(sheetName);
@@ -79,10 +79,10 @@ public class ExcelOperate {
                 Row row = sheet.createRow(result);
                 for (int i = 0; i < fieldList.size(); i++) {
                     row.createCell(i).setCellValue(ExcelDispose.correspondingValue(
-                            fieldList.get(i), obj, this.isGetMethodFieldValue,
-                            fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
-                            fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit(),
-                            fieldList.get(i).getAnnotation(ExcelField.class).roundingMode()
+                                    fieldList.get(i), obj, this.isGetMethodFieldValue,
+                                    fieldList.get(i).getAnnotation(ExcelField.class).dateType(),
+                                    fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit(),
+                                    fieldList.get(i).getAnnotation(ExcelField.class).roundingMode()
                             )
                     );
                 }
@@ -108,7 +108,7 @@ public class ExcelOperate {
      */
     public boolean updateRow(String sheetName, int rowNumber, Object obj) {
         boolean result;
-        if (TextDispose.isNotEmpty(sheetName)) {
+        if (sheetName != null && !sheetName.isEmpty()) {
             List<Field> fieldList = ExcelDispose.getFieldList(obj.getClass());
             if (!fieldList.isEmpty()) {
                 Sheet sheet = workbook.getSheet(sheetName);
@@ -121,7 +121,7 @@ public class ExcelOperate {
                                 fieldList.get(i).getAnnotation(ExcelField.class).decimalAfterDigit(),
                                 fieldList.get(i).getAnnotation(ExcelField.class).roundingMode()
                         );
-                        if (TextDispose.isNotEmpty(value)) {
+                        if (value != null && !value.isEmpty()) {
                             if (row.getCell(i) != null) {
                                 row.getCell(i).setCellValue(value);
                             } else {
@@ -157,7 +157,7 @@ public class ExcelOperate {
      */
     public boolean deleteRow(String sheetName, int rowNumber) {
         boolean result;
-        if (TextDispose.isNotEmpty(sheetName)) {
+        if (sheetName != null && !sheetName.isEmpty()) {
             Sheet sheet = workbook.getSheet(sheetName);
             if (rowNumber >= 0 && rowNumber <= sheet.getLastRowNum()) {
                 sheet.removeRow(sheet.getRow(rowNumber));
@@ -183,7 +183,7 @@ public class ExcelOperate {
      */
     private void writeDocument() {
         try {
-            if (TextDispose.isNotEmpty(path)) {
+            if (path != null && !path.isEmpty()) {
                 FileOutputStream out = new FileOutputStream(this.path);
                 if (this.workbook != null) {
                     workbook.write(out);

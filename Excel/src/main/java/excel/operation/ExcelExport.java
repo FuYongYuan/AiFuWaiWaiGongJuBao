@@ -1,8 +1,9 @@
 package excel.operation;
 
+
 import dispose.DateDispose;
+import dispose.JudgeDispose;
 import dispose.MoneyToChinese;
-import dispose.TextDispose;
 import enumerate.UsedType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
@@ -11,6 +12,7 @@ import excel.operation.cache.TotalRowIndex;
 import excel.operation.set.*;
 import excel.util.ExcelConstant;
 import excel.util.ExcelDispose;
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
@@ -35,6 +37,7 @@ import java.util.Map;
  *
  * @author fyy
  */
+@Getter
 public class ExcelExport {
     /**
      * 工作簿对象
@@ -46,13 +49,6 @@ public class ExcelExport {
      */
     public ExcelExport(Workbook workbook) {
         this.workbook = workbook;
-    }
-
-    /**
-     * 工作簿对象
-     */
-    public Workbook getWorkbook() {
-        return workbook;
     }
 
     /**
@@ -69,6 +65,7 @@ public class ExcelExport {
                 for (SheetSet sheetSet : sheetSets) {
                     //创建页签并给页签命名
                     Sheet sheetModel = this.workbook.createSheet(sheetSet.getSheetName());
+
                     //冻结
                     if (sheetSet.getFreezePane() != null) {
                         sheetModel.createFreezePane(
@@ -78,32 +75,36 @@ public class ExcelExport {
                                 sheetSet.getFreezePane().getTopRow()
                         );
                     }
-                    //获取要执行的对象中属于Excel的字段
-                    ExcelDispose.initialization(sheetSet);
-                    if (sheetSet.getSheetCache().useField != null && !sheetSet.getSheetCache().useField.isEmpty()) {
-                        //初始化行数
-                        if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
-                            sheetSet.getSheetCache().sheetModelCache.initRow = this.getInitRow(
-                                    sheetModel,
-                                    sheetSet
-                            );
-                        }
-                        //初始化样式
-                        if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
-                            sheetSet.getStyle().setTitleBorder(sheetSet.getStyle().getContextBorder());
-                        }
-                        if (sheetSet.getStyle().getContextBorderColor() != null) {
-                            sheetSet.getStyle().setTitleBorderColor(sheetSet.getStyle().getContextBorderColor());
-                        }
 
-                        //设置标题
-                        this.setTitle(sheetModel, sheetSet);
+                    // 表格数据
+                    if (sheetSet.getSheetData() != null) {
+                        //获取要执行的对象中属于Excel的字段
+                        ExcelDispose.initialization(sheetSet);
+                        if (sheetSet.getSheetCache().useField != null && !sheetSet.getSheetCache().useField.isEmpty()) {
+                            //初始化行数
+                            if (sheetSet.getExtraRowData() != null && !sheetSet.getExtraRowData().isEmpty()) {
+                                sheetSet.getSheetCache().sheetModelCache.initRow = this.getInitRow(
+                                        sheetModel,
+                                        sheetSet
+                                );
+                            }
+                            //初始化样式
+                            if (sheetSet.getStyle().getContextBorder() != null && sheetSet.getStyle().getContextBorder() != BorderStyle.NONE) {
+                                sheetSet.getStyle().setTitleBorder(sheetSet.getStyle().getContextBorder());
+                            }
+                            if (sheetSet.getStyle().getContextBorderColor() != null) {
+                                sheetSet.getStyle().setTitleBorderColor(sheetSet.getStyle().getContextBorderColor());
+                            }
 
-                        //循环对象（值）
-                        this.setContent(sheetModel, sheetSet);
+                            //设置标题
+                            this.setTitle(sheetModel, sheetSet);
 
-                        //全部总计
-                        this.setTotalCalculation(sheetModel, sheetSet);
+                            //循环对象（值）
+                            this.setContent(sheetModel, sheetSet);
+
+                            //全部总计
+                            this.setTotalCalculation(sheetModel, sheetSet);
+                        }
                     }
 
                     //额外数据
@@ -111,6 +112,7 @@ public class ExcelExport {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ExcelOperateException("诊断：Excel导出失败！", e);
         }
         return this.workbook;
@@ -135,6 +137,9 @@ public class ExcelExport {
             if (row == null) {
                 row = sheetModel.createRow(sheetSet.getSheetCache().sheetModelCache.initRow);
             }
+            // 设置样式
+            this.setRowStyle(erd, row);
+            // 处理行内单元格
             for (ExtraCellData ecd : erd.getExtraCellData()) {
                 Cell cell = row.getCell(ecd.getCellNumber());
                 if (cell == null) {
@@ -370,6 +375,9 @@ public class ExcelExport {
         if (row == null) {
             row = sheetModel.createRow(erd.getRowNumber());
         }
+        // 设置样式
+        this.setRowStyle(erd, row);
+        // 处理行内单元格
         for (ExtraCellData ecd : erd.getExtraCellData()) {
             Cell cell = row.getCell(ecd.getCellNumber());
             if (cell == null) {
@@ -415,15 +423,15 @@ public class ExcelExport {
                     String cf = cellValue.substring(cellValue.indexOf(ExcelConstant.LEFT_BRACKET) + 1, cellValue.indexOf(ExcelConstant.RIGHT_BRACKET));
 
                     // 在cf中以,分割取前半段
-                    String cv = cf.substring(0, cf.indexOf(","));
+                    String cv = cf.substring(0, cf.indexOf(ExcelConstant.COMMA));
                     // 在cf中以,分割取后半段
-                    String rv = cf.substring(cf.indexOf(",") + 1);
+                    String rv = cf.substring(cf.indexOf(ExcelConstant.COMMA) + 1);
                     // 列值
                     int cellNumber = Integer.parseInt(cv.replaceAll(ExcelConstant.CELL_DOT, "")) - 1;
                     // 行值
                     String rvr = rv.replaceAll(ExcelConstant.ROW_DOT, "");
                     int rowNumber = 0;
-                    if ("this".equals(rvr)) {
+                    if (ExcelConstant.THIS.equals(rvr)) {
                         rowNumber = cell.getRowIndex() + 1;
                     } else {
                         rowNumber = Integer.parseInt(rv.replaceAll(ExcelConstant.ROW_DOT, "")) - 1;
@@ -437,7 +445,7 @@ public class ExcelExport {
                 }
                 // 赋值公式
                 cell.setCellFormula(cellValue);
-            } else if (TextDispose.isNumber(cellValue)) {
+            } else if (JudgeDispose.isNumber(cellValue)) {
                 if (excelField.isChinaMoney()) {
                     // 是否浮点数字
                     boolean exist = field.getType().getName().equals(UsedType.Type_BigDecimal.getValue())
@@ -646,15 +654,15 @@ public class ExcelExport {
                         String cf = ecd.getCellValue().toString().substring(ecd.getCellValue().toString().indexOf(ExcelConstant.LEFT_BRACKET) + 1, ecd.getCellValue().toString().indexOf(ExcelConstant.RIGHT_BRACKET));
 
                         // 在cf中以,分割取前半段
-                        String cv = cf.substring(0, cf.indexOf(","));
+                        String cv = cf.substring(0, cf.indexOf(ExcelConstant.COMMA));
                         // 在cf中以,分割取后半段
-                        String rv = cf.substring(cf.indexOf(",") + 1);
+                        String rv = cf.substring(cf.indexOf(ExcelConstant.COMMA) + 1);
                         // 列值
                         int cellNumber = Integer.parseInt(cv.replaceAll(ExcelConstant.CELL_DOT, "")) - 1;
                         // 行值
                         String rvr = rv.replaceAll(ExcelConstant.ROW_DOT, "");
                         int rowNumber = 0;
-                        if ("this".equals(rvr)) {
+                        if (ExcelConstant.THIS.equals(rvr)) {
                             rowNumber = cell.getRowIndex() + 1;
                         } else {
                             rowNumber = Integer.parseInt(rv.replaceAll(ExcelConstant.ROW_DOT, "")) - 1;
@@ -719,6 +727,19 @@ public class ExcelExport {
             cell.setCellStyle(this.getCellStyle(sheetModel, ecd, globalStyle, cellAddresses));
         } else {
             cell.setCellValue("");
+        }
+    }
+
+    /**
+     * 设置行高
+     */
+    private void setRowStyle(
+            ExtraRowData erd,
+            Row row
+    ) {
+        if (erd.getHeight() > 0) {
+            // 高度
+            row.setHeightInPoints(erd.getHeight());
         }
     }
 
@@ -799,6 +820,9 @@ public class ExcelExport {
             }
             cellStyle.setFont(font);
         }
+        if (ecd.getIsWrapText()) {
+            cellStyle.setWrapText(ecd.getIsWrapText());
+        }
     }
 
     /**
@@ -843,7 +867,7 @@ public class ExcelExport {
             CellRangeAddress cellAddresses
     ) {
         //处理原单元格
-        setContextBorder(cellStyle, globalStyle);
+        this.setContextBorder(cellStyle, globalStyle);
         //处理合并单元格
         if (cellAddresses != null) {
             RegionUtil.setBorderTop(globalStyle.getContextBorder(), cellAddresses, sheetModel);
@@ -1101,7 +1125,9 @@ public class ExcelExport {
     ) {
         if (totalRowIndex.rowspanStart == 0) {
             totalRowIndex.rowspanStart = sheetSet.getSheetCache().sheetModelCache.i + 1;
+            totalRowIndex.rowspanEnd = sheetSet.getSheetCache().sheetModelCache.i + 1;
             totalRowIndex.oldCellValue = referenceFieldCache.rowspanAlignCellValue;
+            totalRowIndex.nextRowspan = true;
         } else {
             if (totalRowIndex.oldCellValue != null && totalRowIndex.oldCellValue.equals(referenceFieldCache.rowspanAlignCellValue)) {
                 totalRowIndex.rowspanEnd = sheetSet.getSheetCache().sheetModelCache.i + 1;
@@ -1292,7 +1318,7 @@ public class ExcelExport {
                     rs = rs + 1;
                 }
                 if (!occupyRows.contains(rs)) {
-                    sb.append(colString).append(rs + 1).append(":").append(colString).append(occupy).append(",");
+                    sb.append(colString).append(rs + 1).append(":").append(colString).append(occupy).append(ExcelConstant.COMMA);
                     int occupyi = occupy + 1;
                     if (occupyi <= rowspanEnd) {
                         if (occupyi > rs) {
@@ -1328,11 +1354,11 @@ public class ExcelExport {
             if (rowExtraData.getIsFormula()) {
                 String cfv = rowExtraData.getValue();
                 while (cfv.contains(ExcelConstant.LEFT_BRACKET) && cfv.contains(ExcelConstant.RIGHT_BRACKET) && cfv.contains(ExcelConstant.THIS_DOT)) {
-                    String cf = cfv.substring(cfv.indexOf("[") + 1, cfv.indexOf("]"));
-                    int cellNumber = Integer.parseInt(cf.replaceAll("this.", "")) - 1;
+                    String cf = cfv.substring(cfv.indexOf(ExcelConstant.LEFT_BRACKET) + 1, cfv.indexOf(ExcelConstant.RIGHT_BRACKET));
+                    int cellNumber = Integer.parseInt(cf.replaceAll(ExcelConstant.THIS_DOT, "")) - 1;
                     //长度转成ABC列
                     String colString = CellReference.convertNumToColString(cellNumber);
-                    cfv = cfv.replaceAll("\\[" + cf + "]", colString + (nextRow.getRowNum() + 1));
+                    cfv = cfv.replaceAll(ExcelConstant.LEFT_BRACKET + cf + ExcelConstant.RIGHT_BRACKET, colString + (nextRow.getRowNum() + 1));
                 }
                 cell.setCellFormula(cfv);
             } else {

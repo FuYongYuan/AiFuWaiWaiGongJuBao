@@ -1,6 +1,7 @@
 package excel.operation.set;
 
 import excel.exception.ExcelOperateException;
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.*;
 
 import java.util.*;
@@ -10,21 +11,22 @@ import java.util.*;
  *
  * @author fyy
  */
+@Getter
 public class Function {
     /**
      * 小计
      */
-    private final Function.Calculation subTotal;
+    private final Calculation subTotal;
 
     /**
      * 总计
      */
-    private final Function.Calculation total;
+    private final Calculation total;
 
     /**
      * 总计所有
      */
-    private final Function.Builder totalAll;
+    private final Builder totalAll;
 
     //------------------------------------------------------------------------------------------------------------------构造
 
@@ -34,39 +36,19 @@ public class Function {
      * @param workbook 导出工作簿对象
      */
     public Function(Workbook workbook) {
-        this.subTotal = new Function.Calculation(workbook);
-        this.total = new Function.Calculation(workbook);
-        this.totalAll = new Function.Builder(workbook);
+        this.subTotal = new Calculation(workbook);
+        this.total = new Calculation(workbook);
+        this.totalAll = new Builder(workbook);
     }
 
     //------------------------------------------------------------------------------------------------------------------GetSet
-
-    /**
-     * 小计
-     */
-    public Calculation getSubTotal() {
-        return subTotal;
-    }
-
-    /**
-     * 总计
-     */
-    public Function.Calculation getTotal() {
-        return total;
-    }
-
-    /**
-     * 总计所有
-     */
-    public Function.Builder getTotalAll() {
-        return totalAll;
-    }
 
     //------------------------------------------------------------------------------------------------------------------内部类
 
     /**
      * 计算配置构建基础类
      */
+    @Getter
     public static class Builder {
         /**
          * 需要计算字段名,排序
@@ -99,6 +81,7 @@ public class Function {
         /**
          * 当前行额外数据
          */
+        @Getter
         public static class RowExtraData {
             /**
              * 结果位置
@@ -142,23 +125,9 @@ public class Function {
             /**
              * 结果位置
              */
-            public int getOrder() {
-                return order;
-            }
-
-            /**
-             * 结果位置
-             */
             public RowExtraData setOrder(int order) {
                 this.order = order;
                 return this;
-            }
-
-            /**
-             * 值
-             */
-            public String getValue() {
-                return value;
             }
 
             /**
@@ -200,7 +169,7 @@ public class Function {
         /**
          * 计算字段名 - 可以多个
          */
-        public Function.Builder setCalculationFieldNames(String... calculationFieldNames) {
+        public Builder setCalculationFieldNames(String... calculationFieldNames) {
             for (String name : calculationFieldNames) {
                 Integer i = this.calculationFieldNameAndOrder.get(name);
                 this.calculationFieldNameAndOrder.put(name, Objects.requireNonNullElse(i, 0));
@@ -211,7 +180,7 @@ public class Function {
         /**
          * 设置计算字段名,位置
          */
-        public Function.Builder setCalculationFieldNameAndOrder(String calculationFieldName, int order) {
+        public Builder setCalculationFieldNameAndOrder(String calculationFieldName, int order) {
             this.calculationFieldNameAndOrder.put(calculationFieldName, order);
             return this;
         }
@@ -219,36 +188,21 @@ public class Function {
         /**
          * 多条设置计算字段名,位置
          */
-        public Function.Builder setCalculationFieldNameAndOrder(Map<String, Integer> calculationFieldNameAndOrder) {
+        public Builder setCalculationFieldNameAndOrder(Map<String, Integer> calculationFieldNameAndOrder) {
             this.calculationFieldNameAndOrder.putAll(calculationFieldNameAndOrder);
             return this;
         }
 
         /**
-         * 获取计算字段名,位置
-         */
-        public Map<String, Integer> getCalculationFieldNameAndOrder() {
-            return this.calculationFieldNameAndOrder;
-        }
-
-
-        /**
          * 说明标注
          */
-        public Function.Builder setExplainAndOrder(String explain, int explainOrder) {
+        public Builder setExplainAndOrder(String explain, int explainOrder) {
             RowExtraData rowExtraData = RowExtraData.create()
                     .setOrder(explainOrder)
                     .setValue(explain)
                     .build();
             this.rowExtraData.put(rowExtraData.order, rowExtraData);
             return this;
-        }
-
-        /**
-         * 行内额外数据
-         */
-        public Map<Integer, RowExtraData> getRowExtraData() {
-            return rowExtraData;
         }
 
         /**
@@ -287,14 +241,7 @@ public class Function {
         /**
          * 样式
          */
-        public CellStyle getStyle() {
-            return style;
-        }
-
-        /**
-         * 样式
-         */
-        public Function.Builder setStyle(CellStyle style) {
+        public Builder setStyle(CellStyle style) {
             this.style = style;
             return this;
         }
@@ -303,7 +250,7 @@ public class Function {
         /**
          * 标题颜色
          */
-        public Function.Builder setStyleColor(short styleColor) {
+        public Builder setStyleColor(short styleColor) {
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             style.setFillForegroundColor(styleColor);
             return this;
@@ -312,7 +259,7 @@ public class Function {
         /**
          * 标题颜色
          */
-        public Function.Builder setStyleColor(IndexedColors indexedColors) {
+        public Builder setStyleColor(IndexedColors indexedColors) {
             style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             style.setFillForegroundColor(indexedColors.getIndex());
             return this;
@@ -321,7 +268,7 @@ public class Function {
         /**
          * 标题是否加粗
          */
-        public Function.Builder setStyleBold(boolean bold) {
+        public Builder setStyleBold(boolean bold) {
             font.setBold(true);
             style.setFont(font);
             return this;
@@ -330,7 +277,7 @@ public class Function {
         /**
          * 水平位置设置
          */
-        public Function.Builder setHorizontalAlignment(HorizontalAlignment alignment) {
+        public Builder setHorizontalAlignment(HorizontalAlignment alignment) {
             style.setAlignment(alignment);
             return this;
         }
@@ -338,7 +285,7 @@ public class Function {
         /**
          * 垂直位置设置
          */
-        public Function.Builder setVerticalAlignment(VerticalAlignment alignment) {
+        public Builder setVerticalAlignment(VerticalAlignment alignment) {
             style.setVerticalAlignment(alignment);
             return this;
         }
@@ -346,7 +293,7 @@ public class Function {
         /**
          * 内容位置设置
          */
-        public Function.Builder setAlignment(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+        public Builder setAlignment(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
             style.setAlignment(horizontalAlignment);
             style.setVerticalAlignment(verticalAlignment);
             return this;
@@ -357,7 +304,7 @@ public class Function {
          *
          * @param decimalAfterDigit 货币格式后保留位数
          */
-        public Function.Builder setStyleMoneyFormat(int decimalAfterDigit) {
+        public Builder setStyleMoneyFormat(int decimalAfterDigit) {
             StringBuilder moneyFormat = new StringBuilder("#,##0");
             if (decimalAfterDigit > 0) {
                 moneyFormat.append(".");
@@ -372,7 +319,7 @@ public class Function {
          *
          * @param decimalAfterDigit 数字格式后保留位数
          */
-        public Function.Builder setStyleNumberFormat(int decimalAfterDigit) {
+        public Builder setStyleNumberFormat(int decimalAfterDigit) {
             StringBuilder sb = new StringBuilder("#0.");
             if (decimalAfterDigit > 0) {
                 sb.append("0".repeat(decimalAfterDigit));
@@ -386,7 +333,7 @@ public class Function {
         /**
          * 边框
          */
-        public Function.Builder setBorder(BorderStyle borderStyle) {
+        public Builder setBorder(BorderStyle borderStyle) {
             style.setBorderTop(borderStyle);
             style.setBorderBottom(borderStyle);
             style.setBorderLeft(borderStyle);
@@ -397,7 +344,7 @@ public class Function {
         /**
          * 边框颜色
          */
-        public Function.Builder setBorderColor(IndexedColors indexedColors) {
+        public Builder setBorderColor(IndexedColors indexedColors) {
             style.setTopBorderColor(indexedColors.getIndex());
             style.setBottomBorderColor(indexedColors.getIndex());
             style.setLeftBorderColor(indexedColors.getIndex());
@@ -408,7 +355,7 @@ public class Function {
         /**
          * 上边框
          */
-        public Function.Builder setBorderTop(BorderStyle borderStyle) {
+        public Builder setBorderTop(BorderStyle borderStyle) {
             style.setBorderTop(borderStyle);
             return this;
         }
@@ -416,7 +363,7 @@ public class Function {
         /**
          * 上边框颜色
          */
-        public Function.Builder setBorderTopColor(IndexedColors indexedColors) {
+        public Builder setBorderTopColor(IndexedColors indexedColors) {
             style.setTopBorderColor(indexedColors.getIndex());
             return this;
         }
@@ -424,7 +371,7 @@ public class Function {
         /**
          * 下边框
          */
-        public Function.Builder setBorderBottom(BorderStyle borderStyle) {
+        public Builder setBorderBottom(BorderStyle borderStyle) {
             style.setBorderBottom(borderStyle);
             return this;
         }
@@ -432,7 +379,7 @@ public class Function {
         /**
          * 下边框颜色
          */
-        public Function.Builder setBorderBottomColor(IndexedColors indexedColors) {
+        public Builder setBorderBottomColor(IndexedColors indexedColors) {
             style.setBottomBorderColor(indexedColors.getIndex());
             return this;
         }
@@ -440,7 +387,7 @@ public class Function {
         /**
          * 左边框
          */
-        public Function.Builder setBorderLeft(BorderStyle borderStyle) {
+        public Builder setBorderLeft(BorderStyle borderStyle) {
             style.setBorderLeft(borderStyle);
             return this;
         }
@@ -448,7 +395,7 @@ public class Function {
         /**
          * 左边框颜色
          */
-        public Function.Builder setBorderLeftColor(IndexedColors indexedColors) {
+        public Builder setBorderLeftColor(IndexedColors indexedColors) {
             style.setLeftBorderColor(indexedColors.getIndex());
             return this;
         }
@@ -456,7 +403,7 @@ public class Function {
         /**
          * 右边框
          */
-        public Function.Builder setBorderRight(BorderStyle borderStyle) {
+        public Builder setBorderRight(BorderStyle borderStyle) {
             style.setBorderRight(borderStyle);
             return this;
         }
@@ -464,7 +411,7 @@ public class Function {
         /**
          * 右边框颜色
          */
-        public Function.Builder setBorderRightColor(IndexedColors indexedColors) {
+        public Builder setBorderRightColor(IndexedColors indexedColors) {
             style.setRightBorderColor(indexedColors.getIndex());
             return this;
         }
@@ -473,6 +420,7 @@ public class Function {
     /**
      * 计算配置类
      */
+    @Getter
     public static class Calculation extends Builder {
         /**
          * 插入参考字段名 - 只能一个
@@ -519,14 +467,7 @@ public class Function {
         /**
          * 插入参考字段名 - 只能一个
          */
-        public String getReferenceFieldName() {
-            return referenceFieldName;
-        }
-
-        /**
-         * 插入参考字段名 - 只能一个
-         */
-        public Function.Calculation setReferenceFieldName(String referenceFieldName) {
+        public Calculation setReferenceFieldName(String referenceFieldName) {
             this.referenceFieldName = referenceFieldName;
             return this;
         }
@@ -534,14 +475,7 @@ public class Function {
         /**
          * 插入后需要合并的字段
          */
-        public List<String> getSpanFieldNames() {
-            return spanFieldNames;
-        }
-
-        /**
-         * 插入后需要合并的字段
-         */
-        public Function.Calculation setSpanFieldNames(String... spanFieldNames) {
+        public Calculation setSpanFieldNames(String... spanFieldNames) {
             this.spanFieldNames = Arrays.asList(spanFieldNames);
             return this;
         }

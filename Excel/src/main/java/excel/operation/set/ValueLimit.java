@@ -1,7 +1,7 @@
 package excel.operation.set;
 
-import dispose.TextDispose;
 import excel.exception.ExcelOperateException;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import java.util.List;
  *
  * @author fyy
  */
+@Getter
 public class ValueLimit {
     /**
      * 是否是MAP数据类型
@@ -61,13 +62,13 @@ public class ValueLimit {
         if (valueList == null || valueList.isEmpty()) {
             throw new ExcelOperateException("诊断：值集内容为空请查验！", new NullPointerException());
         }
-        if (TextDispose.isEmpty(this.valueListName)) {
+        if (this.valueListName == null || this.valueListName.isEmpty()) {
             throw new ExcelOperateException("诊断：值集未被赋予名称请查验！", new NullPointerException());
         }
-        if (TextDispose.isEmpty(this.contrastFieldName)) {
+        if (this.contrastFieldName == null || this.contrastFieldName.isEmpty()) {
             throw new ExcelOperateException("诊断：值集 " + this.valueListName + " 无提供比较值字段名称，无法进行转换！", new NullPointerException());
         }
-        if (TextDispose.isEmpty(this.replaceFieldName)) {
+        if (this.replaceFieldName == null || this.replaceFieldName.isEmpty()) {
             throw new ExcelOperateException("诊断：值集 " + this.valueListName + " 无提供替换值字段名称，无法进行转换！", new NullPointerException());
         }
 
@@ -85,23 +86,9 @@ public class ValueLimit {
     /**
      * 是否是MAP数据类型
      */
-    public Boolean getIsMap() {
-        return isMap;
-    }
-
-    /**
-     * 是否是MAP数据类型
-     */
     public ValueLimit setIsMap(Boolean isMap) {
         this.isMap = isMap;
         return this;
-    }
-
-    /**
-     * 读取字段时是否采用的Get方法读取
-     */
-    public Boolean getIsGetMethodFieldValue() {
-        return isGetMethodFieldValue;
     }
 
     /**
@@ -115,23 +102,9 @@ public class ValueLimit {
     /**
      * 获取对比值的字段名称
      */
-    public String getContrastFieldName() {
-        return contrastFieldName;
-    }
-
-    /**
-     * 获取对比值的字段名称
-     */
     public ValueLimit setContrastFieldName(String contrastFieldName) {
         this.contrastFieldName = contrastFieldName;
         return this;
-    }
-
-    /**
-     * 获取转换值的字段名称
-     */
-    public String getReplaceFieldName() {
-        return replaceFieldName;
     }
 
     /**
@@ -145,23 +118,9 @@ public class ValueLimit {
     /**
      * 值集
      */
-    public List<?> getValueList() {
-        return valueList;
-    }
-
-    /**
-     * 值集
-     */
     public ValueLimit setValueList(List<?> valueList) {
         this.valueList = valueList;
         return this;
-    }
-
-    /**
-     * 值集名称
-     */
-    public String getValueListName() {
-        return valueListName;
     }
 
     /**

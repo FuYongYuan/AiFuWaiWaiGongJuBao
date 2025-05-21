@@ -1,9 +1,9 @@
 package excel.operation.set;
 
-import dispose.TextDispose;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.cache.SheetCache;
+import lombok.Getter;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.lang.reflect.Field;
@@ -15,6 +15,7 @@ import java.util.List;
  *
  * @author fyy
  */
+@Getter
 public class SheetSet {
 
     /**
@@ -91,16 +92,18 @@ public class SheetSet {
         this.style = new Style(workbook);
         this.function = new Function(workbook);
 
-        if (TextDispose.isEmpty(sheetName)) {
+        if (sheetName == null || sheetName.isEmpty()) {
             throw new ExcelOperateException("诊断：工作簿页签名称缺失！", new NullPointerException());
         }
 
-        if (dataClass == null) {
-            throw new ExcelOperateException("诊断：Excel对应关系缺失！", new NullPointerException());
-        } else {
-            if (sheetData != null && !sheetData.isEmpty()) {
-                if (sheetData.get(0).getClass() != dataClass) {
-                    throw new ExcelOperateException("诊断：Excel数据类型错误！", new NullPointerException());
+        if (sheetData != null) {
+            if (dataClass == null) {
+                throw new ExcelOperateException("诊断：Excel对应关系缺失！", new NullPointerException());
+            } else {
+                if (!sheetData.isEmpty()) {
+                    if (sheetData.getFirst().getClass() != dataClass) {
+                        throw new ExcelOperateException("诊断：Excel数据类型错误！", new NullPointerException());
+                    }
                 }
             }
         }
@@ -162,23 +165,9 @@ public class SheetSet {
     /**
      * 工作簿页名称
      */
-    public String getSheetName() {
-        return sheetName;
-    }
-
-    /**
-     * 工作簿页名称
-     */
     public SheetSet setSheetName(String sheetName) {
         this.sheetName = sheetName;
         return this;
-    }
-
-    /**
-     * 导出对象集合
-     */
-    public List<?> getSheetData() {
-        return sheetData;
     }
 
     /**
@@ -192,44 +181,9 @@ public class SheetSet {
     /**
      * 当前页数据类型
      */
-    public Class<?> getDataClass() {
-        return dataClass;
-    }
-
-    /**
-     * 当前页数据类型
-     */
     public SheetSet setDataClass(Class<?> dataClass) {
         this.dataClass = dataClass;
         return this;
-    }
-
-    /**
-     * 对应当前页样式对象
-     */
-    public Style getStyle() {
-        return style;
-    }
-
-    /**
-     * 对应当前页功能设置对象
-     */
-    public Function getFunction() {
-        return function;
-    }
-
-    /**
-     * 对应当前页的数据缓存
-     */
-    public SheetCache getSheetCache() {
-        return sheetCache;
-    }
-
-    /**
-     * 读取字段时是否采用的Get方法读取
-     */
-    public Boolean getIsGetMethodFieldValue() {
-        return isGetMethodFieldValue;
     }
 
     /**
@@ -238,13 +192,6 @@ public class SheetSet {
     public SheetSet setIsGetMethodFieldValue(Boolean isGetMethodFieldValue) {
         this.isGetMethodFieldValue = isGetMethodFieldValue;
         return this;
-    }
-
-    /**
-     * 额外数据集合
-     */
-    public List<ExtraRowData> getExtraRowData() {
-        return extraRowData;
     }
 
     /**
@@ -261,13 +208,6 @@ public class SheetSet {
     public SheetSet setExtraData(ExtraRowData... extraRowData) {
         this.extraRowData = Arrays.asList(extraRowData);
         return this;
-    }
-
-    /**
-     * 转换值集
-     */
-    public List<ValueLimit> getValueLimit() {
-        return valueLimit;
     }
 
     /**
@@ -296,13 +236,6 @@ public class SheetSet {
     public SheetSet setValueLimit(ValueLimit... valueLimit) {
         this.valueLimit = Arrays.asList(valueLimit);
         return this;
-    }
-
-    /**
-     * 冻结
-     */
-    public FreezePane getFreezePane() {
-        return freezePane;
     }
 
     /**

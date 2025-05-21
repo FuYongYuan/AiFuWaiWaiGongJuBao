@@ -1,9 +1,7 @@
 import dispose.CopyClass;
 import enumerate.DateType;
-import excel.annotation.ExcelField;
 import excel.operation.ExcelExport;
 import excel.operation.set.*;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -16,7 +14,7 @@ import java.util.*;
 
 public class Test {
     public static void main(String[] age) {
-         long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
 
         long endTime = System.currentTimeMillis();
@@ -41,14 +39,14 @@ public class Test {
 //            st2.add(test2);
 
 
-            List<Map<String,String>> st2 = new ArrayList<>();
-            Map<String,String> test1 = new HashMap<>();
-            test1.put("name","TYPE01");
-            test1.put("value","类型1");
+            List<Map<String, String>> st2 = new ArrayList<>();
+            Map<String, String> test1 = new HashMap<>();
+            test1.put("name", "TYPE01");
+            test1.put("value", "类型1");
             st2.add(test1);
-            Map<String,String> test2 = new HashMap<>();
-            test2.put("name","TYPE02");
-            test2.put("value","类型2");
+            Map<String, String> test2 = new HashMap<>();
+            test2.put("name", "TYPE02");
+            test2.put("value", "类型2");
             st2.add(test2);
 
             List<Map<String, Object>> excelEntities = new ArrayList<>();
@@ -91,11 +89,6 @@ public class Test {
                                     ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
                                     ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build()
                             ).setIsNewRow(true).build()
-                            , ExtraRowData.create().setIsMaxRowNumber(true).setExtraCellData(
-                                    ExtraCellData.create().setCellNumber(3).setCellValue("测试").setCellType(String.class).build(),
-                                    ExtraCellData.create().setCellNumber(2).setCellValue(1).setCellType(Integer.class).build(),
-                                    ExtraCellData.create().setCellNumber(1).setCellValue(new Date()).setCellType(Date.class).build()
-                            ).setIsNewRow(true).build()
                     )
                     .build(excelExport.getWorkbook());
 
@@ -122,7 +115,7 @@ public class Test {
                     .setExplainAndOrder("小计：", 2)
                     .setStyleColor(IndexedColors.CORAL)
                     .setStyleBold(true).setStyleMoneyFormat(2)
-                    .setAlignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER)
+                    .setAlignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER)
             ;
             //总计 - 方法写法
             Map<String, Integer> calculationFieldNameAndOrder = new HashMap<String, Integer>();
@@ -237,7 +230,6 @@ public class Test {
     }
 
 
-
     private static void setData(List<Map<String, Object>> excelEntities) {
 
 //        List<ExcelEntity> excelEntities = new ArrayList<>();
@@ -265,7 +257,7 @@ public class Test {
 //            }
             omap.put("DT", new Date());
             if (i % 2 != 0) {
-                omap.put("dT", randomNumberByWithin(i) + "." + randomNumberByWithin(i)+ randomNumberByWithin(i)+ randomNumberByWithin(i)+ randomNumberByWithin(i)+ randomNumberByWithin(i));
+                omap.put("dT", randomNumberByWithin(i) + "." + randomNumberByWithin(i) + randomNumberByWithin(i) + randomNumberByWithin(i) + randomNumberByWithin(i) + randomNumberByWithin(i));
             }
 //            if (i % 2 == 0) {
 //                omap.put("bDT", RandomUtil.randomNumberByWithin(i) + "." + RandomUtil.randomNumberByWithin(i));

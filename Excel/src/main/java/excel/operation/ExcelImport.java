@@ -1,9 +1,10 @@
 package excel.operation;
 
+
 import dispose.DateDispose;
-import dispose.TextDispose;
-import enumerate.UsedType;
+import dispose.JudgeDispose;
 import enumerate.DateType;
+import enumerate.UsedType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.cache.LoadSpanCache;
@@ -208,7 +209,7 @@ public class ExcelImport {
             } else if (type == CellType.BOOLEAN) {
                 value = cell.getBooleanCellValue();
             }
-            if (value != null && !"".equals(value.toString())) {
+            if (value != null && !value.toString().isEmpty()) {
                 map.put(colString, value);
                 // 获取跨列 -1 代表忽略自身列
                 int colSpan = getColSpan(cell, sheet) - 1;
@@ -283,7 +284,7 @@ public class ExcelImport {
             } else if (type == CellType.BOOLEAN) {
                 value = cell.getBooleanCellValue();
             }
-            if (value != null && !"".equals(value.toString())) {
+            if (value != null && !value.toString().isEmpty()) {
                 if (isGetMethodFieldValue) {
                     setMethodFieldValue(field, obj, value);
                 } else {
@@ -357,7 +358,7 @@ public class ExcelImport {
         if (field.getType().getName().equals(UsedType.Type_String.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, String.class);
             String s;
-            if (TextDispose.isNumber(value.toString())) {
+            if (JudgeDispose.isNumber(value.toString())) {
                 if (value.toString().indexOf(ExcelConstant.DOT) > 0 && value.toString().indexOf(ExcelConstant.E) > 0) {
                     DecimalFormat df = new DecimalFormat("#");
                     s = df.format(value);
@@ -380,7 +381,7 @@ public class ExcelImport {
             }
         } else if (field.getType().getName().equals(UsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(UsedType.Type_Sql_Date.getValue())) {
             method = obj.getClass().getMethod("set" + fieldNameFirstUpperCase, Date.class);
-            if (TextDispose.isNumber(value.toString())) {
+            if (JudgeDispose.isNumber(value.toString())) {
                 int d = (int) Double.parseDouble(value.toString()) - 2;
                 value = DateDispose.dayCalculateString("1900-1-1", d, DateType.Year_Month_Day);
             }
@@ -420,7 +421,7 @@ public class ExcelImport {
     private static void setFieldValue(Field field, Object obj, Object value) throws Exception {
         //判断哪个类型.读取set方法拿到结果
         if (field.getType().getName().equals(UsedType.Type_Util_Date.getValue()) || field.getType().getName().equals(UsedType.Type_Sql_Date.getValue())) {
-            if (TextDispose.isNumber(value.toString())) {
+            if (JudgeDispose.isNumber(value.toString())) {
                 int d = (int) Double.parseDouble(value.toString()) - 2;
                 value = DateDispose.dayCalculateString("1900-1-1", d, DateType.Year_Month_Day);
             }
@@ -446,7 +447,7 @@ public class ExcelImport {
             field.set(obj, Boolean.parseBoolean(value.toString()));
         } else if (field.getType().getName().equals(UsedType.Type_String.getValue())) {
             String s;
-            if (TextDispose.isNumber(value.toString())) {
+            if (JudgeDispose.isNumber(value.toString())) {
                 if (value.toString().indexOf(ExcelConstant.DOT) > 0 && value.toString().indexOf(ExcelConstant.E) > 0) {
                     DecimalFormat df = new DecimalFormat("#");
                     s = df.format(value);

@@ -1,21 +1,16 @@
 package excel.util;
 
+
 import dispose.DateDispose;
-import dispose.TextDispose;
-import enumerate.UsedType;
+import dispose.JudgeDispose;
 import enumerate.DateType;
+import enumerate.UsedType;
 import excel.annotation.ExcelField;
 import excel.exception.ExcelOperateException;
 import excel.operation.set.SheetSet;
 import excel.operation.set.ValueLimit;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -139,7 +134,7 @@ public class ExcelDispose {
                 value = null;
             } else if (objectValue instanceof Date && !field.getType().getName().equals(UsedType.Type_String.getValue())) {
                 value = DateDispose.formattingDate((Date) objectValue, dateType);
-            } else if (TextDispose.isDouble(objectValue.toString())) {
+            } else if (JudgeDispose.isDouble(objectValue.toString())) {
                 StringBuilder sb = new StringBuilder("#0.");
                 if (decimalAfterDigit > 0) {
                     sb.append("0".repeat(decimalAfterDigit));
@@ -277,31 +272,4 @@ public class ExcelDispose {
         return CellReference.convertNumToColString(num);
     }
 
-    /**
-     * 将CSV文件转换为Excel文件
-     * @param csvFilePath csv文件路径
-     * @param excelFilePath excel文件路径
-     * @throws IOException IO异常
-     */
-    public static void convertCsvToExcel(String csvFilePath, String excelFilePath) throws IOException {
-        try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet();
-            try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath));
-                 OutputStream outStream = new FileOutputStream(excelFilePath)) {
-
-                String line;
-                int rowIndex = 0;
-                while ((line = br.readLine()) != null) {
-                    String[] columns = line.split(",");
-                    Row row = sheet.createRow(rowIndex++);
-                    for (int i = 0; i < columns.length; i++) {
-                        Cell cell = row.createCell(i);
-                        cell.setCellValue(columns[i]);
-                    }
-                }
-
-                workbook.write(outStream);
-            }
-        }
-    }
 }

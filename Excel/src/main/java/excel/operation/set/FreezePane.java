@@ -1,10 +1,13 @@
 package excel.operation.set;
 
+import lombok.Getter;
+
 /**
  * 冻结参数
  *
  * @author fyy
  */
+@Getter
 public class FreezePane {
     /**
      * 列拆分
@@ -47,23 +50,9 @@ public class FreezePane {
     /**
      * 列拆分
      */
-    public int getColSplit() {
-        return colSplit;
-    }
-
-    /**
-     * 列拆分
-     */
     public FreezePane setColSplit(int colSplit) {
         this.colSplit = colSplit;
         return this;
-    }
-
-    /**
-     * 行拆分
-     */
-    public int getRowSplit() {
-        return rowSplit;
     }
 
     /**
@@ -77,23 +66,9 @@ public class FreezePane {
     /**
      * 左侧最大列
      */
-    public int getLeftmostColumn() {
-        return leftmostColumn;
-    }
-
-    /**
-     * 左侧最大列
-     */
     public FreezePane setLeftmostColumn(int leftmostColumn) {
         this.leftmostColumn = leftmostColumn;
         return this;
-    }
-
-    /**
-     * 顶部行
-     */
-    public int getTopRow() {
-        return topRow;
     }
 
     /**
